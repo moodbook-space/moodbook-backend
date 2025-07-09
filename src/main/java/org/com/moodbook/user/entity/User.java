@@ -22,7 +22,7 @@ import org.com.moodbook.common.constants.UserStatus;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
