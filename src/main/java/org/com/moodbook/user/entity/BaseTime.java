@@ -11,7 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
-public abstract class BaseTime {
+public abstract class BaseTime {        // 생성일자, 수정일자 공통 적용
 
     @CreatedDate
     private LocalDateTime createdAt;
