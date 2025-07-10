@@ -1,21 +1,21 @@
-package org.com.moodbook.user.dto;
+package org.com.moodbook.member.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.com.moodbook.common.constants.Gender;
-import org.com.moodbook.user.entity.User;
-import org.com.moodbook.user.entity.UserProfile;
+import org.com.moodbook.member.entity.Member;
+import org.com.moodbook.member.entity.MemberProfile;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserProfileDTO {
+public class MemberProfileDTO {
 
   private Long id;
-  private User user;
+  private Member member;
   private Gender gender;
   private String address;
   private String myImage;
@@ -23,11 +23,11 @@ public class UserProfileDTO {
 
 
   //DTO를 Entity로 변환하는 메소드
-  public UserProfile toEntity() {
-    return UserProfile
+  public MemberProfile toEntity() {
+    return MemberProfile
         .builder()
-        .id(user.getId())
-        .user(user)
+        .id(member.getId())
+        .member(member)
         .gender(gender)
         .address(address)
         .myImage(myImage)
@@ -36,10 +36,10 @@ public class UserProfileDTO {
   }
 
   //Entity를 DTO로 변환하는 메서드
-  public static UserProfileDTO toDTO(UserProfile entity) {
-    return UserProfileDTO.builder()
-        .id(entity.getUser().getId())
-        .user(entity.getUser())
+  public static MemberProfileDTO toDTO(MemberProfile entity) {
+    return MemberProfileDTO.builder()
+        .id(entity.getMember().getId())
+        .member(entity.getMember())
         .gender(entity.getGender())
         .address(entity.getAddress())
         .myImage(entity.getMyImage())
