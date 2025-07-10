@@ -30,6 +30,8 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'com.mysql:mysql-connector-j:8.0.33'
+
 
     // 20250709 JPA 라이브리리 추가
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
