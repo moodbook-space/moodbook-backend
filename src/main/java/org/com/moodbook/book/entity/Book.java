@@ -43,7 +43,7 @@ public class Book extends BaseTime {
   @Column(nullable = false, precision = 3, scale = 1)
   private BigDecimal reputation;
 
-  @Column(length = 255)
+  @Column
   private String coverImage;
 
   // MySQL에서 명시적으로 TEXT형으로 생성
