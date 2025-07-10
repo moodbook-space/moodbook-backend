@@ -11,3 +11,7 @@ spring:
   sql:
     init:
       mode: never
+
+  data:
+    mongodb:
+      uri: mongodb+srv://moodbookuser:moodbookpass@moodbookemotion.e9qbkki.mongodb.net/?retryWrites=true&w=majority&appName=MoodBookEmotion
