@@ -1,5 +1,9 @@
 package org.com.moodbook.book.dto;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import java.time.LocalDateTime;
+import lombok.experimental.SuperBuilder;
 import org.com.moodbook.book.entity.Book;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,55 +16,49 @@ import org.com.moodbook.common.constants.Language;
 public class BookDTO {
 
   private Long id;
-  private String isbn;
+  private String isbn13;
   private String title;
   private String author;
   private String publisher;
+  private String pubDate;
   private BigDecimal reputation;
   private String coverImage;
   private String description;
-  private String genre;
-  private int pageCount;
-  private Language language;
-  private LocalDate publishedAt;
-  private BigDecimal recommendationTag;
-  private Boolean isCached;
+  private String categoryName;
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
 
   public Book toEntity() {
     return Book.builder()
         .id(id)
-        .isbn(isbn)
+        .isbn13(isbn13)
         .title(title)
         .author(author)
         .publisher(publisher)
+        .pubDate(pubDate)
         .reputation(reputation)
-        .cover_image(coverImage)
+        .coverImage(coverImage)
         .description(description)
-        .genre(genre)
-        .page_count(pageCount)
-        .language(language)
-        .published_at(publishedAt)
-        .recommendation_tag(recommendationTag)
-        .is_cached(isCached)
+        .categoryName(categoryName)
+        .createdAt(createdAt)
+        .updatedAt(updatedAt)
         .build();
   }
 
   public static BookDTO toDTO(Book book) {
     return BookDTO.builder()
         .id(book.getId())
-        .isbn(book.getIsbn())
+        .isbn13(book.getIsbn13())
         .title(book.getTitle())
         .author(book.getAuthor())
         .publisher(book.getPublisher())
+        .pubDate(book.getPubDate())
         .reputation(book.getReputation())
-        .coverImage(book.getCover_image())
+        .coverImage(book.getCoverImage())
         .description(book.getDescription())
-        .genre(book.getGenre())
-        .pageCount(book.getPage_count())
-        .language(book.getLanguage())
-        .publishedAt(book.getPublished_at())
-        .recommendationTag(book.getRecommendation_tag())
-        .isCached(book.getIs_cached())
+        .categoryName(book.getCategoryName())
+        .createdAt(book.getCreatedAt())
+        .updatedAt(book.getUpdatedAt())
         .build();
   }
 }
