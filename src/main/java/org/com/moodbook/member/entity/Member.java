@@ -1,4 +1,4 @@
-package org.com.moodbook.user.entity;
+package org.com.moodbook.member.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,14 +15,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.com.moodbook.common.constants.Role;
-import org.com.moodbook.common.constants.UserStatus;
+import org.com.moodbook.common.constants.MemberStatus;
+import org.com.moodbook.common.model.BaseTime;
 
 @Entity
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends BaseTime {
+public class Member extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,8 +35,8 @@ public class User extends BaseTime {
     @Column(nullable = false)
     private String password;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private UserProfile userProfile;
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private MemberProfile memberProfile;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -50,6 +51,6 @@ public class User extends BaseTime {
     private boolean emailVerified;
 
     @Enumerated(EnumType.STRING)
-    private UserStatus status;
+    private MemberStatus status;
 
 }
