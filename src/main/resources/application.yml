@@ -1,0 +1,30 @@
+server:
+  port: 8080              # 공통 설정
+
+spring:
+  profiles:
+    default: local        # 기본 프로파일 설정
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
