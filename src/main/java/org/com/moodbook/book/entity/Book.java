@@ -14,7 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.com.moodbook.common.constants.Language;
-import org.com.moodbook.user.entity.BaseTime;
+import org.com.moodbook.common.model.BaseTime;
 
 @Entity
 @Getter
