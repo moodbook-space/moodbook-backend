@@ -1,13 +1,23 @@
 spring:
+  config:
+    activate:
+      on-profile: dev
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/${DB_NAME}
     username: root
     password: 1234
+
   jpa:
     generate-ddl: true
     show-sql: true
     open-in-view: false
+
   sql:
     init:
       mode: never
+
+  data:
+    mongodb:
+      uri: mongodb+srv://moodbookuser:moodbookpass@moodbookemotion.e9qbkki.mongodb.net/?retryWrites=true&w=majority&appName=MoodBookEmotion
