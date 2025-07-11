@@ -6,15 +6,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.math.BigDecimal;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import org.com.moodbook.common.constants.Language;
 import org.com.moodbook.common.model.BaseTime;
 
 import lombok.experimental.SuperBuilder;
-import org.com.moodbook.user.entity.BaseTime;
 
 
 @Entity
@@ -41,7 +40,7 @@ public class Book extends BaseTime {
   private String publisher;
 
   @Column(length = 50)
-  private String pubDate;
+  private Date pubDate;
 
   // precision = 총 자리수
   // scale = 소수점 아래 몇 자리까지 표현할지
