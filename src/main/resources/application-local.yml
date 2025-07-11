@@ -21,3 +21,21 @@ spring:
   data:
     mongodb:
       uri: mongodb+srv://moodbookuser:moodbookpass@moodbookemotion.e9qbkki.mongodb.net/?retryWrites=true&w=majority&appName=MoodBookEmotion
+      database: moodbookDB
+
+
+# AWS S3 적용을 위한 세팅
+# S3 사용을 위한 키는 정호종씨에게 문의하세요
+cloud:
+  aws:
+    stack:
+      auto: false
+    region:
+      static: ap-northeast-2
+    credentials:
+      secret-key: XkEHkDUMZPPFb18tWuFu0PyI9rL4s6VnATGcmk
+      access-key: AKIAWKHCA6KPRLOBBA6P
+
+jwt:
+  secretKey: 12345
+DB_NAME: moodbook
