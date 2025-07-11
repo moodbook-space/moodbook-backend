@@ -1,4 +1,4 @@
-package org.com.moodbook.user.entity;
+package org.com.moodbook.member.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,7 +19,7 @@ import org.com.moodbook.common.constants.Gender;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserProfile {
+public class MemberProfile {
 
 
   @Id
@@ -29,7 +29,7 @@ public class UserProfile {
   @OneToOne
   @MapsId
   @JoinColumn(name = "id")
-  private User user;
+  private Member member;
 
   private Gender gender;
 

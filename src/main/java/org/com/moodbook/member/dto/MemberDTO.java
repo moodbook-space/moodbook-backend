@@ -1,18 +1,18 @@
-package org.com.moodbook.user.dto;
+package org.com.moodbook.member.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.com.moodbook.common.constants.Role;
-import org.com.moodbook.common.constants.UserStatus;
-import org.com.moodbook.user.entity.User;
+import org.com.moodbook.common.constants.MemberStatus;
+import org.com.moodbook.member.entity.Member;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserDTO {
+public class MemberDTO {
 
   private Long id;
   private String email;
@@ -21,11 +21,11 @@ public class UserDTO {
   private Role role;
   private String contact;
   private boolean emailVerified;
-  private UserStatus status;
+  private MemberStatus status;
 
 
-  public User toEntity() {
-    return User.builder()
+  public Member toEntity() {
+    return Member.builder()
         .id(id)
         .email(email)
         .password(password)
@@ -37,8 +37,8 @@ public class UserDTO {
         .build();
   }
 
-  public static UserDTO toDto(User entity) {
-    return UserDTO.builder()
+  public static MemberDTO toDto(Member entity) {
+    return MemberDTO.builder()
         .id(entity.getId())
         .email(entity.getEmail())
         .password(entity.getPassword())
