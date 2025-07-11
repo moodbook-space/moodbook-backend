@@ -1,0 +1,138 @@
+package org.com.moodbook.post.service.impl;
+
+import lombok.RequiredArgsConstructor;
+import org.com.moodbook.common.constants.MeetingJoinStatus;
+import org.com.moodbook.common.constants.MeetingType;
+import org.com.moodbook.common.exception.BaseException;
+import org.com.moodbook.common.exception.ErrorCode;
+import org.com.moodbook.member.entity.Member;
+import org.com.moodbook.member.repository.MemberRepository;
+import org.com.moodbook.post.dto.CreateMeetingRequest;
+import org.com.moodbook.post.dto.MeetingDetailResponse;
+import org.com.moodbook.post.dto.MeetingSummaryResponse;
+import org.com.moodbook.post.entity.Meeting;
+import org.com.moodbook.post.entity.MeetingMember;
+import org.com.moodbook.post.entity.MoodTag;
+import org.com.moodbook.post.repository.MeetingMemberRepository;
+import org.com.moodbook.post.repository.MeetingRepository;
+import org.com.moodbook.post.repository.MoodTagRepository;
+import org.com.moodbook.post.service.MeetingService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class MeetingServiceImpl implements MeetingService {
+
+  private final MeetingRepository meetingRepository;
+  private final MemberRepository memberRepository;
+  private final MoodTagRepository tagRepository;
+  private final MeetingMemberRepository memberRepo;
+
+  @Override
+  public Long createMeeting(Long memberId, CreateMeetingRequest req) {
+    // 호스트 검증
+    Member host = memberRepository.findById(memberId)
+        .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+
+    // 태그 조회
+    List<MoodTag> tags = tagRepository.findAllById(req.getTagIds());
+    if (tags.isEmpty()) {
+      throw new BaseException(ErrorCode.TAG_NOT_FOUND);
+    }
+
+    // MeetingType 변환
+    MeetingType type;
+    try {
+      type = MeetingType.valueOf(req.getMeetingType());
+    } catch (Exception e) {
+      throw new BaseException(ErrorCode.INVALID_MEETING_TYPE);
+    }
+
+    // 엔티티 저장
+    Meeting meeting = Meeting.builder()
+        .title(req.getTitle())
+        .content(req.getContent())
+        .member(host)
+        .meetingType(type)
+        .startAt(req.getStartAt())
+        .endAt(req.getEndAt())
+        .capacity(req.getCapacity())
+        .location(req.getLocation())
+        .moodTags(tags)
+        .build();
+    meetingRepository.save(meeting);
+
+    // 호스트 자동 승인
+    MeetingMember self = MeetingMember.builder()
+        .meeting(meeting)
+        .member(host)
+        .status(MeetingJoinStatus.APPROVED)
+        .joinedAt(meeting.getCreatedAt())
+        .build();
+    memberRepo.save(self);
+
+    return meeting.getId();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public MeetingDetailResponse getMeeting(Long meetingId) {
+    Meeting meeting = meetingRepository.findById(meetingId)
+        .orElseThrow(() -> new BaseException(ErrorCode.MEETING_NOT_FOUND));
+
+    int count = memberRepo.findByMeetingIdAndStatus(meetingId, MeetingJoinStatus.APPROVED)
+        .size();
+
+    return MeetingDetailResponse.builder()
+        .id(meeting.getId())
+        .title(meeting.getTitle())
+        .content(meeting.getContent())
+        .meetingType(meeting.getMeetingType().name())
+        .startAt(meeting.getStartAt())
+        .endAt(meeting.getEndAt())
+        .capacity(meeting.getCapacity())
+        .location(meeting.getLocation())
+        .viewCount(meeting.getViewCount())
+        .likeCount(meeting.getLikeCount())
+        .currentParticipants(count)
+        .tags(meeting.getMoodTags().stream()
+            .map(MoodTag::getName)
+            .collect(Collectors.toList()))
+        .hostName(meeting.getMember().getName())
+        .createdAt(meeting.getCreatedAt())
+        .updatedAt(meeting.getUpdatedAt())
+        .build();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<MeetingSummaryResponse> getMeetings(Pageable pageable) {
+    return meetingRepository.findAll(pageable)
+        .map(m -> MeetingSummaryResponse.builder()
+            .id(m.getId())
+            .title(m.getTitle())
+            .hostName(m.getMember().getName())
+            .meetingType(m.getMeetingType().name())
+            .startAt(m.getStartAt())
+            .currentParticipants(
+                memberRepo.findByMeetingIdAndStatus(m.getId(), MeetingJoinStatus.APPROVED)
+                    .size()
+            )
+            .capacity(m.getCapacity())
+            .viewCount(m.getViewCount())
+            .likeCount(m.getLikeCount())
+            .tags(m.getMoodTags().stream()
+                .map(MoodTag::getName)
+                .collect(Collectors.toList()))
+            .createdAt(m.getCreatedAt())
+            .build()
+        );
+  }
+}
