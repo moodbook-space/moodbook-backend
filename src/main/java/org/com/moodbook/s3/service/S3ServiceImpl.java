@@ -53,6 +53,8 @@ public class S3ServiceImpl implements S3Service {
           .key(convertedName)
           .build();
       s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+
+      log.info("업로드 완료");
     } catch (IOException e) {
       // 업로드 도중 예외 발생 시 런타임 예외로 감싸서 throw
       throw new RuntimeException("S3 업로드 중 오류 발생", e);
