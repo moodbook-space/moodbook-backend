@@ -1,4 +1,4 @@
-package org.com.moodbook.admin.admin_main.controller;
+package org.com.moodbook.admin.controller;
 
 
 import org.springframework.stereotype.Controller;
@@ -10,7 +10,7 @@ public class AdminMainController {
   @GetMapping("/api/admin")
   public String getAdminMainPage() {
 
-    return "admin/admin_main";
+    return "admin/main";
   }
 
 }
