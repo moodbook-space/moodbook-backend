@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.com.moodbook.common.constants.EmotionTag;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "emotion_scores")
@@ -24,7 +25,7 @@ public class BookEmotionScore {
   private String isbn13;
   private String bookTitle;
   private String description; // 분석한 문장
-  private Map<String, Integer> scores; // 감정별 점수
+  private Map<EmotionTag, Integer> scores; // 감정별 점수
   private Long timestamp; // 저장 시간(선택)
 
 }
