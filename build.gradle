@@ -44,8 +44,17 @@ dependencies {
     // 20250709 JPA 라이브리리 추가
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
+    // AWS S3
+    implementation platform("software.amazon.awssdk:bom:2.25.0")
+    implementation "software.amazon.awssdk:s3"
+
     // 20250710 MongoDB 의존성 추가
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    // Thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+
 
 }
 
