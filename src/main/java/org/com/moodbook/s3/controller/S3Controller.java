@@ -15,21 +15,21 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class S3Controller {
 
-  private final S3ServiceImpl s3ServiceImpl;
+  private final S3ServiceImpl s3Service;
 
   @PostMapping("/upload")
   public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-    String url = s3ServiceImpl.upload(file);
+    String url = s3Service.upload(file);
     return ResponseEntity.ok(url);
   }
 
   @GetMapping("/getUrl")
   public ResponseEntity<?> getFile(@RequestParam String filename) {
-    if (!s3ServiceImpl.doesObjectExist(filename)) {
+    if (!s3Service.doesObjectExist(filename)) {
       return ResponseEntity.notFound().build();
     }
 
-    String url = s3ServiceImpl.getFileUrl(filename);
+    String url = s3Service.getFileUrl(filename);
     return ResponseEntity.ok(url);
   }
 }
