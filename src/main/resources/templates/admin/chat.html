@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>채팅방 관리</title>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #f8f8f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sidebar {
+      position: fixed;
+      width: 180px;
+      height: 100vh;
+      background: linear-gradient(to bottom, #2c3e50, #34495e);
+      padding: 20px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sidebar img {
+      width: 100px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    .sidebar button {
+      width: 100%;
+      padding: 10px;
+      background-color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .main {
+      margin-left: 200px;
+      padding: 30px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .header img {
+      height: 80px;
+      border-radius: 5px;
+    }
+
+    .search-section {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .search-section input[type="text"] {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px 0 0 5px;
+    }
+
+    .search-section button {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      background-color: #eee;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f0f0f0;
+      font-weight: bold;
+    }
+
+    .delete-btn {
+      font-size: 20px;
+      color: red;
+      cursor: pointer;
+    }
+
+    .pagination {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .pagination a {
+      margin: 0 5px;
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <img src="/images/logo.png" alt="로고" onclick="onLogoClick()" >
+  <button onclick="location.href='/admin'">관리자 페이지</button>
+</div>
+
+<div class="main">
+  <div class="header">
+    <h1>채팅방 관리</h1>
+    <img src="/images/gendo.png" alt="관리자 이미지">
+  </div>
+
+  <div class="search-section">
+    <input type="text" id="search-input" placeholder="방 제목 또는 방장 이름 검색" onkeydown="if(event.key === 'Enter') searchChats()">
+    <button onclick="searchChats()">검색</button>
+  </div>
+
+  <table id="chat-table">
+    <thead>
+    <tr>
+      <th>방 인원</th>
+      <th>방 이름</th>
+      <th>방장</th>
+      <th>방 설명</th>
+      <th>삭제</th>
+    </tr>
+    </thead>
+    <tbody id="chat-tbody">
+    <!-- JavaScript로 채워짐 -->
+    </tbody>
+  </table>
+
+  <div class="pagination" id="pagination">
+    <!-- JavaScript로 페이지 번호 렌더링 -->
+  </div>
+</div>
+
+<script>
+  let currentPage = 0;
+  const pageSize = 10;
+  let currentQuery = "";
+
+  function fetchChats(page, query = "") {
+    fetch(`/api/admin/chat?page=${page}&size=${pageSize}&query=${encodeURIComponent(query)}`)
+    .then(res => res.json())
+    .then(data => {
+      renderTable(data.content);
+      renderPagination(data.totalPages, page, query);
+    });
+  }
+
+  function renderTable(chats) {
+    const tbody = document.getElementById("chat-tbody");
+    tbody.innerHTML = "";
+    chats.forEach(chat => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+          <td>${chat.participants}</td>
+          <td>${chat.name}</td>
+          <td>${chat.created_by}</td>
+          <td>${chat.description || ""}</td>
+          <td><span class="delete-btn" onclick="deleteChat(${chat.id})">&#10060;</span></td>
+        `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderPagination(totalPages, current, query = "") {
+    const container = document.getElementById("pagination");
+    container.innerHTML = "";
+    for (let i = 0; i < totalPages; i++) {
+      const link = document.createElement("a");
+      link.href = "#";
+      link.textContent = i + 1;
+      link.style.color = i === current ? "blue" : "#333";
+      link.onclick = (e) => {
+        e.preventDefault();
+        currentPage = i;
+        fetchChats(i, query);
+      };
+      container.appendChild(link);
+    }
+  }
+
+  function searchChats() {
+    const keyword = document.getElementById("search-input").value;
+    currentPage = 0;
+    currentQuery = keyword;
+    fetchChats(currentPage, currentQuery);
+  }
+
+  function deleteChat(id) {
+    if (confirm("정말 삭제하시겠습니까?")) {
+      fetch(`/api/admin/chat/${id}`, { method: 'DELETE' })
+      .then(res => {
+        if (res.ok) fetchChats(currentPage, currentQuery);
+      });
+    }
+  }
+
+  function onLogoClick() {
+    alert("아직 이동 경로가 지정되지 않았습니다.");
+  }
+
+  fetchChats(currentPage);
+</script>
+</body>
+</html>
