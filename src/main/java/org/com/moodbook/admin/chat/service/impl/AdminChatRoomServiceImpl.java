@@ -1,6 +1,5 @@
 package org.com.moodbook.admin.chat.service.impl;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.com.moodbook.admin.chat.dto.AdminChatRoomDTO;
