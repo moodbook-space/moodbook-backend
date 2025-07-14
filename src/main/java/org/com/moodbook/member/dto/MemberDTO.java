@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.com.moodbook.common.constants.Role;
 import org.com.moodbook.common.constants.MemberStatus;
 import org.com.moodbook.member.entity.Member;
@@ -12,6 +13,7 @@ import org.com.moodbook.member.entity.Member;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Setter
 public class MemberDTO {
 
   private Long id;
