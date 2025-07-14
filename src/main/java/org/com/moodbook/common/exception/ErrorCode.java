@@ -32,6 +32,7 @@ public enum ErrorCode {
   BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOK_NOT_FOUND", "해당 책을 찾을 수 없습니다."),
   REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT_NOT_FOUND", "해당 독후감을 찾을 수 없습니다."),
   MEETING_NOT_FOUND(HttpStatus.NOT_FOUND, "MEETING_NOT_FOUND", "해당 모임을 찾을 수 없습니다."),
+  EMOTION_NOT_FOUND(HttpStatus.NOT_FOUND, "EMOTION_NOT_FOUND", "해당 감정을 찾을 수 없습니다."),
 
   /* 500 - Internal Server Error */
   INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버에 오류가 발생했습니다.");
