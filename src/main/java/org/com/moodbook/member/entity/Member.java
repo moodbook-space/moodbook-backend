@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.com.moodbook.common.constants.Role;
 import org.com.moodbook.common.constants.MemberStatus;
 import org.com.moodbook.common.model.BaseTime;
@@ -23,6 +24,7 @@ import org.com.moodbook.common.model.BaseTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 public class Member extends BaseTime {
 
     @Id
@@ -35,11 +37,11 @@ public class Member extends BaseTime {
     @Column(nullable = false)
     private String password;
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY,orphanRemoval = true)
     private MemberProfile memberProfile;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role role =  Role.USER;
 
     @Column(nullable = false)
     private String name;
@@ -48,9 +50,13 @@ public class Member extends BaseTime {
     private String contact;
 
     @Column(nullable = false)
-    private boolean emailVerified;
+    private boolean emailVerified = false;
 
     @Enumerated(EnumType.STRING)
-    private MemberStatus status;
+    private MemberStatus status = MemberStatus.ACTIVATED;
 
+    public void setProfile(MemberProfile memberProfile) {
+        this.memberProfile = memberProfile;
+        memberProfile.setMember(this);
+    }
 }
