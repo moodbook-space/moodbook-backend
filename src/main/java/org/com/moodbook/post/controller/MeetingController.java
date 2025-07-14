@@ -1,10 +1,15 @@
 package org.com.moodbook.post.controller;
 
 import jakarta.validation.Valid;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.com.moodbook.post.dto.CreateMeetingRequest;
 import org.com.moodbook.post.dto.MeetingDetailResponse;
 
+import org.com.moodbook.post.dto.MeetingJoinDto;
+import org.com.moodbook.post.dto.MeetingJoinResponseRequest;
 import org.com.moodbook.post.dto.MeetingSummaryResponse;
+import org.com.moodbook.post.dto.UpdateMeetingRequest;
 import org.com.moodbook.post.service.MeetingService;
 
 
@@ -17,19 +22,17 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
-
 @RestController
 @RequestMapping("/api/meetings")
+@RequiredArgsConstructor
 @Validated
 public class MeetingController {
 
   private final MeetingService meetingService;
 
-  public MeetingController(MeetingService meetingService) {
-    this.meetingService = meetingService;
-  }
-
-  /** 모임 생성 */
+  /**
+   * 모임 생성
+   */
   @PostMapping
   public ResponseEntity<Long> createMeeting(
       @AuthenticationPrincipal CustomMemberDetails memberDetails,
@@ -39,16 +42,83 @@ public class MeetingController {
     return ResponseEntity.status(201).body(meetingId);
   }
 
-  /** 모임 단일 조회 */
+  /**
+   * 모임 단일 조회
+   */
   @GetMapping("/{id}")
   public ResponseEntity<MeetingDetailResponse> getMeeting(@PathVariable Long id) {
     return ResponseEntity.ok(meetingService.getMeeting(id));
   }
 
-  /** 독서모임 목록 조회*/
+  /**
+   * 독서모임 목록 조회
+   */
   @GetMapping
   public ResponseEntity<Page<MeetingSummaryResponse>> getMeetings(Pageable pageable) {
     return ResponseEntity.ok(meetingService.getMeetings(pageable));
+  }
+
+  /**
+   * 모임 수정
+   */
+  @PatchMapping("/{id}")
+  public ResponseEntity<Void> updateMeeting(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      @PathVariable Long id,
+      @Valid @RequestBody UpdateMeetingRequest req
+  ) {
+    meetingService.updateMeeting(md.getId(), id, req);
+    return ResponseEntity.noContent().build();
+  }
+
+  /**
+   * 모임 삭제
+   */
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteMeeting(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      @PathVariable Long id
+  ) {
+    meetingService.deleteMeeting(md.getId(), id);
+    return ResponseEntity.noContent().build();
+  }
+
+  /**
+   * 모임 참가 신청
+   */
+  @PostMapping("/{id}/requests")
+  public ResponseEntity<Void> requestJoin(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      @PathVariable("id") Long meetingId
+  ) {
+    meetingService.requestJoinMeeting(md.getId(), meetingId);
+    return ResponseEntity.status(201).build();
+  }
+
+  /**
+   * 모임장 전용: 대기 중인 신청자 목록 조회
+   */
+  @GetMapping("/{id}/requests")
+  public ResponseEntity<List<MeetingJoinDto>> listJoinRequests(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      @PathVariable("id") Long meetingId
+  ) {
+    List<MeetingJoinDto> list = meetingService.listJoinRequests(md.getId(), meetingId);
+    return ResponseEntity.ok(list);
+  }
+
+  /**
+   * 모임장 승인/거절
+   */
+  @PatchMapping("/{id}/requests/{reqId}")
+  public ResponseEntity<Void> respondRequest(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      @PathVariable("id") Long meetingId,
+      @PathVariable("reqId") Long requestId,
+      @Valid @RequestBody MeetingJoinResponseRequest body
+  ) {
+    meetingService.respondToJoinRequest(md.getId(), meetingId, requestId, body);
+    return ResponseEntity.noContent().build();
   }
 }
 

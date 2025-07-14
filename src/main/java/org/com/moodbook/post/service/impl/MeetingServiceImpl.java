@@ -1,5 +1,6 @@
 package org.com.moodbook.post.service.impl;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.com.moodbook.common.constants.MeetingJoinStatus;
 import org.com.moodbook.common.constants.MeetingType;
@@ -9,7 +10,10 @@ import org.com.moodbook.member.entity.Member;
 import org.com.moodbook.member.repository.MemberRepository;
 import org.com.moodbook.post.dto.CreateMeetingRequest;
 import org.com.moodbook.post.dto.MeetingDetailResponse;
+import org.com.moodbook.post.dto.MeetingJoinDto;
+import org.com.moodbook.post.dto.MeetingJoinResponseRequest;
 import org.com.moodbook.post.dto.MeetingSummaryResponse;
+import org.com.moodbook.post.dto.UpdateMeetingRequest;
 import org.com.moodbook.post.entity.Meeting;
 import org.com.moodbook.post.entity.MeetingMember;
 import org.com.moodbook.post.entity.MoodTag;
@@ -135,4 +139,120 @@ public class MeetingServiceImpl implements MeetingService {
             .build()
         );
   }
+
+  @Override
+  public void updateMeeting(Long memberId, Long meetingId, UpdateMeetingRequest req) {
+    // 모임과 작성자 검증
+    Meeting meeting = meetingRepository.findById(meetingId)
+        .orElseThrow(() -> new BaseException(ErrorCode.MEETING_NOT_FOUND));
+    if (!meeting.getMember().getId().equals(memberId)) {
+      throw new BaseException(ErrorCode.ACCESS_DENIED);
+    }
+
+    // moodTags 업데이트
+    List<MoodTag> tags = tagRepository.findAllById(req.getTagIds());
+    if (tags.isEmpty()) {
+      throw new BaseException(ErrorCode.TAG_NOT_FOUND);
+    }
+
+    // MeetingType 변환
+    MeetingType type;
+    try {
+      type = MeetingType.valueOf(req.getMeetingType());
+    } catch (Exception e) {
+      throw new BaseException(ErrorCode.INVALID_MEETING_TYPE);
+    }
+
+    // 필드 수정
+    meeting.setTitle(req.getTitle());
+    meeting.setContent(req.getContent());
+    meeting.setMeetingType(type);
+    meeting.setStartAt(req.getStartAt());
+    meeting.setEndAt(req.getEndAt());
+    meeting.setCapacity(req.getCapacity());
+    meeting.setLocation(req.getLocation());
+    meeting.setMoodTags(tags);
+
+    // 저장 (트랜잭션 커밋 시 자동 flush)
+    meetingRepository.save(meeting);
+  }
+
+  @Override
+  public void deleteMeeting(Long memberId, Long meetingId) {
+    Meeting meeting = meetingRepository.findById(meetingId)
+        .orElseThrow(() -> new BaseException(ErrorCode.MEETING_NOT_FOUND));
+    if (!meeting.getMember().getId().equals(memberId)) {
+      throw new BaseException(ErrorCode.ACCESS_DENIED);
+    }
+    meetingRepository.deleteById(meetingId);
+    // @SQLDelete 에 의해 soft-delete 처리
+  }
+
+  @Override
+  public void requestJoinMeeting(Long memberId, Long meetingId) {
+    Meeting meeting = meetingRepository.findById(meetingId)
+        .orElseThrow(() -> new BaseException(ErrorCode.MEETING_NOT_FOUND));
+
+    if (memberRepo.existsByMeetingIdAndMemberId(meetingId, memberId)) {
+      throw new BaseException(ErrorCode.ALREADY_EXIST_JOIN);
+    }
+
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+
+    MeetingMember req = MeetingMember.builder()
+        .meeting(meeting)
+        .member(member)
+        .status(MeetingJoinStatus.PENDING)
+        .build();
+    memberRepo.save(req);
+  }
+
+  @Override
+  public void respondToJoinRequest(Long hostId, Long meetingId, Long requestId, MeetingJoinResponseRequest reqDto) {
+    Meeting meeting = meetingRepository.findById(meetingId)
+        .orElseThrow(() -> new BaseException(ErrorCode.MEETING_NOT_FOUND));
+    if (!meeting.getMember().getId().equals(hostId)) {
+      throw new BaseException(ErrorCode.ACCESS_DENIED);
+    }
+
+    MeetingMember req = memberRepo.findById(requestId)
+        .orElseThrow(() -> new BaseException(ErrorCode.JOIN_REQUEST_NOT_FOUND));
+    if (!req.getMeeting().getId().equals(meetingId)) {
+      throw new BaseException(ErrorCode.INVALID_REQUEST);
+    }
+
+    String action = reqDto.getAction();
+    if ("APPROVE".equalsIgnoreCase(action)) {
+      req.setStatus(MeetingJoinStatus.APPROVED);
+      req.setJoinedAt(LocalDateTime.now());
+    } else if ("REJECT".equalsIgnoreCase(action)) {
+      req.setStatus(MeetingJoinStatus.REJECTED);
+    } else {
+      throw new BaseException(ErrorCode.INVALID_ACTION);
+    }
+    memberRepo.save(req);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<MeetingJoinDto> listJoinRequests(Long hostId, Long meetingId) {
+    Meeting meeting = meetingRepository.findById(meetingId)
+        .orElseThrow(() -> new BaseException(ErrorCode.MEETING_NOT_FOUND));
+    if (!meeting.getMember().getId().equals(hostId)) {
+      throw new BaseException(ErrorCode.ACCESS_DENIED);
+    }
+
+    return memberRepo.findByMeetingIdAndStatus(meetingId, MeetingJoinStatus.PENDING)
+        .stream()
+        .map(r -> new MeetingJoinDto(
+            r.getId(),
+            r.getMember().getId(),
+            r.getMember().getName(),
+            r.getStatus().name(),
+            r.getCreatedAt().toString()
+        ))
+        .collect(Collectors.toList());
+  }
+
 }
