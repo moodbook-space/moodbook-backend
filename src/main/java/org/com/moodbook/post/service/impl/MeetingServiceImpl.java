@@ -43,7 +43,7 @@ public class MeetingServiceImpl implements MeetingService {
   public Long createMeeting(Long memberId, CreateMeetingRequest req) {
     // 호스트 검증
     Member host = memberRepository.findById(memberId)
-        .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
 
     // 태그 조회
     List<MoodTag> tags = tagRepository.findAllById(req.getTagIds());
@@ -198,7 +198,7 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     Member member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
 
     MeetingMember req = MeetingMember.builder()
         .meeting(meeting)

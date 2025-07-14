@@ -38,7 +38,7 @@ public class ReportServiceImpl implements ReportService {
   public Long createReport(Long memberId, CreateReportRequest req) {
     // 작성자 검증
     Member author = memberRepository.findById(memberId)
-        .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
 
     // 책 정보 검증
     var book = bookRepository.findById(req.getBookId())
