@@ -13,12 +13,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.com.moodbook.common.constants.Gender;
 
 @Entity
 @Table(name = "Member_Profile")
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberProfile {
@@ -42,5 +44,4 @@ public class MemberProfile {
 
   @Column(length = 100)
   private String nickname;
-
 }
