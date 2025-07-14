@@ -23,7 +23,11 @@ public class AWSS3Controller {
     return ResponseEntity.ok(url);
   }
 
-  /// 파일명 기반으로 URL을 받아오는 함수 그런데, upload결과로 URL을 반환할거고, 이를 DB에 저장해 쓸 것이기 때문에 사실상 사용할 일은 없음
+  /**
+  파일명 기반으로 URL을 받아오는 함수
+  그러나, upload결과로 URL이 반환되며, URL 자체를 DB에 저장해 쓸 것이기 때문에 사실상 사용할 일은 없음
+  추후 관련 코드가 필요할 일이 생길 경우를 대비해 주석처리함, 서비스 완성 이후 필요가 없다고 판단되면 제거할 예정
+
   public ResponseEntity<?> getFile(@RequestParam String filename) {
     if (!awss3Service.doesObjectExist(filename)) {
       return ResponseEntity.notFound().build();
@@ -32,4 +36,6 @@ public class AWSS3Controller {
     String url = awss3Service.getFileUrl(filename);
     return ResponseEntity.ok(url);
   }
+  */
+
 }
