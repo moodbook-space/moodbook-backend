@@ -29,7 +29,7 @@ public class SecurityConfig {
     return http
         .csrf(csrf -> csrf.disable()) // csrf 비활성화
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/oauth/tempSignUp").permitAll()
+            .requestMatchers("/api/oauth/**").permitAll()
             .anyRequest().authenticated()
         )
         .build();
