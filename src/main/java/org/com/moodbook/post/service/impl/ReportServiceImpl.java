@@ -1,6 +1,7 @@
 package org.com.moodbook.post.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.com.moodbook.book.entity.Book;
 import org.com.moodbook.book.repository.BookRepository;
 import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.common.exception.ErrorCode;
@@ -9,6 +10,7 @@ import org.com.moodbook.member.repository.MemberRepository;
 import org.com.moodbook.post.dto.CreateReportRequest;
 import org.com.moodbook.post.dto.ReportDetailResponse;
 import org.com.moodbook.post.dto.ReportSummaryResponse;
+import org.com.moodbook.post.dto.UpdateReportRequest;
 import org.com.moodbook.post.entity.Report;
 import org.com.moodbook.post.entity.MoodTag;
 import org.com.moodbook.post.repository.MoodTagRepository;
@@ -87,6 +89,59 @@ public class ReportServiceImpl implements ReportService {
   @Transactional(readOnly = true)
   public Page<ReportSummaryResponse> getReports(Pageable pageable) {
     return reportRepository.findAll(pageable)
+        .map(r -> ReportSummaryResponse.builder()
+            .id(r.getId())
+            .title(r.getTitle())
+            .authorName(r.getMember().getName())
+            .createdAt(r.getCreatedAt())
+            .viewCount(r.getViewCount())
+            .likeCount(r.getLikeCount())
+            .tags(r.getMoodTags().stream()
+                .map(MoodTag::getName)
+                .collect(Collectors.toList()))
+            .build()
+        );
+  }
+
+  @Override
+  public void updateReport(Long memberId, Long reportId, UpdateReportRequest req) {
+    Report rpt = reportRepository.findById(reportId)
+        .orElseThrow(() -> new BaseException(ErrorCode.REPORT_NOT_FOUND));
+    if (!rpt.getMember().getId().equals(memberId)) {
+      throw new BaseException(ErrorCode.ACCESS_DENIED);
+    }
+
+    // book 교체
+    Book book = bookRepository.findById(req.getBookId())
+        .orElseThrow(() -> new BaseException(ErrorCode.BOOK_NOT_FOUND));
+    List<MoodTag> tags = tagRepository.findAllById(req.getTagIds());
+    if (tags.isEmpty()) {
+      throw new BaseException(ErrorCode.TAG_NOT_FOUND);
+    }
+
+    rpt.setTitle(req.getTitle());
+    rpt.setContent(req.getContent());
+    rpt.setBook(book);
+    rpt.setMoodTags(tags);
+
+    reportRepository.save(rpt);
+  }
+
+  @Override
+  public void deleteReport(Long memberId, Long reportId) {
+    Report rpt = reportRepository.findById(reportId)
+        .orElseThrow(() -> new BaseException(ErrorCode.REPORT_NOT_FOUND));
+    if (!rpt.getMember().getId().equals(memberId)) {
+      throw new BaseException(ErrorCode.ACCESS_DENIED);
+    }
+    reportRepository.deleteById(reportId);  // 소프트 삭제
+  }
+
+  // 도서 상세페이지에서 해당 도서에 관한 독후감목록만조회하기위한 메서드
+  @Override
+  @Transactional(readOnly = true)
+  public Page<ReportSummaryResponse> getReportsByBook(Long bookId, Pageable pageable) {
+    return reportRepository.findByBook_Id(bookId, pageable)
         .map(r -> ReportSummaryResponse.builder()
             .id(r.getId())
             .title(r.getTitle())
