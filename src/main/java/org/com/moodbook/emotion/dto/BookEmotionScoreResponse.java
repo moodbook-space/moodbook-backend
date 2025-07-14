@@ -2,6 +2,7 @@ package org.com.moodbook.emotion.dto;
 
 import java.util.Map;
 import lombok.Getter;
+import org.com.moodbook.common.constants.EmotionTag;
 import org.com.moodbook.emotion.entity.BookEmotionScore;
 
 @Getter
@@ -9,7 +10,7 @@ public class BookEmotionScoreResponse {
   private String isbn13;
   private String bookTitle;
   private String description;
-  private Map<String, Integer> scores;
+  private Map<EmotionTag, Integer> scores;
   private Long timestamp;
 
   public BookEmotionScoreResponse(BookEmotionScore bookEmotionScore) {
