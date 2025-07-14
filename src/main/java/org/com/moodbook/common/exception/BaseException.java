@@ -26,6 +26,8 @@ public class BaseException extends RuntimeException {
     public static final BaseException EMOTION_NOT_FOUND = new BaseException(ErrorCode.EMOTION_NOT_FOUND);
 
     public static final BaseException INTERNAL_SERVER_ERROR = new BaseException(ErrorCode.INTERNAL_SERVER_ERROR);
+    public static final BaseException AWSS3_UPLOAD_ERROR = new BaseException(ErrorCode.AWSS3_UPLOAD_ERROR);
+    public static final BaseException AWSS3_GET_ERROR = new BaseException(ErrorCode.AWSS3_GET_ERROR);
 
     private final ErrorCode errorCode;
 

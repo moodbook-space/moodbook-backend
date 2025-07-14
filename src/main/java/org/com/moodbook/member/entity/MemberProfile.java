@@ -39,8 +39,8 @@ public class MemberProfile {
   @Column(nullable = false)
   private String address;
 
-  @Column
-  private String myImage;
+  @Column(nullable = false)
+  private String myImage = "https://moodbook-bucket.s3.ap-northeast-2.amazonaws.com/131a3a40-191c-4a7a-83ee-af254efaf0fb.png";
 
   @Column(length = 100)
   private String nickname;
