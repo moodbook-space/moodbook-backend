@@ -1,6 +1,7 @@
 package org.com.moodbook.member.service;
 
 import org.com.moodbook.member.dto.MemberDTO;
+import org.com.moodbook.member.dto.MemberLoginDTO;
 import org.com.moodbook.member.dto.MemberProfileDTO;
 import org.com.moodbook.member.dto.MemberTempJoinDto;
 import org.com.moodbook.member.entity.Member;
@@ -15,6 +16,9 @@ public interface MemberService {
 
   //회원가입
   public MemberDTO join(MemberDTO memberDTO, MemberProfileDTO profileDTO);
+
+  //로그인
+  MemberDTO login(MemberLoginDTO memberLoginDTO);
 
 
 }

@@ -39,7 +39,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         || path.equals("/index.html")
         || path.endsWith(".html")
         || path.startsWith("/favicon.ico")
-        || path.startsWith("/api/oauth/tempSighUp");
+        || path.startsWith("/api/oauth/tempSighUp")
+        || path.startsWith("/api/oauth/login");
 
     /**
      config에서 인증하라고 하고 여기서 인증 무시하라고 하면 401 에러남
