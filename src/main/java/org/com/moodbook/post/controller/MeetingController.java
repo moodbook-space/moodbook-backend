@@ -2,6 +2,7 @@ package org.com.moodbook.post.controller;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.com.moodbook.post.dto.CreateMeetingRequest;
 import org.com.moodbook.post.dto.MeetingDetailResponse;
 
@@ -23,14 +24,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/meetings")
+@RequiredArgsConstructor
 @Validated
 public class MeetingController {
 
   private final MeetingService meetingService;
-
-  public MeetingController(MeetingService meetingService) {
-    this.meetingService = meetingService;
-  }
 
   /**
    * 모임 생성
