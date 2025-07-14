@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.com.moodbook.common.constants.AWSS3Constants;
 import org.com.moodbook.common.constants.Gender;
 
 @Entity
@@ -40,7 +41,7 @@ public class MemberProfile {
   private String address;
 
   @Column(nullable = false)
-  private String myImage = "https://moodbook-bucket.s3.ap-northeast-2.amazonaws.com/131a3a40-191c-4a7a-83ee-af254efaf0fb.png";
+  private String myImage = AWSS3Constants.DEFAULT_PROFILE_IMAGE;
 
   @Column(length = 100)
   private String nickname;
