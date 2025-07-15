@@ -198,7 +198,7 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     Member member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
 
     MeetingMember req = MeetingMember.builder()
         .meeting(meeting)
