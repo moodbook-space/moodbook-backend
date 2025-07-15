@@ -18,7 +18,6 @@ public class LikeController {
 
   /**
    * 좋아요 토글: 이미 좋아요가 있으면 취소, 없으면 생성
-   * POST /api/posts/{postId}/like
    */
   @PostMapping("/{postId}/like")
   public ResponseEntity<Void> toggleLike(
@@ -31,7 +30,6 @@ public class LikeController {
 
   /**
    * 좋아요 개수와 내가 눌렀는지 여부 조회
-   * GET /api/posts/{postId}/like
    */
   @GetMapping("/{postId}/like")
   public ResponseEntity<LikeStatusResponse> getLikeStatus(

@@ -47,13 +47,13 @@ public class CommentServiceImpl implements CommentService {
   @Override
   @Transactional(readOnly = true)
   public List<CommentResponse> getComments(Long memberId, Long postId) {
-    // 1) 최상위 댓글부터 조회
+    // 최상위 댓글부터 조회
     var roots = commentRepository.findByPostIdAndParentCommentIsNullOrderByCreatedAtAsc(postId);
     return roots.stream().map(root -> toDto(root, memberId)).toList();
   }
 
   private CommentResponse toDto(Comment c, Long memberId) {
-    // 2) 대댓글 조회
+    // 대댓글 조회
     var replies = commentRepository.findByParentCommentIdOrderByCreatedAtAsc(c.getId())
         .stream()
         .map(r -> toDto(r, memberId))
