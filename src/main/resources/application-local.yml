@@ -16,11 +16,11 @@ spring:
     hibernate:
       ddl-auto: update
 
-    batch:
-      jdbc:
-        initialize-schema: never
-      job:
-        enabled: false
+  batch:
+    jdbc:
+      initialize-schema: never
+    job:
+      enabled: false
 
   sql:
     init:
@@ -46,7 +46,7 @@ cloud:
 
 aladin:
   api:
-    key: ttbzac03281049001
+    key:
     base-url: https://www.aladin.co.kr/ttb/api/ItemSearch.aspx
 
 jwt:
