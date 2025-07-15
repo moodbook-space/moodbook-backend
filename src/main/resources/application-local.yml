@@ -16,6 +16,12 @@ spring:
     hibernate:
       ddl-auto: update
 
+    batch:
+      jdbc:
+        initialize-schema: never
+      job:
+        enabled: false
+
   sql:
     init:
       mode: never
@@ -36,7 +42,12 @@ cloud:
       static: ap-northeast-2
     credentials:
       secret-key: 
-      access-key: 
+      access-key:
+
+aladin:
+  api:
+    key: ttbzac03281049001
+    base-url: https://www.aladin.co.kr/ttb/api/ItemSearch.aspx
 
 jwt:
   secretKey: 12345
