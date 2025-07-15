@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/s3")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class AWSS3Controller {
 
   private final AWSS3Service awss3Service;
 
   /// /api/s3/upload 파일을 업로드하고, 업로드 결과로 그 URL을 반환한다.
-  @PostMapping("/upload")
+  @PostMapping("/upload/mypage/profile/image")
   public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
     String url = awss3Service.uploadFile(file);
     return ResponseEntity.ok(url);
