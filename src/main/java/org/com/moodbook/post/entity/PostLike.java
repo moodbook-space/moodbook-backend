@@ -1,22 +1,17 @@
 package org.com.moodbook.post.entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.com.moodbook.common.model.BaseTime;
 import org.com.moodbook.member.entity.Member;
 
-/**
- * 게시글 좋아요(PostLike) 엔티티
- */
 @Entity
 @Table(
-    name = "post_like",
-    uniqueConstraints = @UniqueConstraint(
-        name = "uk_post_member",
-        columnNames = {"post_id", "member_id"}
-    )
+    name = "post_likes",
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_post_member", columnNames = {"post_id", "member_id"})
+    }
 )
 @Getter
 @Setter
@@ -30,14 +25,14 @@ public class PostLike extends BaseTime {
   private Long id;
 
   /**
-   * 좋아요가 달린 게시글
+   * 좋아요 누른 대상 게시글
    */
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "post_id", nullable = false)
   private BasePost post;
 
   /**
-   * 좋아요를 누른 회원
+   * 좋아요 누른 회원
    */
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id", nullable = false)
