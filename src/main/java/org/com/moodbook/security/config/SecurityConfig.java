@@ -22,13 +22,14 @@ public class SecurityConfig {
   @Bean
   public PasswordEncoder passwordEncoder() {return new BCryptPasswordEncoder();}
 
-
-
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
         .csrf(csrf -> csrf.disable()) // csrf 비활성화
         .authorizeHttpRequests(auth -> auth
+                               
+            .requestMatchers("/api/oauth/**").permitAll()
+            .requestMatchers("/api/chat-rooms/**").permitAll()
             .requestMatchers(
                 "/api/oauth/",
                 "/admin/",
@@ -39,6 +40,7 @@ public class SecurityConfig {
                 "/favicon.ico",
                 "/error"
             ).permitAll()
+
             .anyRequest().authenticated()
         )
         .build();
