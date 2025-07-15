@@ -3,18 +3,18 @@ package org.com.moodbook.book.service;
 import java.util.List;
 import org.com.moodbook.book.dto.BookRequest;
 import org.com.moodbook.book.dto.BookResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface BookService {
 
-  public BookResponse saveBook(BookRequest bookRequest);
-  public BookResponse updateBook(BookRequest bookRequest);
-  public void deleteBookById(Long id);
+  /** 알라딘 평점 기준 추천 **/
+  Page<BookResponse> getRecommendedBooks(Pageable pageable);
 
-  public BookResponse getBookById(Long id);
-  public List<BookResponse> getAllBooks();
-  public List<BookResponse> getBooksPopular();
+  /** 책 상세 조회 **/
+  BookResponse getBookById(Long id);
 
-  // 도서관련 리뷰 조회
+  /** 책 조회수별로 조회 **/
+  Page<BookResponse> getTrendingBooks(Pageable pageable);
 
-  // 도서관련 게시글 조회
 }
