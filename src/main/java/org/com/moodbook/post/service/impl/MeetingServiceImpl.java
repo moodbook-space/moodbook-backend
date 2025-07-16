@@ -20,6 +20,7 @@ import org.com.moodbook.post.entity.MoodTag;
 import org.com.moodbook.post.repository.MeetingMemberRepository;
 import org.com.moodbook.post.repository.MeetingRepository;
 import org.com.moodbook.post.repository.MoodTagRepository;
+import org.com.moodbook.post.service.LikeService;
 import org.com.moodbook.post.service.MeetingService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +39,7 @@ public class MeetingServiceImpl implements MeetingService {
   private final MemberRepository memberRepository;
   private final MoodTagRepository tagRepository;
   private final MeetingMemberRepository meetingMemberRepo;
+  private final LikeService likeService;
 
   @Override
   public Long createMeeting(Long memberId, CreateMeetingRequest req) {
@@ -87,7 +89,7 @@ public class MeetingServiceImpl implements MeetingService {
 
   @Override
   @Transactional
-  public MeetingDetailResponse getMeeting(Long meetingId) {
+  public MeetingDetailResponse getMeeting(Long memberId, Long meetingId) {
     Meeting meeting = meetingRepository.findById(meetingId)
         .orElseThrow(() -> new BaseException(ErrorCode.MEETING_NOT_FOUND));
 
@@ -96,6 +98,8 @@ public class MeetingServiceImpl implements MeetingService {
 
     meeting.setViewCount(meeting.getViewCount() + 1);
     meetingRepository.save(meeting);
+
+    boolean liked = likeService.isLikedBy(memberId, meetingId);
 
     return MeetingDetailResponse.builder()
         .id(meeting.getId())
@@ -115,12 +119,13 @@ public class MeetingServiceImpl implements MeetingService {
         .hostName(meeting.getMember().getName())
         .createdAt(meeting.getCreatedAt())
         .updatedAt(meeting.getUpdatedAt())
+        .likedByMe(liked)
         .build();
   }
 
   @Override
   @Transactional(readOnly = true)
-  public Page<MeetingSummaryResponse> getMeetings(Pageable pageable) {
+  public Page<MeetingSummaryResponse> getMeetings(Long memberId, Pageable pageable) {
     return meetingRepository.findAll(pageable)
         .map(m -> MeetingSummaryResponse.builder()
             .id(m.getId())
@@ -139,6 +144,7 @@ public class MeetingServiceImpl implements MeetingService {
                 .map(MoodTag::getName)
                 .collect(Collectors.toList()))
             .createdAt(m.getCreatedAt())
+            .likedByMe(likeService.isLikedBy(memberId, m.getId()))
             .build()
         );
   }
