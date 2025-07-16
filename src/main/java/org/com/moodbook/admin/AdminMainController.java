@@ -24,5 +24,11 @@ public class AdminMainController {
     return "admin/chat";
   }
 
+  //관리자 유저 관리 페이지
+  @GetMapping("/member")
+  public String memberPage(){
+    return "admin/member";
+  }
+
 
 }
