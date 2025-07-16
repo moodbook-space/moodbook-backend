@@ -24,7 +24,7 @@ public class BaseException extends RuntimeException {
     public static final BaseException MEMBER_DEACTIVATED =  new BaseException(ErrorCode.MEMBER_DEACTIVATED);
     public static final BaseException ALREADY_EXIST_CONTACT =  new BaseException(ErrorCode.ALREADY_EXIST_CONTACT);
     public static final BaseException EMOTION_NOT_FOUND = new BaseException(ErrorCode.EMOTION_NOT_FOUND);
-
+    public static final BaseException CHATROOM_NOT_FOUND = new BaseException(ErrorCode.CHATROOM_NOT_FOUND);
     public static final BaseException INTERNAL_SERVER_ERROR = new BaseException(ErrorCode.INTERNAL_SERVER_ERROR);
     public static final BaseException AWSS3_UPLOAD_ERROR = new BaseException(ErrorCode.AWSS3_UPLOAD_ERROR);
     public static final BaseException AWSS3_GET_ERROR = new BaseException(ErrorCode.AWSS3_GET_ERROR);
