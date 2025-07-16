@@ -69,6 +69,9 @@ public class ReportServiceImpl implements ReportService {
     Report report = reportRepository.findById(reportId)
         .orElseThrow(() -> new BaseException(ErrorCode.REPORT_NOT_FOUND));
 
+    report.setViewCount(report.getViewCount() +1);
+    reportRepository.save(report);
+
     return ReportDetailResponse.builder()
         .id(report.getId())
         .title(report.getTitle())
