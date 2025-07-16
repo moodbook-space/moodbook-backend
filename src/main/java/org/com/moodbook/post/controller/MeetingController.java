@@ -120,5 +120,17 @@ public class MeetingController {
     meetingService.respondToJoinRequest(md.getId(), meetingId, requestId, body);
     return ResponseEntity.noContent().build();
   }
+
+  /**
+   * 내가 만든 모임 및 참여중인 모임목록을 조회할수있는 엔드포인트(마이페이지)
+   */
+  @GetMapping("/api/meetings/my")
+  public ResponseEntity<Page<MeetingSummaryResponse>> getMyMeetings(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      @RequestParam(defaultValue = "host") String role,
+      Pageable pageable
+  ) {
+    return ResponseEntity.ok(meetingService.getMyMeetings(md.getId(), role, pageable));
+  }
 }
 
