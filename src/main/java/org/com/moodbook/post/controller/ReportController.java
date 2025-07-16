@@ -2,6 +2,7 @@ package org.com.moodbook.post.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.com.moodbook.common.util.PageableUtil;
 import org.com.moodbook.post.dto.CreateReportRequest;
 import org.com.moodbook.post.dto.ReportDetailResponse;
 import org.com.moodbook.post.dto.ReportSummaryResponse;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -59,15 +61,18 @@ public class ReportController {
   }
 
   /**
-   * 독후감 목록 조회
+   * 독후감 목록 조회 (정렬 -> 최신순 좋아요순 조회수순)
    */
   @GetMapping
   public ResponseEntity<Page<ReportSummaryResponse>> getReports(
       @AuthenticationPrincipal CustomMemberDetails md,
-      Pageable pageable
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "latest") String sortType
   ) {
-    Page<ReportSummaryResponse> page = reportService.getReports(md.getId(), pageable);
-    return ResponseEntity.ok(page);
+    Pageable pageable = PageableUtil.of(page, size, sortType);
+    Page<ReportSummaryResponse> result = reportService.getReports(md.getId(), pageable);
+    return ResponseEntity.ok(result);
   }
 
   /**
