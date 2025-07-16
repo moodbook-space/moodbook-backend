@@ -26,6 +26,7 @@ public class MemberController {
    */
   @PostMapping("/tempSignUp")
   public ResponseEntity<MemberDTO>  tempSignUp(@RequestBody MemberTempJoinDTO dto) {
+
     MemberDTO result = memberService.tempjoin(dto);
     return ResponseEntity.status(HttpStatus.OK).body(result);
   }

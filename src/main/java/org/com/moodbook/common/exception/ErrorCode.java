@@ -34,6 +34,7 @@ public enum ErrorCode {
   EXPIRED_OR_PREVIOUS_REFRESH_TOKEN(HttpStatus.FORBIDDEN, "EXPIRED_OR_PREVIOUS_REFRESH_TOKEN",
       "만료되었거나 이전에 발급된 Refresh Token입니다."),
   MEMBER_DEACTIVATED(HttpStatus.UNAUTHORIZED,"MEMBER_DEACTIVATED","비활성화된 멤버입니다"),
+  CHAT_ROOM_MEMBER_NOT_LEADER(HttpStatus.UNAUTHORIZED,"CHAT_ROOM_MEMBER_NOT_LEADER","방장 권한이 없습니다."),
 
 
 
@@ -46,6 +47,8 @@ public enum ErrorCode {
   MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND,"MEMBER_NOT_FOUND","해당 사용자를 찾을 수 없습니다"),
   INVALID_PASSWORD(HttpStatus.NOT_FOUND,"INVALID_PASSWORD","비밀번호가 일치하지 않습니다"),
   JOIN_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "JOIN_REQUEST_NOT_FOUND", "신청 요청을 찾을 수 없습니다."),
+  COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "COMMENT_NOT_FOUND", "댓글을 찾을 수 없습니다."),
+  POST_NOT_FOUND(HttpStatus.BAD_REQUEST, "POST_NOT_FOUND", "게시글을 찾을 수 없습니다."),
 
   /* 500 - Internal Server Error */
   INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버에 오류가 발생했습니다."),
