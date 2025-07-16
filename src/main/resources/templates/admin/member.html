@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>유저 관리</title>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #f8f8f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sidebar {
+      position: fixed;
+      width: 180px;
+      height: 100vh;
+      background: linear-gradient(to bottom, #2c3e50, #34495e);
+      padding: 20px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sidebar img {
+      width: 100px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    .sidebar button {
+      width: 100%;
+      padding: 10px;
+      background-color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .main {
+      margin-left: 200px;
+      padding: 30px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .header img {
+      height: 80px;
+      border-radius: 5px;
+    }
+
+    .search-section {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .search-section input[type="text"] {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px 0 0 5px;
+    }
+
+    .search-section button {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      background-color: #eee;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f0f0f0;
+      font-weight: bold;
+    }
+
+    .pagination {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .pagination a {
+      margin: 0 5px;
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .detail-panel {
+      margin-top: 20px;
+      padding: 20px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      max-width: 400px;
+    }
+
+    .detail-panel input {
+      width: 100%;
+      margin: 5px 0 15px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .detail-buttons {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .detail-buttons button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <img src="/images/logo.png" alt="로고" onclick="onLogoClick()" >
+  <button onclick="location.href='/admin'">관리자 페이지</button>
+</div>
+
+<div class="main">
+  <div class="header">
+    <h1>유저 관리</h1>
+    <img src="/images/gendo.png" alt="관리자 이미지">
+  </div>
+
+  <div class="search-section">
+    <input type="text" id="search-input" placeholder="이름 또는 이메일 검색" onkeydown="if(event.key === 'Enter') searchMembers()">
+    <button onclick="searchMembers()">검색</button>
+  </div>
+
+  <table id="member-table">
+    <thead>
+    <tr>
+      <th>이름</th>
+      <th>email</th>
+    </tr>
+    </thead>
+    <tbody id="member-tbody">
+    <!-- JS로 채워짐 -->
+    </tbody>
+  </table>
+
+  <div class="pagination" id="pagination"></div>
+
+  <div id="member-detail" class="detail-panel" style="display:flex; gap: 20px; display: none;">
+    <!-- 왼쪽 정보 입력 영역 -->
+    <div style="flex:1;">
+      <h2>회원 정보 수정</h2>
+      <label>이름</label>
+      <input type="text" id="detail-name">
+      <label>닉네임</label>
+      <input type="text" id="detail-nickname">
+      <label>전화번호</label>
+      <input type="text" id="detail-contact">
+      <label>이메일</label>
+      <input type="email" id="detail-email">
+      <label>주소</label>
+      <input type="text" id="detail-address">
+      <label>가입일</label>
+      <input type="date" id="detail-joined" disabled>
+      <input type="hidden" id="detail-image"> <!-- S3 URL 저장용 -->
+      <div class="detail-buttons">
+        <button onclick="closeDetail()">닫기</button>
+        <button onclick="confirmApply()">적용</button>
+        <button onclick="confirmWithdraw()">탈퇴</button>
+      </div>
+    </div>
+
+    <!-- 오른쪽 이미지 영역 -->
+    <div style="flex-shrink: 0; text-align: center;">
+      <label>프로필 이미지</label><br>
+      <img id="preview-image" src="" alt="미리보기" style="width: 120px; height: 120px; border: 1px solid #ccc; object-fit: cover; margin-bottom: 10px;"><br>
+      <input type="file" id="image-upload" accept="image/*">
+    </div>
+  </div>
+</div>
+
+
+<script>
+  let currentPage = 0;
+  let currentQuery = "";
+  let selectedMemberId = null;
+
+  document.getElementById("image-upload").addEventListener("change", async function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // 미리보기
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById("preview-image").src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+
+    // 서버 업로드 (S3에 업로드)
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await fetch("/api/admin/upload-image", {
+      method: "POST",
+      body: formData
+    });
+
+    const result = await response.json();
+    document.getElementById("detail-image").value = result.imageUrl;
+  });
+
+
+
+  function fetchMembers(page, query = "") {
+    fetch(`/api/admin/member?page=${page}&size=10&query=${encodeURIComponent(query)}`)
+    .then(res => res.json())
+    .then(data => {
+      renderTable(data.content);
+      renderPagination(data.totalPages, page, query);
+    });
+  }
+
+  function renderTable(members) {
+    const tbody = document.getElementById("member-tbody");
+    tbody.innerHTML = "";
+    members.forEach(m => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${m.name}</td><td>${m.email}</td>`;
+      tr.style.cursor = "pointer";
+      tr.onclick = () => showDetail(m);
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderPagination(totalPages, current, query = "") {
+    const container = document.getElementById("pagination");
+    container.innerHTML = "";
+    for (let i = 0; i < totalPages; i++) {
+      const link = document.createElement("a");
+      link.href = "#";
+      link.textContent = i + 1;
+      link.style.color = i === current ? "blue" : "#333";
+      link.onclick = (e) => {
+        e.preventDefault();
+        currentPage = i;
+        fetchMembers(i, query);
+      };
+      container.appendChild(link);
+    }
+  }
+
+  function searchMembers() {
+    const keyword = document.getElementById("search-input").value;
+    currentPage = 0;
+    currentQuery = keyword;
+    fetchMembers(currentPage, currentQuery);
+  }
+
+  function showDetail(member) {
+    selectedMemberId = member.id;
+    document.getElementById("detail-name").value = member.name;
+    document.getElementById("detail-nickname").value = member.nickname;
+    document.getElementById("detail-contact").value = member.contact || "";
+    document.getElementById("detail-email").value = member.email;
+    document.getElementById("detail-address").value = member.address || "";
+    document.getElementById("detail-joined").value = member.createdAt.substring(0,10);
+    document.getElementById("detail-image").value = member.myImage || "";
+    document.getElementById("preview-image").src = member.myImage || "";
+
+    document.getElementById("member-detail").style.display = "flex";
+  }
+
+  function closeDetail() {
+    document.getElementById("member-detail").style.display = "none";
+    selectedMemberId = null;
+  }
+
+  function confirmApply() {
+    if (confirm("정말 수정하시겠습니까?")) {
+      const payload = {
+        id: selectedMemberId,
+        name: document.getElementById("detail-name").value,
+        nickname: document.getElementById("detail-nickname").value,
+        contact: document.getElementById("detail-contact").value,
+        email: document.getElementById("detail-email").value,
+        address: document.getElementById("detail-address").value,
+        myImage: document.getElementById("detail-image").value
+      };
+      fetch(`/api/admin/member/${selectedMemberId}`, {
+        method: "PUT",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(res => {
+        if (res.ok) {
+          alert("수정 완료!");
+          fetchMembers(currentPage, currentQuery);
+          closeDetail();
+        }
+      });
+    }
+  }
+
+  function confirmWithdraw() {
+    if (confirm("정말 탈퇴시키겠습니까?")) {
+      fetch(`/api/admin/member/${selectedMemberId}`, { method: "DELETE" })
+      .then(res => {
+        if (res.ok) {
+          alert("탈퇴 완료");
+          fetchMembers(currentPage, currentQuery);
+          closeDetail();
+        }
+      });
+    }
+  }
+
+  function onLogoClick() {
+    alert("아직 이동 경로가 지정되지 않았습니다.");
+  }
+
+  fetchMembers(currentPage);
+</script>
+</body>
+</html>
