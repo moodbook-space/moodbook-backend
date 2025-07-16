@@ -1,5 +1,6 @@
 package org.com.moodbook.post.service;
 
+import org.com.moodbook.member.entity.Member;
 import org.com.moodbook.post.dto.CreateReportRequest;
 import org.com.moodbook.post.dto.ReportDetailResponse;
 import org.com.moodbook.post.dto.ReportSummaryResponse;
@@ -13,10 +14,10 @@ public interface ReportService {
   Long createReport(Long memberId, CreateReportRequest request);
 
   // 단일 독후감 조회
-  ReportDetailResponse getReport(Long reportId);
+  ReportDetailResponse getReport(Long memberId, Long reportId);
 
   // 독후감 목록 조회
-  Page<ReportSummaryResponse> getReports(Pageable pageable);
+  Page<ReportSummaryResponse> getReports(Long memberId, Pageable pageable);
 
   // 독후감 수정
   void updateReport(Long memberId, Long reportId, UpdateReportRequest request);

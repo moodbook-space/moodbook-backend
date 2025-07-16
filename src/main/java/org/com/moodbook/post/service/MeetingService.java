@@ -14,9 +14,9 @@ public interface MeetingService {
 
   Long createMeeting(Long memberId, CreateMeetingRequest request);
 
-  MeetingDetailResponse getMeeting(Long meetingId);
+  MeetingDetailResponse getMeeting(Long memberId, Long meetingId);
 
-  Page<MeetingSummaryResponse> getMeetings(Pageable pageable);
+  Page<MeetingSummaryResponse> getMeetings(Long memberId, Pageable pageable);
 
   // 모임 수정
   void updateMeeting(Long memberId, Long meetingId, UpdateMeetingRequest request);
@@ -35,7 +35,8 @@ public interface MeetingService {
 
   /**
    * 내가 만든(호스트) 또는 참가 중인 모임 목록 조회
-   * @param role "host" 또는 "participant"
+   *
+   * @param role host 또는 participant
    */
   Page<MeetingSummaryResponse> getMyMeetings(Long memberId, String role, Pageable pageable);
 }
