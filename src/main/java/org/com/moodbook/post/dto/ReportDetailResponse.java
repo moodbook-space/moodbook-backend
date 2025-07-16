@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ReportDetailResponse {
+
   private Long id;
   private String title;
   private String content;
@@ -21,4 +22,5 @@ public class ReportDetailResponse {
   private String authorName;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
+  private boolean likedByMe;
 }

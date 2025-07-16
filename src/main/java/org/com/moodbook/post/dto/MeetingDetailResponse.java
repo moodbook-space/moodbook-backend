@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class MeetingDetailResponse {
+
   private Long id;
   private String title;
   private String content;
@@ -26,4 +27,5 @@ public class MeetingDetailResponse {
   private String hostName;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
+  private boolean likedByMe;
 }

@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ReportSummaryResponse {
+
   private Long id;
   private String title;
   private String authorName;
@@ -17,4 +18,5 @@ public class ReportSummaryResponse {
   private int viewCount;
   private int likeCount;
   private List<String> tags;
+  private boolean likedByMe;
 }

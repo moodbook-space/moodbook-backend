@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class MeetingSummaryResponse {
+
   private Long id;
   private String title;
   private String hostName;
@@ -21,4 +22,5 @@ public class MeetingSummaryResponse {
   private int likeCount;
   private List<String> tags;
   private LocalDateTime createdAt;
+  private boolean likedByMe;
 }

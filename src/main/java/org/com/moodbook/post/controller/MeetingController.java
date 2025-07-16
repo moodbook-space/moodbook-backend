@@ -3,6 +3,7 @@ package org.com.moodbook.post.controller;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.com.moodbook.common.util.PageableUtil;
 import org.com.moodbook.post.dto.CreateMeetingRequest;
 import org.com.moodbook.post.dto.MeetingDetailResponse;
 
@@ -43,19 +44,30 @@ public class MeetingController {
   }
 
   /**
-   * 모임 단일 조회
+   * 독서모임 단일 조회
    */
   @GetMapping("/{id}")
-  public ResponseEntity<MeetingDetailResponse> getMeeting(@PathVariable Long id) {
-    return ResponseEntity.ok(meetingService.getMeeting(id));
+  public ResponseEntity<MeetingDetailResponse> getMeeting(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      @PathVariable Long id
+  ) {
+    MeetingDetailResponse detail = meetingService.getMeeting(md.getId(), id);
+    return ResponseEntity.ok(detail);
   }
 
   /**
-   * 독서모임 목록 조회
+   * 독서모임 목록 조회 (정렬은 좋아요순 조회수순 최신순 가능)
    */
   @GetMapping
-  public ResponseEntity<Page<MeetingSummaryResponse>> getMeetings(Pageable pageable) {
-    return ResponseEntity.ok(meetingService.getMeetings(pageable));
+  public ResponseEntity<Page<MeetingSummaryResponse>> getMeetings(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "latest") String sortType
+  ) {
+    Pageable pageable = PageableUtil.of(page, size, sortType);
+    Page<MeetingSummaryResponse> result = meetingService.getMeetings(md.getId(), pageable);
+    return ResponseEntity.ok(result);
   }
 
   /**
@@ -119,6 +131,18 @@ public class MeetingController {
   ) {
     meetingService.respondToJoinRequest(md.getId(), meetingId, requestId, body);
     return ResponseEntity.noContent().build();
+  }
+
+  /**
+   * 내가 만든 모임 및 참여중인 모임목록을 조회할수있는 엔드포인트(마이페이지)
+   */
+  @GetMapping("/api/meetings/my")
+  public ResponseEntity<Page<MeetingSummaryResponse>> getMyMeetings(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      @RequestParam(defaultValue = "host") String role,
+      Pageable pageable
+  ) {
+    return ResponseEntity.ok(meetingService.getMyMeetings(md.getId(), role, pageable));
   }
 }
 
