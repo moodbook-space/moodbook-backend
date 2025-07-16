@@ -37,7 +37,7 @@ public class MeetingServiceImpl implements MeetingService {
   private final MeetingRepository meetingRepository;
   private final MemberRepository memberRepository;
   private final MoodTagRepository tagRepository;
-  private final MeetingMemberRepository memberRepo;
+  private final MeetingMemberRepository meetingMemberRepo;
 
   @Override
   public Long createMeeting(Long memberId, CreateMeetingRequest req) {
@@ -80,7 +80,7 @@ public class MeetingServiceImpl implements MeetingService {
         .status(MeetingJoinStatus.APPROVED)
         .joinedAt(meeting.getCreatedAt())
         .build();
-    memberRepo.save(self);
+    meetingMemberRepo.save(self);
 
     return meeting.getId();
   }
@@ -91,7 +91,7 @@ public class MeetingServiceImpl implements MeetingService {
     Meeting meeting = meetingRepository.findById(meetingId)
         .orElseThrow(() -> new BaseException(ErrorCode.MEETING_NOT_FOUND));
 
-    int count = memberRepo.findByMeetingIdAndStatus(meetingId, MeetingJoinStatus.APPROVED)
+    int count = meetingMemberRepo.findByMeetingIdAndStatus(meetingId, MeetingJoinStatus.APPROVED)
         .size();
 
     return MeetingDetailResponse.builder()
@@ -126,7 +126,7 @@ public class MeetingServiceImpl implements MeetingService {
             .meetingType(m.getMeetingType().name())
             .startAt(m.getStartAt())
             .currentParticipants(
-                memberRepo.findByMeetingIdAndStatus(m.getId(), MeetingJoinStatus.APPROVED)
+                meetingMemberRepo.findByMeetingIdAndStatus(m.getId(), MeetingJoinStatus.APPROVED)
                     .size()
             )
             .capacity(m.getCapacity())
@@ -193,7 +193,7 @@ public class MeetingServiceImpl implements MeetingService {
     Meeting meeting = meetingRepository.findById(meetingId)
         .orElseThrow(() -> new BaseException(ErrorCode.MEETING_NOT_FOUND));
 
-    if (memberRepo.existsByMeetingIdAndMemberId(meetingId, memberId)) {
+    if (meetingMemberRepo.existsByMeetingIdAndMemberId(meetingId, memberId)) {
       throw new BaseException(ErrorCode.ALREADY_EXIST_JOIN);
     }
 
@@ -205,7 +205,7 @@ public class MeetingServiceImpl implements MeetingService {
         .member(member)
         .status(MeetingJoinStatus.PENDING)
         .build();
-    memberRepo.save(req);
+    meetingMemberRepo.save(req);
   }
 
   @Override
@@ -216,7 +216,7 @@ public class MeetingServiceImpl implements MeetingService {
       throw new BaseException(ErrorCode.ACCESS_DENIED);
     }
 
-    MeetingMember req = memberRepo.findById(requestId)
+    MeetingMember req = meetingMemberRepo.findById(requestId)
         .orElseThrow(() -> new BaseException(ErrorCode.JOIN_REQUEST_NOT_FOUND));
     if (!req.getMeeting().getId().equals(meetingId)) {
       throw new BaseException(ErrorCode.INVALID_REQUEST);
@@ -231,7 +231,7 @@ public class MeetingServiceImpl implements MeetingService {
     } else {
       throw new BaseException(ErrorCode.INVALID_ACTION);
     }
-    memberRepo.save(req);
+    meetingMemberRepo.save(req);
   }
 
   @Override
@@ -243,7 +243,7 @@ public class MeetingServiceImpl implements MeetingService {
       throw new BaseException(ErrorCode.ACCESS_DENIED);
     }
 
-    return memberRepo.findByMeetingIdAndStatus(meetingId, MeetingJoinStatus.PENDING)
+    return meetingMemberRepo.findByMeetingIdAndStatus(meetingId, MeetingJoinStatus.PENDING)
         .stream()
         .map(r -> new MeetingJoinDto(
             r.getId(),
@@ -253,6 +253,51 @@ public class MeetingServiceImpl implements MeetingService {
             r.getCreatedAt().toString()
         ))
         .collect(Collectors.toList());
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<MeetingSummaryResponse> getMyMeetings(Long memberId, String role, Pageable pageable) {
+    if ("participant".equalsIgnoreCase(role)) {
+      // 내가 참가된 모임만
+      Page<MeetingMember> joins = meetingMemberRepo.findByMemberIdAndStatus(memberId, MeetingJoinStatus.APPROVED, pageable);
+      return joins.map(j -> {
+        Meeting m = j.getMeeting();
+        int count = meetingMemberRepo.findByMeetingIdAndStatus(m.getId(), MeetingJoinStatus.APPROVED).size();
+        return MeetingSummaryResponse.builder()
+            .id(m.getId())
+            .title(m.getTitle())
+            .hostName(m.getMember().getName())
+            .meetingType(m.getMeetingType().name())
+            .startAt(m.getStartAt())
+            .currentParticipants(count)
+            .capacity(m.getCapacity())
+            .viewCount(m.getViewCount())
+            .likeCount(m.getLikeCount())
+            .tags(m.getMoodTags().stream().map(MoodTag::getName).toList())
+            .createdAt(m.getCreatedAt())
+            .build();
+      });
+    } else {
+      // role=host 부분
+      return meetingRepository.findByMember_Id(memberId, pageable)
+          .map(m -> {
+            int count = meetingMemberRepo.findByMeetingIdAndStatus(m.getId(), MeetingJoinStatus.APPROVED).size();
+            return MeetingSummaryResponse.builder()
+                .id(m.getId())
+                .title(m.getTitle())
+                .hostName(m.getMember().getName())
+                .meetingType(m.getMeetingType().name())
+                .startAt(m.getStartAt())
+                .currentParticipants(count)
+                .capacity(m.getCapacity())
+                .viewCount(m.getViewCount())
+                .likeCount(m.getLikeCount())
+                .tags(m.getMoodTags().stream().map(MoodTag::getName).toList())
+                .createdAt(m.getCreatedAt())
+                .build();
+          });
+    }
   }
 
 }
