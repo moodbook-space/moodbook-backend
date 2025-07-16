@@ -26,9 +26,10 @@ public class CustomMemberDetails implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    //User의 권한을 변환하는 메서드
+    //Member의 권한을 변환하는 메서드
     //Collections.singleton <- 이 사용자는 한가지 권한만 갖는다는 의미
-    return Collections.singleton(new SimpleGrantedAuthority(member.getRole().name()));
+    //member.getRole().name()는 USER, ADMIN 등을 문자열로 꺼냄을 의미
+    return Collections.singleton(new SimpleGrantedAuthority("ROLE_" +member.getRole().name()));
 
     //토큰에서 추출한 사용자 정보의 Id를 반환 (테이블의  pk 값)
     //User 엔티티에서 Id추출
