@@ -17,7 +17,7 @@ import org.com.moodbook.member.entity.Member;
 import org.com.moodbook.member.entity.MemberProfile;
 import org.com.moodbook.member.repository.MemberRepository;
 import org.com.moodbook.security.authentication.service.AuthenticationService;
-import org.com.moodbook.security.jwt.JwtPropertires;
+import org.com.moodbook.security.jwt.JwtProperties;
 import org.com.moodbook.security.jwt.JwtTokenProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ public class MemberServiceImpl implements MemberService {
   private final MemberRepository memberRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtTokenProvider jwtTokenProvider;
-  private final JwtPropertires jwtProperties;
+  private final JwtProperties jwtProperties;
   private final AuthenticationService authenticationService;
 
   //임시 회원가입 진행
