@@ -1,6 +1,7 @@
 package org.com.moodbook.post.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.com.moodbook.post.dto.CreateReportRequest;
 import org.com.moodbook.post.dto.ReportDetailResponse;
 import org.com.moodbook.post.dto.ReportSummaryResponse;
@@ -26,15 +27,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/reports")
+@RequiredArgsConstructor
 @Validated
 public class ReportController {
 
   private final ReportService reportService;
-
-  @Autowired
-  public ReportController(ReportService reportService) {
-    this.reportService = reportService;
-  }
 
   /**
    * 독후감 작성
@@ -53,8 +50,11 @@ public class ReportController {
    * 단일 독후감 상세 조회
    */
   @GetMapping("/{id}")
-  public ResponseEntity<ReportDetailResponse> getReport(@PathVariable("id") Long id) {
-    ReportDetailResponse detail = reportService.getReport(id);
+  public ResponseEntity<ReportDetailResponse> getReport(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      @PathVariable("id") Long id
+  ) {
+    ReportDetailResponse detail = reportService.getReport(md.getId(), id);
     return ResponseEntity.ok(detail);
   }
 
@@ -62,8 +62,11 @@ public class ReportController {
    * 독후감 목록 조회
    */
   @GetMapping
-  public ResponseEntity<Page<ReportSummaryResponse>> getReports(Pageable pageable) {
-    Page<ReportSummaryResponse> page = reportService.getReports(pageable);
+  public ResponseEntity<Page<ReportSummaryResponse>> getReports(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      Pageable pageable
+  ) {
+    Page<ReportSummaryResponse> page = reportService.getReports(md.getId(), pageable);
     return ResponseEntity.ok(page);
   }
 

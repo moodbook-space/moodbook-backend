@@ -46,18 +46,25 @@ public class MeetingController {
    * 모임 단일 조회
    */
   @GetMapping("/{id}")
-  public ResponseEntity<MeetingDetailResponse> getMeeting(@PathVariable Long id) {
-    return ResponseEntity.ok(meetingService.getMeeting(id));
+  public ResponseEntity<MeetingDetailResponse> getMeeting(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      @PathVariable Long id
+  ) {
+    MeetingDetailResponse detail = meetingService.getMeeting(md.getId(), id);
+    return ResponseEntity.ok(detail);
   }
 
   /**
    * 독서모임 목록 조회
    */
   @GetMapping
-  public ResponseEntity<Page<MeetingSummaryResponse>> getMeetings(Pageable pageable) {
-    return ResponseEntity.ok(meetingService.getMeetings(pageable));
+  public ResponseEntity<Page<MeetingSummaryResponse>> getMeetings(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      Pageable pageable
+  ) {
+    Page<MeetingSummaryResponse> page = meetingService.getMeetings(md.getId(), pageable);
+    return ResponseEntity.ok(page);
   }
-
   /**
    * 모임 수정
    */
