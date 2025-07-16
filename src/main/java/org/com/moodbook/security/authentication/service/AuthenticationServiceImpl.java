@@ -8,7 +8,7 @@ import org.com.moodbook.member.entity.Member;
 import org.com.moodbook.security.authentication.entity.AuthenticationEntity;
 import org.com.moodbook.security.authentication.repository.AuthenticationRepository;
 import org.com.moodbook.security.core.CustomMemberDetails;
-import org.com.moodbook.security.jwt.JwtPropertires;
+import org.com.moodbook.security.jwt.JwtProperties;
 import org.com.moodbook.security.jwt.JwtTokenProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,8 +20,8 @@ import org.springframework.stereotype.Service;
 public class AuthenticationServiceImpl implements AuthenticationService {
 
   private final JwtTokenProvider jwtTokenProvider;
-  private final JwtPropertires jwtPropertires;
-  private final AuthenticationRepository authenticationReposiroty;
+  private final JwtProperties jwtProperties;
+  private final AuthenticationRepository authenticationRepository;
 
 
   @Override
@@ -32,8 +32,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         null,
         Collections.singleton(new SimpleGrantedAuthority(member.getRole().name())));
     //2. Jwt토큰 생성
-    String accessToken = jwtTokenProvider.generateToken(authToken,jwtPropertires.getAccessTokenExpirationMs());
-    String refreshToken = jwtTokenProvider.generateToken(authToken,jwtPropertires.getRefreshTokenExpirationMs());
+    String accessToken = jwtTokenProvider.generateToken(authToken,
+        jwtProperties.getAccessTokenExpirationMs(), "access");
+    String refreshToken = jwtTokenProvider.generateToken(authToken,
+        jwtProperties.getRefreshTokenExpirationMs(), "refresh");
 
     //3 Authentication엔티티에 토큰 저장
     AuthenticationEntity entity = AuthenticationEntity.builder()
@@ -43,7 +45,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         .tokenType("Bearer ")
         .build();
 
-    authenticationReposiroty.save(entity);
+    authenticationRepository.save(entity);
     return LoginResponseDTO.builder()
         .accessToken(accessToken)
         .refreshToken(refreshToken)
