@@ -155,4 +155,21 @@ public class ReportServiceImpl implements ReportService {
             .build()
         );
   }
+
+  // 내가 쓴 독후감들 전체 조회 (마이페이지에서 가능)
+  @Override
+  @Transactional(readOnly = true)
+  public Page<ReportSummaryResponse> getMyReports(Long memberId, Pageable pageable) {
+    return reportRepository.findByMember_Id(memberId, pageable)
+        .map(r -> ReportSummaryResponse.builder()
+            .id(r.getId())
+            .title(r.getTitle())
+            .authorName(r.getMember().getName())
+            .createdAt(r.getCreatedAt())
+            .viewCount(r.getViewCount())
+            .likeCount(r.getLikeCount())
+            .tags(r.getMoodTags().stream().map(MoodTag::getName).toList())
+            .build()
+        );
+  }
 }
