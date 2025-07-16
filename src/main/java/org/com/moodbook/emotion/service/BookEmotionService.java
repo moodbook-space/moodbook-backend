@@ -5,8 +5,10 @@ import org.com.moodbook.emotion.dto.BookEmotionScoreResponse;
 
 public interface BookEmotionService {
 
-  public BookEmotionScoreResponse saveEmotionScore(BookEmotionScoreRequest bookEmotionRequest)
+  BookEmotionScoreResponse saveEmotionScore(BookEmotionScoreRequest bookEmotionRequest)
       throws Exception;
+
+
 
 
 }

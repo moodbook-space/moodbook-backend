@@ -3,9 +3,16 @@ package org.com.moodbook.book.service.impl;
 import static org.com.moodbook.common.exception.BaseException.BOOK_NOT_FOUND;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.com.moodbook.book.dto.BookEmotionRecommendAllRequest;
+import org.com.moodbook.book.dto.BookEmotionRecommendAllResponse;
+import org.com.moodbook.book.dto.BookEmotionRecommendRequest;
+import org.com.moodbook.book.dto.BookEmotionRecommendResponse;
 import org.com.moodbook.book.dto.BookResponse;
 import org.com.moodbook.book.entity.Book;
 import org.com.moodbook.book.entity.BookCount;
@@ -14,8 +21,15 @@ import org.com.moodbook.book.entity.QBook;
 import org.com.moodbook.book.repository.BookCountRepository;
 import org.com.moodbook.book.repository.BookRepository;
 import org.com.moodbook.book.service.BookService;
+import org.com.moodbook.common.constants.EmotionTag;
+import org.com.moodbook.emotion.entity.BookEmotionScore;
+import org.com.moodbook.emotion.repository.BookEmotionScoreRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +42,8 @@ public class BookServiceImpl implements BookService {
   private final JPAQueryFactory queryFactory;
   private final BookRepository bookRepository;
   private final BookCountRepository bookCountRepository;
+  private final MongoTemplate mongoTemplate;
+  private final BookEmotionScoreRepository bookEmotionScoreRepository;
 
   /** Recommendation (기준: 알라딘 평점순 - 높은 순으로) **/
   @Override
@@ -87,6 +103,59 @@ public class BookServiceImpl implements BookService {
   @Transactional(readOnly = true)
   public Page<BookResponse> getTrendingBooks(Pageable pageable) {
     return bookRepository.findAllWithViewCount(pageable);
+  }
+
+  /** 감정 별 책 추천 Top10 **/
+  @Override
+  @Transactional(readOnly = true)
+  public List<BookEmotionRecommendResponse> getBooksByEmotionTop10(BookEmotionRecommendRequest request) {
+
+    int minScore = 4;
+    int maxScore = 5;
+    int limit = 10;
+
+    String emotionTag = request.getEmotionTag();
+
+    Query query = new Query();
+    query.addCriteria(Criteria.where("scores." + emotionTag).gte(minScore).lte(maxScore));
+    query.fields().include("isbn13");
+    query.limit(limit);
+
+    List<BookEmotionScore> emotionScores = mongoTemplate.find(query, BookEmotionScore.class);
+
+    List<String> isbn13List = emotionScores.stream()
+        .map(BookEmotionScore::getIsbn13)
+        .filter(Objects::nonNull)
+        .distinct()
+        .collect(Collectors.toList());
+
+    List<Book> books = bookRepository.findByIsbn13In(isbn13List);
+
+    return books.stream()
+        .map(BookEmotionRecommendResponse::from)
+        .collect(Collectors.toList());
+  }
+
+  // 더보기
+  @Override
+  public List<BookEmotionRecommendAllResponse> getBooksByEmotionDesc(
+      BookEmotionRecommendAllRequest request) {
+
+    Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+    String emotionTag = request.getEmotionTag();
+
+    List<BookEmotionScore> scores = bookEmotionScoreRepository
+        .findByEmotionScoreDesc(emotionTag, pageable);
+
+    List<String> isbn13List = scores.stream()
+        .map(BookEmotionScore::getIsbn13)
+        .toList();
+
+    List<Book> books = bookRepository.findByIsbn13In(isbn13List);
+
+    return books.stream()
+        .map(BookEmotionRecommendAllResponse::from)
+        .toList();
   }
 
 }
