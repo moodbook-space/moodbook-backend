@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <title>채팅방 정보</title>
+  <meta charset="UTF-8">
+</head>
+<body>
+<h1 th:text="${chatRoom.title}">방 제목</h1>
+<p>방장: <span th:text="${chatRoom.ownerName}"></span></p>
+<p>최대 인원: <span th:text="${chatRoom.limitMembers}"></span></p>
+<p>상태: <span th:text="${chatRoom.status}"></span></p>
+
+<div th:if="${isMember}">
+  <a th:href="@{|/chat-rooms/${chatRoom.chatRoomId}/chat|}">채팅 참여하기</a>
+  <form th:action="@{|/api/chat-rooms/${chatRoom.chatRoomId}/leave|}" method="post">
+    <input type="hidden" name="memberId" th:value="${myMemberId}"/>
+    <button type="submit">퇴장하기</button>
+  </form>
+</div>
+<div th:if="${!isMember}">
+  <form th:action="@{|/api/chat-rooms/${chatRoom.chatRoomId}/join|}" method="post">
+    <input type="hidden" name="memberId" th:value="${myMemberId}"/>
+    <button type="submit">입장 신청</button>
+  </form>
+</div>
+<h3>참여자 목록</h3>
+<ul>
+  <li th:each="member : ${members}">
+    <span th:text="${member.memberName}"></span> (<span th:text="${member.status}"></span>)
+
+    <span th:if="${isOwner}">
+                <form th:action="@{/api/chat-rooms/members/approve}" method="post">
+                    <input type="hidden" name="approveId" th:value="${myMemberId}"/>
+                    <input type="hidden" name="chatRoomMemberId" th:value="${member.memberId}"/>
+                    <input type="hidden" name="approve" value="true"/>
+                    <button type="submit">승인</button>
+                </form>
+                <form th:action="@{/api/chat-rooms/members/approve}" method="post">
+                    <input type="hidden" name="approveId" th:value="${myMemberId}"/>
+                    <input type="hidden" name="chatRoomMemberId" th:value="${member.memberId}"/>
+                    <input type="hidden" name="approve" value="false"/>
+                    <button type="submit">거절</button>
+                </form>
+            </span>
+  </li>
+</ul>
+</body>
+</html>
