@@ -140,6 +140,8 @@
       <th>방 인원</th>
       <th>방 이름</th>
       <th>방장</th>
+      <th>상태</th>
+      <th>생성일시</th>
       <th>방 설명</th>
       <th>삭제</th>
     </tr>
@@ -172,12 +174,15 @@
     const tbody = document.getElementById("chat-tbody");
     tbody.innerHTML = "";
     chats.forEach(chat => {
+      const createdAt = chat.createdAt ? chat.createdAt.slice(0, 16).replace("T", " ") : "-";
       const tr = document.createElement("tr");
       tr.innerHTML = `
-          <td>${chat.participants}</td>
-          <td>${chat.name}</td>
-          <td>${chat.created_by}</td>
-          <td>${chat.description || ""}</td>
+          <td>${chat.participants} / ${chat.limitMembers}</td>
+          <td>${chat.title}</td>
+          <td>${chat.nickname}</td>
+          <td>${chat.status}</td>
+          <td>${createdAt}</td>
+          <td>-</td>
           <td><span class="delete-btn" onclick="deleteChat(${chat.id})">&#10060;</span></td>
         `;
       tbody.appendChild(tr);
