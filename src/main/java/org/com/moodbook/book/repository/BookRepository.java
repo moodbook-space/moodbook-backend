@@ -1,5 +1,6 @@
 package org.com.moodbook.book.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.com.moodbook.book.dto.BookResponse;
@@ -40,5 +41,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
   Page<BookResponse> findAllWithViewCount(Pageable pageable);
 
   List<Book> findAllByOrderByReputationDesc();
+
+  List<Book> findByIsbn13In(Collection<String> isbn13);
 
 }
