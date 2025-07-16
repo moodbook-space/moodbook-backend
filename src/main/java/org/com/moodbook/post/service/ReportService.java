@@ -26,4 +26,7 @@ public interface ReportService {
 
   // 특정 책에 달린 독후감 목록 조회 (도서 상세페이지에서 해당 도서의 독후감 목록조회를 위한 메서드)
   Page<ReportSummaryResponse> getReportsByBook(Long bookId, Pageable pageable);
+
+  // 내가 쓴 독후감 목록 조회
+  Page<ReportSummaryResponse> getMyReports(Long memberId, Pageable pageable);
 }
