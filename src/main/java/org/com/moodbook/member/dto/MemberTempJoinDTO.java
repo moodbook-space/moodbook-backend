@@ -12,7 +12,7 @@ import org.com.moodbook.common.constants.Role;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberTempJoinDto {
+public class MemberTempJoinDTO {
 
   private String email;
   private String password;

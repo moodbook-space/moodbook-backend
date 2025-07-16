@@ -9,19 +9,20 @@ import lombok.RequiredArgsConstructor;
 import org.com.moodbook.common.constants.MemberStatus;
 import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.common.exception.ErrorCode;
+import org.com.moodbook.member.dto.LoginResponseDTO;
 import org.com.moodbook.member.dto.MemberDTO;
-import org.com.moodbook.member.dto.MemberLoginDTO;
-import org.com.moodbook.member.dto.MemberProfileDTO;
-import org.com.moodbook.member.dto.MemberTempJoinDto;
+import org.com.moodbook.member.dto.LoginRequestDTO;
+import org.com.moodbook.member.dto.MemberTempJoinDTO;
 import org.com.moodbook.member.entity.Member;
 import org.com.moodbook.member.entity.MemberProfile;
-import org.com.moodbook.member.repository.MemberProfileRepository;
 import org.com.moodbook.member.repository.MemberRepository;
+import org.com.moodbook.security.authentication.service.AuthenticationService;
+import org.com.moodbook.security.jwt.JwtPropertires;
+import org.com.moodbook.security.jwt.JwtTokenProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+
 
 @Service
 @RequiredArgsConstructor
@@ -30,14 +31,16 @@ public class MemberServiceImpl implements MemberService {
 
   //리포지토리 주입
   private final MemberRepository memberRepository;
-  private final MemberProfileRepository memberProfileRepository;
   private final PasswordEncoder passwordEncoder;
+  private final JwtTokenProvider jwtTokenProvider;
+  private final JwtPropertires jwtProperties;
+  private final AuthenticationService authenticationService;
 
   //임시 회원가입 진행
   @Override
   @Transactional
   public MemberDTO tempjoin(
-       MemberTempJoinDto dto) {
+       MemberTempJoinDTO dto) {
 
     if (memberRepository.existsByEmail(dto.getEmail())) {
       throw new BaseException(ErrorCode.ALREADY_EXIST_EMAIL);
@@ -69,19 +72,10 @@ public class MemberServiceImpl implements MemberService {
     return MemberDTO.toDto(member);
   }
 
-  @Override
-  public MemberDTO join(MemberDTO memberDTO, MemberProfileDTO profileDTO) {
-
-    Member entity = memberDTO.toEntity();
-//    MemberProfile profileEntity = profileDTO.toEntity();
-
-    memberRepository.save(entity);
-    return null;
-  }
 
   //로그인
   @Override
-  public MemberDTO login(MemberLoginDTO dto) {
+  public LoginResponseDTO login(LoginRequestDTO dto) {
     // 1.이메일을 통한 회원 존재 여부 확인
     Member member = memberRepository.findByEmail(dto.getEmail())
         .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
@@ -100,8 +94,9 @@ public class MemberServiceImpl implements MemberService {
     if (member.getStatus() == MemberStatus.DEACTIVATED) {
       throw new BaseException(MEMBER_DEACTIVATED);
     }
-
-    return MemberDTO.toDto(member);
+    // 5.모든 로그인 검증완료 -> 토큰 발급 및 저장 로직 호출
+    MemberDTO memberDTO = MemberDTO.toDto(member);
+    return authenticationService.issueTokenAndStore(memberDTO);
   }
 
   //회원가입

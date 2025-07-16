@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration//설정 클래스 등록
 @EnableWebSecurity//스프링 시큐리티 활성화
@@ -43,6 +44,7 @@ public class SecurityConfig {
 
             .anyRequest().authenticated()
         )
+        .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)//filter등록
         .build();
   }
 

@@ -1,24 +1,21 @@
 package org.com.moodbook.member.service;
 
+import org.com.moodbook.member.dto.LoginResponseDTO;
 import org.com.moodbook.member.dto.MemberDTO;
-import org.com.moodbook.member.dto.MemberLoginDTO;
-import org.com.moodbook.member.dto.MemberProfileDTO;
-import org.com.moodbook.member.dto.MemberTempJoinDto;
-import org.com.moodbook.member.entity.Member;
-import org.springframework.stereotype.Service;
+import org.com.moodbook.member.dto.LoginRequestDTO;
+import org.com.moodbook.member.dto.MemberTempJoinDTO;
 
 
 public interface MemberService {
 
 
   //임시 회원가입
-  MemberDTO tempjoin(MemberTempJoinDto memberTempJoinDto);
+  MemberDTO tempjoin(MemberTempJoinDTO memberTempJoinDto);
 
-  //회원가입
-  public MemberDTO join(MemberDTO memberDTO, MemberProfileDTO profileDTO);
+
 
   //로그인
-  MemberDTO login(MemberLoginDTO memberLoginDTO);
+  LoginResponseDTO login(LoginRequestDTO memberLoginDTO);
 
 
 }
