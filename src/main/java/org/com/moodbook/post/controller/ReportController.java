@@ -104,4 +104,15 @@ public class ReportController {
     Page<ReportSummaryResponse> page = reportService.getReportsByBook(bookId, pageable);
     return ResponseEntity.ok(page);
   }
+
+  /**
+   * 내가 쓴 독후감을 조회하기 위한 엔드포인트 (마이페이지)
+   */
+  @GetMapping("/api/reports/my")
+  public ResponseEntity<Page<ReportSummaryResponse>> getMyReports(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      Pageable pageable
+  ) {
+    return ResponseEntity.ok(reportService.getMyReports(md.getId(), pageable));
+  }
 }
