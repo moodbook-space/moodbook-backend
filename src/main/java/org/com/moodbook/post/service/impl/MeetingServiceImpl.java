@@ -86,13 +86,16 @@ public class MeetingServiceImpl implements MeetingService {
   }
 
   @Override
-  @Transactional(readOnly = true)
+  @Transactional
   public MeetingDetailResponse getMeeting(Long meetingId) {
     Meeting meeting = meetingRepository.findById(meetingId)
         .orElseThrow(() -> new BaseException(ErrorCode.MEETING_NOT_FOUND));
 
     int count = meetingMemberRepo.findByMeetingIdAndStatus(meetingId, MeetingJoinStatus.APPROVED)
         .size();
+
+    meeting.setViewCount(meeting.getViewCount() + 1);
+    meetingRepository.save(meeting);
 
     return MeetingDetailResponse.builder()
         .id(meeting.getId())
@@ -260,7 +263,8 @@ public class MeetingServiceImpl implements MeetingService {
   public Page<MeetingSummaryResponse> getMyMeetings(Long memberId, String role, Pageable pageable) {
     if ("participant".equalsIgnoreCase(role)) {
       // 내가 참가된 모임만
-      Page<MeetingMember> joins = meetingMemberRepo.findByMemberIdAndStatus(memberId, MeetingJoinStatus.APPROVED, pageable);
+      Page<MeetingMember> joins = meetingMemberRepo.findByMemberIdAndStatus(memberId, MeetingJoinStatus.APPROVED,
+          pageable);
       return joins.map(j -> {
         Meeting m = j.getMeeting();
         int count = meetingMemberRepo.findByMeetingIdAndStatus(m.getId(), MeetingJoinStatus.APPROVED).size();
