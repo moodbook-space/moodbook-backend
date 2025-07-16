@@ -18,7 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity//스프링 시큐리티 활성화
 @RequiredArgsConstructor//생성자 자동 생성
 public class SecurityConfig {
-
     private final JwtTokenFilter jwtTokenFilter;
 
     //회원가입시에 비밀번호를 암호화해주는 메서드

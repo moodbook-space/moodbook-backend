@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <title>입장 대기 멤버 목록</title>
+  <meta charset="UTF-8">
+</head>
+<body>
+<h2>입장 대기 멤버 목록</h2>
+<a th:href="@{'/chat-rooms/' + ${chatRoom.chatRoomId}}">← 채팅방으로 돌아가기</a>
+<ul>
+  <li th:each="member : ${waitingMembers}">
+    <span th:text="${member.memberName}">멤버이름</span>
+    (<span th:text="${member.memberId}">ID</span>)
+    <!-- 승인/거절 버튼 (폼 전송 or ajax 처리 가능) -->
+    <form th:action="@{/api/chat-rooms/members/approve}" method="post" style="display:inline;">
+      <input type="hidden" name="approveId" th:value="${chatRoom.ownerId}" />
+      <input type="hidden" name="chatRoomMemberId" th:value="${member.memberId}" />
+      <input type="hidden" name="approve" value="true" />
+      <button type="submit">승인</button>
+    </form>
+    <form th:action="@{/api/chat-rooms/members/approve}" method="post" style="display:inline;">
+      <input type="hidden" name="approveId" th:value="${chatRoom.ownerId}" />
+      <input type="hidden" name="chatRoomMemberId" th:value="${member.memberId}" />
+      <input type="hidden" name="approve" value="false" />
+      <button type="submit">거절</button>
+    </form>
+  </li>
+</ul>
+</body>
+</html>

@@ -1,0 +1,21 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <title>채팅방 목록</title>
+  <meta charset="UTF-8">
+</head>
+
+<body>
+<h1>전체 채팅방</h1>
+<a th:href="@{/chat-rooms/create}">+ 새 채팅방 만들기</a>
+<ul>
+  <li th:each="room : ${chatRooms}">
+    <span th:text="${room.title}"></span>
+    (<span th:text="${room.limitMembers}"></span>명)
+    <a th:href="@{|/chat-rooms/${room.chatRoomId}|}">입장</a>
+  </li>
+</ul>
+</body>
+</html>
+

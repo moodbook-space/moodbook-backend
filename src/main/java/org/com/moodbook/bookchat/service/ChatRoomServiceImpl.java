@@ -64,6 +64,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         chatRoom.getId(),
         chatRoom.getTitle(),
         chatRoom.getLimitMembers(),
+        "OPEN",
         ownerId,
         ownerName,
         LocalDateTime.now()
@@ -98,6 +99,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         chatRoom.getId(),
         chatRoom.getTitle(),
         chatRoom.getLimitMembers(),
+        "OPEN",
         ownerId,
         ownerName,
         LocalDateTime.now()
