@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.com.moodbook.member.entity.Member;
-import org.com.moodbook.security.authentication.entity.Authentication;
+import org.com.moodbook.security.authentication.entity.AuthenticationEntity;
 
 @Getter
 @Setter
@@ -17,7 +17,7 @@ public class AuthenticationDto {
 
 
   private Long id;
-  private Member member;
+  private Member member_id;
   private String token;
   private String refreshToken;
   private String tokenType;
@@ -26,10 +26,10 @@ public class AuthenticationDto {
 
 
   //Entity를 DTO로 변환하는 메서드
-  public static AuthenticationDto toDto(Authentication entity) {
+  public static AuthenticationDto toDto(AuthenticationEntity entity) {
     return AuthenticationDto.builder()
         .id(entity.getId())
-        .member(entity.getMember())
+        .member_id(entity.getMember_id())
         .token(entity.getToken())
         .refreshToken(entity.getRefreshToken())
         .tokenType(entity.getTokenType())
@@ -37,10 +37,10 @@ public class AuthenticationDto {
   }
 
   //DTO를 Entity로 변환하는 메서드
-  public Authentication toEntity() {
-    return Authentication.builder()
+  public AuthenticationEntity toEntity() {
+    return AuthenticationEntity.builder()
         .id(id)
-        .member(member)
+        .member_id(member_id)
         .token(token)
         .refreshToken(refreshToken)
         .tokenType(tokenType)
