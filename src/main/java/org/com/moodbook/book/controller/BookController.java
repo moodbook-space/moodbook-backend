@@ -1,7 +1,13 @@
 package org.com.moodbook.book.controller;
 
+import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.com.moodbook.book.dto.BookEmotionRecommendAllRequest;
+import org.com.moodbook.book.dto.BookEmotionRecommendAllResponse;
+import org.com.moodbook.book.dto.BookEmotionRecommendRequest;
+import org.com.moodbook.book.dto.BookEmotionRecommendResponse;
 import org.com.moodbook.book.dto.BookResponse;
 import org.com.moodbook.book.service.BookService;
 import org.springframework.data.domain.Page;
@@ -11,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,5 +60,19 @@ public class BookController {
 
     /** Based on your mood **/
 
+    @PostMapping("/recommend/emotion/top10")
+    public ResponseEntity<List<BookEmotionRecommendResponse>> getBooksByEmotionTop10(
+        @RequestBody @Valid BookEmotionRecommendRequest request
+    ) {
+        List<BookEmotionRecommendResponse> result = bookService.getBooksByEmotionTop10(request);
+        return ResponseEntity.ok(result);
+    }
 
+    @PostMapping("/recommend/emotion/all")
+    public ResponseEntity<List<BookEmotionRecommendAllResponse>> getBooksByEmotionAll(
+        @RequestBody @Valid BookEmotionRecommendAllRequest request
+    ) {
+        List<BookEmotionRecommendAllResponse> result = bookService.getBooksByEmotionDesc(request);
+        return ResponseEntity.ok(result);
+    }
 }

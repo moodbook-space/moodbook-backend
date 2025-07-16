@@ -15,6 +15,7 @@ import org.com.moodbook.post.entity.Report;
 import org.com.moodbook.post.entity.MoodTag;
 import org.com.moodbook.post.repository.MoodTagRepository;
 import org.com.moodbook.post.repository.ReportRepository;
+import org.com.moodbook.post.service.LikeService;
 import org.com.moodbook.post.service.ReportService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,7 @@ public class ReportServiceImpl implements ReportService {
   private final BookRepository bookRepository;
   private final MemberRepository memberRepository;
   private final MoodTagRepository tagRepository;
+  private final LikeService likeService;
 
   @Override
   public Long createReport(Long memberId, CreateReportRequest req) {
@@ -65,9 +67,14 @@ public class ReportServiceImpl implements ReportService {
 
   @Override
   @Transactional(readOnly = true)
-  public ReportDetailResponse getReport(Long reportId) {
+  public ReportDetailResponse getReport(Long memberId, Long reportId) {
     Report report = reportRepository.findById(reportId)
         .orElseThrow(() -> new BaseException(ErrorCode.REPORT_NOT_FOUND));
+
+    report.setViewCount(report.getViewCount() + 1);
+    reportRepository.save(report);
+
+    boolean liked = likeService.isLikedBy(memberId, reportId);
 
     return ReportDetailResponse.builder()
         .id(report.getId())
@@ -82,12 +89,13 @@ public class ReportServiceImpl implements ReportService {
         .authorName(report.getMember().getName())
         .createdAt(report.getCreatedAt())
         .updatedAt(report.getUpdatedAt())
+        .likedByMe(liked)
         .build();
   }
 
   @Override
   @Transactional(readOnly = true)
-  public Page<ReportSummaryResponse> getReports(Pageable pageable) {
+  public Page<ReportSummaryResponse> getReports(Long memberId, Pageable pageable) {
     return reportRepository.findAll(pageable)
         .map(r -> ReportSummaryResponse.builder()
             .id(r.getId())
@@ -99,6 +107,7 @@ public class ReportServiceImpl implements ReportService {
             .tags(r.getMoodTags().stream()
                 .map(MoodTag::getName)
                 .collect(Collectors.toList()))
+            .likedByMe(likeService.isLikedBy(memberId, r.getId()))
             .build()
         );
   }
@@ -152,6 +161,23 @@ public class ReportServiceImpl implements ReportService {
             .tags(r.getMoodTags().stream()
                 .map(MoodTag::getName)
                 .collect(Collectors.toList()))
+            .build()
+        );
+  }
+
+  // 내가 쓴 독후감들 전체 조회 (마이페이지에서 가능)
+  @Override
+  @Transactional(readOnly = true)
+  public Page<ReportSummaryResponse> getMyReports(Long memberId, Pageable pageable) {
+    return reportRepository.findByMember_Id(memberId, pageable)
+        .map(r -> ReportSummaryResponse.builder()
+            .id(r.getId())
+            .title(r.getTitle())
+            .authorName(r.getMember().getName())
+            .createdAt(r.getCreatedAt())
+            .viewCount(r.getViewCount())
+            .likeCount(r.getLikeCount())
+            .tags(r.getMoodTags().stream().map(MoodTag::getName).toList())
             .build()
         );
   }

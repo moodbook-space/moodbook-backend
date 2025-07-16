@@ -21,7 +21,7 @@ public class JwtTokenProvider {
   private final SecretKey secretKey;// 토큰을 만들 때 서명하는 키
 
   //현재 로그인이 완료된 사용자 정보를 기반으로 access, refresh token 발급
-  public String generateToken(Authentication authentication, Long expirationMillis) {
+  public String generateToken(Authentication authentication, Long expirationMillis, String tokenType) {
 
     //현재 로그인한 사용자의 정보를 꺼냄
     CustomMemberDetails customMemberDetails = (CustomMemberDetails) authentication.getPrincipal();
@@ -30,6 +30,7 @@ public class JwtTokenProvider {
     //payload
     Claims claims = Jwts.claims();
     claims.put("member-id", customMemberDetails.getId());//memberEntity의 pk값
+    claims.put("token-type", tokenType);      // accessToken, refreshToken 다르게 나오도록 수정
     claims.put("email", customMemberDetails.getUsername());//member의 email값
 
     return Jwts.builder()

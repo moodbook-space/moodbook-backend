@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.com.moodbook.security.core.CustomMemberDetails;
 import org.com.moodbook.security.core.CustomUserDetailsService;
 import org.com.moodbook.threadlocal.TraceIdHolder;
 import org.hibernate.annotations.Filter;
@@ -20,6 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
 
   private final JwtTokenProvider jwtTokenProvider;
@@ -74,10 +77,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         // 토큰에서 사용자 인증정보를 조회해서 인증정보를 현재 스레드에 인증된 사용자로 등록
 
         String url = request.getRequestURI().toString();
-
+        log.info("현재 들어온 HTTP 요청 = " + url);
 
         String method = request.getMethod();                // GET, POST, PUT ...
-
+        log.info("HTTP 메소드 + method = " + method);
       }
 
       /**
@@ -112,9 +115,21 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
   //http 요청에서 사용자 인증 정보를 담는 객체
   private UsernamePasswordAuthenticationToken getAuthentication(String token) {
+    //1. 토큰에서 사용자 ID 추출
     Long memberId = jwtTokenProvider.getUserIdFromToken(token);
 
-    return null;
+    if (memberId == null) {
+      return null;//memberId 와 일치하는게 없다면 유효하지 않은 토큰이기 때문에 null 반환
+    }
+    //2.사용자 Id로 DB 조회.
+    CustomMemberDetails memberDetails =
+        (CustomMemberDetails) customUserDetailsService.loadUserById(memberId);
+
+    return new UsernamePasswordAuthenticationToken(
+        memberDetails,
+        null,
+        memberDetails.getAuthorities()
+    );
   }
 
   private String extractTokenFromRequest(HttpServletRequest request) {

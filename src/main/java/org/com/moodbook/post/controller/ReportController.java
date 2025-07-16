@@ -1,6 +1,8 @@
 package org.com.moodbook.post.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.com.moodbook.common.util.PageableUtil;
 import org.com.moodbook.post.dto.CreateReportRequest;
 import org.com.moodbook.post.dto.ReportDetailResponse;
 import org.com.moodbook.post.dto.ReportSummaryResponse;
@@ -22,19 +24,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/reports")
+@RequiredArgsConstructor
 @Validated
 public class ReportController {
 
   private final ReportService reportService;
-
-  @Autowired
-  public ReportController(ReportService reportService) {
-    this.reportService = reportService;
-  }
 
   /**
    * 독후감 작성
@@ -53,18 +52,27 @@ public class ReportController {
    * 단일 독후감 상세 조회
    */
   @GetMapping("/{id}")
-  public ResponseEntity<ReportDetailResponse> getReport(@PathVariable("id") Long id) {
-    ReportDetailResponse detail = reportService.getReport(id);
+  public ResponseEntity<ReportDetailResponse> getReport(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      @PathVariable("id") Long id
+  ) {
+    ReportDetailResponse detail = reportService.getReport(md.getId(), id);
     return ResponseEntity.ok(detail);
   }
 
   /**
-   * 독후감 목록 조회
+   * 독후감 목록 조회 (정렬 -> 최신순 좋아요순 조회수순)
    */
   @GetMapping
-  public ResponseEntity<Page<ReportSummaryResponse>> getReports(Pageable pageable) {
-    Page<ReportSummaryResponse> page = reportService.getReports(pageable);
-    return ResponseEntity.ok(page);
+  public ResponseEntity<Page<ReportSummaryResponse>> getReports(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "latest") String sortType
+  ) {
+    Pageable pageable = PageableUtil.of(page, size, sortType);
+    Page<ReportSummaryResponse> result = reportService.getReports(md.getId(), pageable);
+    return ResponseEntity.ok(result);
   }
 
   /**
@@ -103,5 +111,16 @@ public class ReportController {
   ) {
     Page<ReportSummaryResponse> page = reportService.getReportsByBook(bookId, pageable);
     return ResponseEntity.ok(page);
+  }
+
+  /**
+   * 내가 쓴 독후감을 조회하기 위한 엔드포인트 (마이페이지)
+   */
+  @GetMapping("/api/reports/my")
+  public ResponseEntity<Page<ReportSummaryResponse>> getMyReports(
+      @AuthenticationPrincipal CustomMemberDetails md,
+      Pageable pageable
+  ) {
+    return ResponseEntity.ok(reportService.getMyReports(md.getId(), pageable));
   }
 }

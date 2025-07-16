@@ -1,44 +1,42 @@
-package org.com.moodbook.admin.chat.entity;
+package org.com.moodbook.security.authentication.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.time.LocalDateTime;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.com.moodbook.member.entity.Member;
 
 @Entity
-@Builder
+@Table(name = "authentication")
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdminChatRoom {
-
-  /** 에러 방지용 임시 엔티티 **/
-
+public class AuthenticationEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(nullable = false)
-  private Long participants;
+  @ManyToOne
+  @JoinColumn(name = "member_id")
+  private Member member_id;
 
   @Column(nullable = false)
-  private String name;
+  private String token;
 
   @Column(nullable = false)
-  private String createdBy;
+  private String refreshToken;
 
-  @Column(nullable = false)
-  private String description;
-
-  @Column(nullable = false)
-  private LocalDateTime createdAt;
+  private String tokenType;
 
 
 }
