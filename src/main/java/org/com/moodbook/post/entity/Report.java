@@ -25,7 +25,7 @@ public class Report extends BasePost {
 
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "book_id", nullable = false)
+  @JoinColumn(name = "book_id", nullable = true)
   private Book book;
 }
 

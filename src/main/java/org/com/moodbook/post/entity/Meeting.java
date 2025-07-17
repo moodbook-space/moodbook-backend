@@ -23,17 +23,17 @@ import org.com.moodbook.common.constants.MeetingType;
 public class Meeting extends BasePost {
 
   @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
+  @Column(nullable = true)
   private MeetingType meetingType;
 
-  @Column(nullable = false)
+  @Column(nullable = true)
   private LocalDateTime startAt;
 
-  @Column(nullable = false)
+  @Column(nullable = true)
   private LocalDateTime endAt;
 
-  @Column(nullable = false)
-  private int capacity;
+  @Column(nullable = true)
+  private Integer capacity;
 
   @Column(length = 200)
   private String location;
