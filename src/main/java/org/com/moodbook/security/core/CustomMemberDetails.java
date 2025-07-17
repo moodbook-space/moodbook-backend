@@ -19,10 +19,12 @@ public class CustomMemberDetails implements UserDetails {
     return member.getPassword();
   }
 
-  @Override
-  public String getUsername() {
+  public String getUserEmail() {
     return member.getEmail();
   }
+
+  @Override
+  public String getUsername() {return member.getName();}
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
