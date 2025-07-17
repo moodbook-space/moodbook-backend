@@ -37,7 +37,7 @@ public class Member extends BaseTime {
     @Column(nullable = false)
     private String password;
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY,orphanRemoval = true)
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private MemberProfile memberProfile;
 
     @Enumerated(EnumType.STRING)

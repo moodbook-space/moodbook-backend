@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>MOODBOOK | 회원가입</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: 'Noto Sans KR', Arial, sans-serif;
+      background: #f3f3f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .signup-box {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.09);
+      padding: 48px 36px;
+      min-width: 370px;
+    }
+    .signup-box h2 {
+      margin-bottom: 24px;
+      font-weight: 700;
+      color: #6347f5;
+      letter-spacing: 2px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: #666;
+      font-size: 15px;
+    }
+    input, select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #d3d3e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus {
+      border-color: #6347f5;
+      outline: none;
+    }
+    .signup-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(90deg, #6347f5, #a885fd);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: background 0.2s;
+    }
+    .signup-btn:hover {
+      background: linear-gradient(90deg, #4b2fcf, #8060cf);
+    }
+    .error-msg {
+      color: #ef3c3c;
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+    .success-msg {
+      color: #4cbb5b;
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+<div class="signup-box">
+  <h2>회원가입</h2>
+  <form id="signupForm" autocomplete="off">
+    <div class="form-group">
+      <label for="email">이메일 *</label>
+      <input type="email" id="email" name="email" required placeholder="이메일 입력">
+    </div>
+    <div class="form-group">
+      <label for="password">비밀번호 *</label>
+      <input type="password" id="password" name="password" required placeholder="비밀번호 입력">
+    </div>
+    <div class="form-group">
+      <label for="name">이름 *</label>
+      <input type="text" id="name" name="name" required placeholder="이름 입력">
+    </div>
+    <div class="form-group">
+      <label for="nickname">닉네임</label>
+      <input type="text" id="nickname" name="nickname" placeholder="닉네임 입력">
+    </div>
+    <div class="form-group">
+      <label for="contact">연락처 *</label>
+      <input type="text" id="contact" name="contact" required placeholder="010-0000-0000">
+    </div>
+    <div class="form-group">
+      <label for="gender">성별</label>
+      <select id="gender" name="gender">
+        <option value="">선택안함</option>
+        <option value="M">남자</option>
+        <option value="F">여자</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="address">주소</label>
+      <input type="text" id="address" name="address" placeholder="주소 입력">
+    </div>
+    <div class="form-group">
+      <label for="myImage">프로필 이미지 URL</label>
+      <input type="text" id="myImage" name="myImage" placeholder="이미지 URL">
+    </div>
+    <div class="form-group">
+      <label for="role">회원 구분 *</label>
+      <select id="role" name="role" required>
+        <option value="USER">일반 회원</option>
+        <option value="ADMIN">관리자</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="emailVerified">이메일 인증 여부</label>
+      <select id="emailVerified" name="emailVerified">
+        <option value="true">인증됨</option>
+        <option value="false">미인증</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="status">회원 상태</label>
+      <select id="status" name="status">
+        <option value="ACTIVATED">활성</option>
+        <option value="DEACTIVATED">비활성</option>
+      </select>
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="success-msg" id="successMsg"></div>
+    <button type="submit" class="signup-btn">회원가입</button>
+  </form>
+</div>
+
+<script>
+  document.getElementById("signupForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const name = document.getElementById("name").value.trim();
+    const nickname = document.getElementById("nickname").value.trim();
+    const contact = document.getElementById("contact").value.trim();
+    const gender = document.getElementById("gender").value;
+    const address = document.getElementById("address").value.trim();
+    const myImage = document.getElementById("myImage").value.trim();
+    const role = document.getElementById("role").value;
+    const emailVerified = document.getElementById("emailVerified").value === "true";
+    const status = document.getElementById("status").value;
+
+    const errorMsg = document.getElementById("errorMsg");
+    const successMsg = document.getElementById("successMsg");
+    errorMsg.textContent = "";
+    successMsg.textContent = "";
+
+    const body = {
+      email, password, name, nickname, contact,
+      gender, address, myImage, role, emailVerified, status
+    };
+
+    const resp = await fetch("/api/oauth/tempSignUp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    if(resp.ok){
+      successMsg.textContent = "회원가입이 완료되었습니다!";
+      document.getElementById("signupForm").reset();
+    }else{
+      const err = await resp.json();
+      errorMsg.textContent = err.message || "회원가입에 실패했습니다.";
+    }
+  });
+</script>
+</body>
+</html>

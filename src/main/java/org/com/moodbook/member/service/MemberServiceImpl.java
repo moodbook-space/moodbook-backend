@@ -6,7 +6,9 @@ import static org.com.moodbook.common.exception.ErrorCode.INVALID_PASSWORD;
 import static org.com.moodbook.common.exception.ErrorCode.MEMBER_DEACTIVATED;
 
 import lombok.RequiredArgsConstructor;
+import org.com.moodbook.common.constants.Gender;
 import org.com.moodbook.common.constants.MemberStatus;
+import org.com.moodbook.common.constants.Role;
 import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.common.exception.ErrorCode;
 import org.com.moodbook.member.dto.LoginResponseDTO;
@@ -49,18 +51,23 @@ public class MemberServiceImpl implements MemberService {
       throw new BaseException(ErrorCode.ALREADY_EXIST_CONTACT);
     }
 
+    Role role = Role.valueOf(dto.getRole());
+    Gender gender = Gender.valueOf(dto.getGender());
+    MemberStatus status = MemberStatus.valueOf(dto.getStatus());
+
+
     Member member = Member.builder()
         .email(dto.getEmail())
         .password(passwordEncoder.encode(dto.getPassword()))
-        .role(dto.getRole())
+        .role(role)
         .name(dto.getName())
         .contact(dto.getContact())
         .emailVerified(dto.isEmailVerified())
-        .status(dto.getStatus())
+        .status(status)
         .build();
 
     MemberProfile profile = MemberProfile.builder()
-        .gender(dto.getGender())
+        .gender(gender)
         .address(dto.getAddress())
         .myImage(dto.getMyImage())
         .nickname(dto.getNickname())
