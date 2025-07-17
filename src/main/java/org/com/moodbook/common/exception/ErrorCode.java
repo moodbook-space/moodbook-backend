@@ -36,6 +36,7 @@ public enum ErrorCode {
   MEMBER_DEACTIVATED(HttpStatus.UNAUTHORIZED,"MEMBER_DEACTIVATED","비활성화된 멤버입니다"),
   CHAT_ROOM_MEMBER_NOT_LEADER(HttpStatus.UNAUTHORIZED,"CHAT_ROOM_MEMBER_NOT_LEADER","방장 권한이 없습니다."),
 
+  REVIEW_FORBIDDEN(HttpStatus.UNAUTHORIZED, "REVIEW_FORBIDDEN", "본인의 리뷰만 수정/삭제할 수 있습니다."),
 
 
   /* 404 - Not Found */
@@ -51,7 +52,7 @@ public enum ErrorCode {
   COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "COMMENT_NOT_FOUND", "댓글을 찾을 수 없습니다."),
   POST_NOT_FOUND(HttpStatus.BAD_REQUEST, "POST_NOT_FOUND", "게시글을 찾을 수 없습니다."),
 
-
+  REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_NOT_FOUND", "리뷰를 찾을 수 없습니다."),
 
   /* 500 - Internal Server Error */
   INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버에 오류가 발생했습니다."),
