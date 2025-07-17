@@ -10,12 +10,14 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.com.moodbook.security.core.CustomMemberDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtTokenProvider {
 
   private final SecretKey secretKey;// 토큰을 만들 때 서명하는 키
@@ -67,20 +69,25 @@ public class JwtTokenProvider {
     } catch (
         MalformedJwtException e) {
       //토큰 형식이 잘못되었을 때
+      log.warn("❌ 잘못된 형식의 토큰");
       return false;
     } catch (
         ExpiredJwtException e) {
       //토큰이 만료가 되었을 때
+      log.warn("❌ 만료된 JWT 토큰");
       return false;
     } catch (
         UnsupportedJwtException e) {
       //지원하지 않는 토큰일 때
+      log.warn("❌ 지원하지 않는 JWT 토큰");
       return false;
     } catch (IllegalArgumentException e) {
       //토큰 문자열이 비어있거나 이상할 때
+      log.warn("❌ 토큰 문자열이 비어있음");
       return false;
     } catch (
         JwtException e) {
+      log.warn("❌ 토큰 검증 실패: {}", e.getMessage());
       //기타 예외
       return false;
     }
