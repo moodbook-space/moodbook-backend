@@ -1,6 +1,5 @@
 package org.com.moodbook.emotion.entity;
 
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -8,7 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,27 +21,25 @@ import org.com.moodbook.member.entity.Member;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "member_emotion", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"member_id", "emotion_Id"})})
 public class MemberEmotion {
 
-  @EmbeddedId
-  private MemberEmotionId id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @MapsId("memberId")
-  @JoinColumn(name = "member_id")
+  @JoinColumn(name = "member_id", nullable = false)
   private Member member;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @MapsId("emotionId")
-  @JoinColumn(name = "emotion_id")
+  @JoinColumn(name = "emotion_id", nullable = false)
   private Emotion emotion;
 
-  // 정적 팩토리 메소드
+  // 정적 팩토리 메소드, memberId와 emotionId로 MemberEmotion을 만든다.
   public static MemberEmotion of(Long memberId, Long emotionId) {
-    return MemberEmotion.builder()
-        .id(new MemberEmotionId(memberId, emotionId))
-        .member(Member.builder().id(memberId).build())
-        .emotion(Emotion.builder().id(emotionId).build())
-        .build();
+    return MemberEmotion.builder().member(Member.builder().id(memberId).build())
+        .emotion(Emotion.builder().id(emotionId).build()).build();
   }
 }
