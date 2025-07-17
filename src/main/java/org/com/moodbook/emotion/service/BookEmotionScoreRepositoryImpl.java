@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class BookEmotionScoreRepositoryImpl implements BookEmotionScoreRepositoryCustom {
 
-  private MongoTemplate mongoTemplate;
+  private final MongoTemplate mongoTemplate;
 
   @Override
   public List<BookEmotionScore> findByEmotionScoreDesc(String emotionTag, Pageable pageable) {
