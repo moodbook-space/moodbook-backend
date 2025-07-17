@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BookEmotionServiceImpl implements BookEmotionService {
 
-
   private final BookEmotionScoreRepository bookEmotionScoreRepository;
   private final EmotionAnalyzer emotionAnalyzer;
 
@@ -53,6 +52,7 @@ public class BookEmotionServiceImpl implements BookEmotionService {
 
     BookEmotionScore emotionScore = BookEmotionScore.builder()
         .bookId(bookEmotionRequest.getBookId())
+        .isbn13(bookEmotionRequest.getIsbn13())
         .bookTitle(bookEmotionRequest.getBookTitle())
         .description(bookEmotionRequest.getDescription())
         .timestamp(System.currentTimeMillis())

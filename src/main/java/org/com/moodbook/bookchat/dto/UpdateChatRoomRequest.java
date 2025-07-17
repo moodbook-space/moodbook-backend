@@ -11,5 +11,6 @@ public class UpdateChatRoomRequest {
   private int limitMembers;
   private MemberDTO owner;
   private Long chatRoomId;
+  private Long memberId;
 
 }
