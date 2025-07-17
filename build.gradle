@@ -71,7 +71,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-batch'
 
     // swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0"
+
+    // H2
+    testImplementation 'com.h2database:h2'
 
     // web-socket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
