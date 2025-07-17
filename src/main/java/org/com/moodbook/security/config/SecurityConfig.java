@@ -34,6 +34,7 @@ public class SecurityConfig {
 
                 .requestMatchers("/api/oauth/**").permitAll()
                 .requestMatchers("/api/chat-rooms/**").permitAll()
+                .requestMatchers("/chat-rooms/**").permitAll()
                 .requestMatchers(
                     "/api/oauth/",
                     "/admin/",
@@ -42,7 +43,12 @@ public class SecurityConfig {
                     "/images/",
                     "/sounds/",
                     "/favicon.ico",
-                    "/error"
+                    "/error",
+                    "/emotion/**",
+                    "/api/emotion/**",
+                    "/api/books/**",
+                    "/login",
+                    "signup"
                 ).permitAll()
 
                 .anyRequest().authenticated()
