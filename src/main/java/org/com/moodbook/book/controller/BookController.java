@@ -1,5 +1,8 @@
 package org.com.moodbook.book.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -10,11 +13,13 @@ import org.com.moodbook.book.dto.BookEmotionRecommendRequest;
 import org.com.moodbook.book.dto.BookEmotionRecommendResponse;
 import org.com.moodbook.book.dto.BookResponse;
 import org.com.moodbook.book.service.BookService;
+import org.com.moodbook.security.core.CustomMemberDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +36,14 @@ public class BookController {
     private final BookService bookService;
 
     /** Recommendation (기준: 알라딘 평점순 - 높은 순으로) **/
+    /** Recommendation (기준: 알라딘 평점순 - 높은 순으로) **/
     @GetMapping(value = "/recommendations/star")
+    @Operation(summary = "알라딘 평점순 - 높은 순으로",
+        description = "알라딘에서 추출한 데이터를 가지고 평점 기준으로 반환")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "도서 리스트 반환 성공"),
+        @ApiResponse(responseCode = "500", description = "도서 리스트 반환 오류")
+    })
     public ResponseEntity<Page<BookResponse>> getRecommendedBooks(
         @PageableDefault(size = 10, page = 0)
         Pageable pageable) {
@@ -41,8 +53,10 @@ public class BookController {
 
     /** 도서 상세 조회 **/
     @GetMapping("/{bookId}")
-    public ResponseEntity<BookResponse> getBookDetail(@PathVariable Long bookId) {
-        BookResponse book = bookService.getBookById(bookId);
+    public ResponseEntity<BookResponse> getBookDetail(
+        @PathVariable Long bookId, @AuthenticationPrincipal CustomMemberDetails memberDetails) {
+        Long memberId = memberDetails.getId();
+        BookResponse book = bookService.getBookById(bookId, memberId);
         return ResponseEntity.status(HttpStatus.OK).body(book);
     }
 
@@ -54,11 +68,6 @@ public class BookController {
         Page<BookResponse> trendingBooks = bookService.getTrendingBooks(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(trendingBooks);
     }
-
-    /** 추천 히스토리 저장 **/
-
-
-    /** Based on your mood **/
 
     @PostMapping("/recommend/emotion/top10")
     public ResponseEntity<List<BookEmotionRecommendResponse>> getBooksByEmotionTop10(
