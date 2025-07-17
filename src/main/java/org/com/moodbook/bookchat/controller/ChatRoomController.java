@@ -6,7 +6,9 @@ import org.com.moodbook.bookchat.entity.ChatRoomMemberStatus;
 import org.com.moodbook.bookchat.service.ChatRoomService;
 import org.com.moodbook.member.entity.Member;
 import org.com.moodbook.member.repository.MemberRepository;
+import org.com.moodbook.security.core.CustomMemberDetails;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,13 +24,15 @@ public class ChatRoomController {
   @PostMapping
   public ResponseEntity<ChatRoomResponse> createRoom(
       @RequestBody CreateChatRoomRequest request,
-      @SessionAttribute(name = "memberId", required = false) Long memberId
+      @AuthenticationPrincipal CustomMemberDetails memberDetails
   ) {
-    // 세션에서 owner로 지정
-    if (request.getOwner() == null && memberId != null) {
-      Member member = memberRepository.findById(memberId).orElse(null);
-      assert member != null;
-      request.setOwner(new MemberDTO(memberId, member.getName()));
+
+    Long memberId = memberDetails.getId();
+    String memberName = memberDetails.getUsername();
+
+    if (request.getOwner() == null) {
+
+      request.setOwner(new MemberDTO(memberId, memberName));
     }
     return ResponseEntity.ok(chatRoomService.createRoom(request));
   }
@@ -38,8 +42,9 @@ public class ChatRoomController {
   public ResponseEntity<ChatRoomResponse> updateRoomSettings(
       @PathVariable Long roomId,
       @RequestBody UpdateChatRoomRequest request,
-      @SessionAttribute(name = "memberId", required = false) Long memberId
+      @AuthenticationPrincipal CustomMemberDetails memberDetails
   ) {
+    Long memberId = memberDetails.getId();
     request.setChatRoomId(roomId);
     request.setMemberId(memberId);
     return ResponseEntity.ok(chatRoomService.updateRoomSettings(request));
@@ -58,16 +63,18 @@ public class ChatRoomController {
   @PostMapping("/{roomId}/join")
   public ResponseEntity<ChatRoomMemberResponse> requestJoinChatRoom(
       @PathVariable Long roomId,
-      @SessionAttribute(name = "memberId", required = false) Long memberId
+      @AuthenticationPrincipal CustomMemberDetails memberDetails
   ) {
+    Long memberId = memberDetails.getId();
     return ResponseEntity.ok(chatRoomService.requestJoinChatRoom(roomId, memberId));
   }
 
   @PostMapping("/members/approve")
   public ResponseEntity<Void> approveJoinChatRoom(
       @RequestBody ApproveJoinRequest request,
-      @SessionAttribute(name = "memberId", required = false) Long memberId
+      @AuthenticationPrincipal CustomMemberDetails memberDetails
   ) {
+    Long memberId = memberDetails.getId();
     request.setApproveId(memberId); // 세션에서 받아서 approveId에 주입
     chatRoomService.approveJoinChatRoom(request);
     return ResponseEntity.ok().build();
@@ -84,8 +91,9 @@ public class ChatRoomController {
   @DeleteMapping("/{roomId}")
   public ResponseEntity<Void> deleteRoom(
       @PathVariable Long roomId,
-      @SessionAttribute(name = "memberId", required = false) Long memberId
+      @AuthenticationPrincipal CustomMemberDetails memberDetails
   ) {
+    Long memberId = memberDetails.getId();
     chatRoomService.deleteRoom(roomId, memberId);
     return ResponseEntity.ok().build();
   }
@@ -93,8 +101,9 @@ public class ChatRoomController {
   @PostMapping("/{roomId}/leave")
   public ResponseEntity<Void> leaveRoom(
       @PathVariable Long roomId,
-      @SessionAttribute(name = "memberId", required = false) Long memberId
+      @AuthenticationPrincipal CustomMemberDetails memberDetails
   ) {
+    Long memberId = memberDetails.getId();
     chatRoomService.leaveRoom(roomId, memberId);
     return ResponseEntity.ok().build();
   }
