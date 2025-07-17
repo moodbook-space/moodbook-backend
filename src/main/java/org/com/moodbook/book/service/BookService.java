@@ -17,7 +17,7 @@ public interface BookService {
   Page<BookResponse> getRecommendedBooks(Pageable pageable);
 
   /** 책 상세 조회 **/
-  BookResponse getBookById(Long id);
+  BookResponse getBookById(Long id, Long memberId);
 
   /** 책 조회수별로 조회 **/
   Page<BookResponse> getTrendingBooks(Pageable pageable);

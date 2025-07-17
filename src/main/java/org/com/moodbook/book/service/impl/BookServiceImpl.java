@@ -3,9 +3,11 @@ package org.com.moodbook.book.service.impl;
 import static org.com.moodbook.common.exception.BaseException.BOOK_NOT_FOUND;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +24,14 @@ import org.com.moodbook.book.repository.BookCountRepository;
 import org.com.moodbook.book.repository.BookRepository;
 import org.com.moodbook.book.service.BookService;
 import org.com.moodbook.common.constants.EmotionTag;
+import org.com.moodbook.common.exception.BaseException;
+import org.com.moodbook.common.exception.ErrorCode;
 import org.com.moodbook.emotion.entity.BookEmotionScore;
 import org.com.moodbook.emotion.repository.BookEmotionScoreRepository;
+import org.com.moodbook.member.entity.Member;
+import org.com.moodbook.member.repository.MemberRepository;
+import org.com.moodbook.recentbookviews.entity.RecentBookView;
+import org.com.moodbook.recentbookviews.repository.RecentBookViewRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +52,8 @@ public class BookServiceImpl implements BookService {
   private final BookCountRepository bookCountRepository;
   private final MongoTemplate mongoTemplate;
   private final BookEmotionScoreRepository bookEmotionScoreRepository;
+  private final MemberRepository memberRepository;
+  private final RecentBookViewRepository recentBookViewRepository;
 
   /** Recommendation (기준: 알라딘 평점순 - 높은 순으로) **/
   @Override
@@ -77,7 +87,7 @@ public class BookServiceImpl implements BookService {
   /** 도서 상세 조회 **/
   @Override
   @Transactional
-  public BookResponse getBookById(Long id) {
+  public BookResponse getBookById(Long id, Long memberId) {
     Book book = bookRepository.findById(id)
         .orElseThrow(() -> BOOK_NOT_FOUND);
 
@@ -90,11 +100,13 @@ public class BookServiceImpl implements BookService {
           return bookCountRepository.save(newCount);
         });
 
-    // 4. 조회수 증가
+    // 1. 조회수 증가
     bookCount.increaseViewCount();
     bookCountRepository.save(bookCount);
 
-    // 5. 업데이트된 조회수 반영해 BookResponse 새로 생성
+    // 2. 최근 조회 기록 저장
+    saveOrUpdateRecentView(memberId, book);
+
     return BookResponse.from(book, bookCount.getViewCount());
   }
 
@@ -156,6 +168,25 @@ public class BookServiceImpl implements BookService {
     return books.stream()
         .map(BookEmotionRecommendAllResponse::from)
         .toList();
+  }
+
+  private void saveOrUpdateRecentView(Long memberId, Book book) {
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+
+    Optional<RecentBookView> existingView =
+        recentBookViewRepository.findByMemberIdAndBookId(memberId, book.getId());
+
+    if (existingView.isPresent()) {
+      existingView.get().updateViewedAt(LocalDateTime.now());
+    } else {
+      RecentBookView view = RecentBookView.builder()
+          .member(member)
+          .book(book)
+          .viewedAt(LocalDateTime.now())
+          .build();
+      recentBookViewRepository.save(view);
+    }
   }
 
 }
