@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>MOODBOOK | 로그인</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: 'Noto Sans KR', Arial, sans-serif;
+      background: #f3f3f7;
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+    }
+    .login-box {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.09);
+      padding: 48px 36px;
+      min-width: 340px;
+    }
+    .login-box h2 {
+      margin-bottom: 24px;
+      font-weight: 700;
+      color: #6347f5;
+      letter-spacing: 2px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: #666;
+      font-size: 15px;
+    }
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d3d3e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.2s;
+    }
+    input:focus {
+      border-color: #6347f5;
+      outline: none;
+    }
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(90deg, #6347f5, #a885fd);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 10px;
+    }
+    .login-btn:hover {
+      background: linear-gradient(90deg, #4b2fcf, #8060cf);
+    }
+    .error-msg {
+      color: #ef3c3c;
+      margin-bottom: 12px;
+      font-size: 15px;
+    }
+    .token-box {
+      background: #f7f6fd;
+      border-radius: 10px;
+      margin-top: 24px;
+      padding: 14px;
+      font-size: 13px;
+      color: #555;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+<div class="login-box">
+  <h2>로그인</h2>
+  <form id="loginForm" autocomplete="off">
+    <div class="form-group">
+      <label for="email">이메일</label>
+      <input type="email" id="email" name="email" required placeholder="이메일 입력" autofocus>
+    </div>
+    <div class="form-group">
+      <label for="password">비밀번호</label>
+      <input type="password" id="password" name="password" required placeholder="비밀번호 입력">
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+    <button type="submit" class="login-btn">로그인</button>
+  </form>
+  <div class="token-box" id="loginResult" style="display:none;"></div>
+</div>
+
+<script>
+  document.getElementById("loginForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    const resultDiv = document.getElementById("loginResult");
+    const errorMsg = document.getElementById("errorMsg");
+    resultDiv.style.display = "none";
+    errorMsg.textContent = "";
+
+    const response = await fetch("/api/oauth/login", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({email, password})
+    });
+
+    if(response.ok){
+      const data = await response.json();
+      // 예시) 토큰 저장 (선택)
+      // localStorage.setItem("accessToken", data.accessToken);
+      window.location.href = "/chat-rooms"; // 성공시 이동!
+    } else {
+      const err = await response.json();
+      errorMsg.textContent = err.message || "로그인에 실패했습니다.";
+    }
+  });
+
+</script>
+</body>
+</html>
