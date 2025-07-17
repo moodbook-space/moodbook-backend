@@ -2,7 +2,6 @@ package org.com.moodbook.common.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Http;
 import org.springframework.http.HttpStatus;
 
 @Getter
@@ -17,11 +16,12 @@ public enum ErrorCode {
   ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "ALREADY_EXIST_EMAIL", "이미 가입된 이메일입니다."),
   INVALID_MEETING_TYPE(HttpStatus.BAD_REQUEST, "INVALID_MEETING_TYPE", "올바른 모임 유형이 아닙니다."),
   TAG_NOT_FOUND(HttpStatus.BAD_REQUEST, "TAG_NOT_FOUND", "유효하지 않은 태그입니다."),
-
   ALREADY_EXIST_CONTACT(HttpStatus.BAD_REQUEST,"ALREADY_EXIST_CONTACT","이미 등록된 연락처입니다"),
   ALREADY_EXIST_JOIN(HttpStatus.BAD_REQUEST, "ALREADY_EXIST_JOIN", "이미 신청한 모임입니다."),
   INVALID_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", "잘못된 요청입니다."),
   INVALID_ACTION(HttpStatus.BAD_REQUEST, "INVALID_ACTION", "올바른 작업이 아닙니다."),
+  ALREADY_IN_BOOKMARK(HttpStatus.BAD_REQUEST, "ALREADY_IN_BOOKMARK", "이미 북마크에 존재하는 도서입니다"),
+
 
   /* 401 - Unauthorized */
   AUTHENTICATION_FAILED(HttpStatus.BAD_REQUEST, "AUTHENTICATION_FAILED", "인증에 실패했습니다."),
@@ -44,6 +44,7 @@ public enum ErrorCode {
   REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT_NOT_FOUND", "해당 독후감을 찾을 수 없습니다."),
   MEETING_NOT_FOUND(HttpStatus.NOT_FOUND, "MEETING_NOT_FOUND", "해당 모임을 찾을 수 없습니다."),
   EMOTION_NOT_FOUND(HttpStatus.NOT_FOUND, "EMOTION_NOT_FOUND", "해당 감정을 찾을 수 없습니다."),
+  BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK_NOT_FOUND", "북마크에 해당 책이 존재하지 않습니다."),
 
   MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND,"MEMBER_NOT_FOUND","해당 사용자를 찾을 수 없습니다"),
   CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CHATROOM_REQUEST_NOT_FOUND", "해당 채팅방을 찾을 수 없습니다."),
