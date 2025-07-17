@@ -10,16 +10,16 @@ import org.com.moodbook.bookchat.entity.ChatRoom;
 public class ChatRoomResponse {
   private Long chatRoomId;
   private String title;
-  private int limitMember;
+  private int limitMembers;
   private String status;
   private Long ownerId;
   private String ownerName;
   private LocalDateTime createdAt;
 
-  public ChatRoomResponse(Long chatRoomId, String title, int limitMember, String status, Long ownerId, String ownerName, LocalDateTime createdAt) {
+  public ChatRoomResponse(Long chatRoomId, String title, int limitMembers, String status, Long ownerId, String ownerName, LocalDateTime createdAt) {
     this.chatRoomId = chatRoomId;
     this.title = title;
-    this.limitMember = limitMember;
+    this.limitMembers = limitMembers;
     this.status = status;
     this.ownerId = ownerId;
     this.ownerName = ownerName;
@@ -30,7 +30,7 @@ public class ChatRoomResponse {
     return ChatRoomResponse.builder()
         .chatRoomId(room.getId())
         .title(room.getTitle())
-        .limitMember(room.getLimitMembers())
+        .limitMembers(room.getLimitMembers())
         .status(room.getStatus().name())
         .ownerId(room.getOwner().getId())
         .ownerName(room.getOwner().getName())

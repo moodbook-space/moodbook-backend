@@ -9,6 +9,6 @@ public class MemberDTO {
 
   public MemberDTO(Long memberId, String memberName) {
     this.memberId = memberId;
-
+    this.memberName = memberName;
   }
 }
