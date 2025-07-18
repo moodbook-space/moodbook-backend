@@ -3,6 +3,7 @@ package org.com.moodbook.common.util;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.com.moodbook.awss3.dto.AWSS3DTO;
 import org.com.moodbook.common.exception.BaseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -60,8 +61,29 @@ public class AWSS3UploaderImpl implements AWSS3Uploader {
       throw BaseException.AWSS3_UPLOAD_ERROR;
     }
 
-    // 업로드된 파일의 URL 반환
+    // 업로드된 파일의 URL을 DTO에 담아서 반환
     // https://moodbook-bucket.s3.ap-northeast-2.amazonaws.com/9bcd1234-5678-90ab-cdef-1234567890ff.png
     return String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, convertedName);
   }
+
+  @Override
+  // 파일을 삭제하는 기능 담당
+  public void delete(String url) {
+    String key = url.substring(url.indexOf(".com/") + 5);
+    try {
+      s3Client.deleteObject(builder -> builder
+          .bucket(bucket)
+          .key(key)
+          .build()
+      );
+      log.info("S3 파일 삭제 완료: {}", key);
+    }
+    catch (Exception e) {
+      log.error("S3 파일 삭제 중 오류 발생: {}", key, e);
+      throw BaseException.AWSS3_DELETE_ERROR;
+    }
+
+
+  }
+
 }
