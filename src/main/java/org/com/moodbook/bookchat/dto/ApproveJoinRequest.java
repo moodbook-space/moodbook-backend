@@ -5,6 +5,7 @@ import lombok.Setter;
 
 @Getter
 public class ApproveJoinRequest {
+  private Long roomId;
 
   @Setter
   private Long approveId;
