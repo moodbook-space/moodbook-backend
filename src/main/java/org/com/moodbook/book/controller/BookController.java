@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -79,9 +80,14 @@ public class BookController {
 
     @PostMapping("/recommend/emotion/all")
     public ResponseEntity<List<BookEmotionRecommendAllResponse>> getBooksByEmotionAll(
-        @RequestBody @Valid BookEmotionRecommendAllRequest request
+        @RequestBody @Valid BookEmotionRecommendAllRequest request,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
     ) {
+        request.setPage(page);
+        request.setSize(size);
         List<BookEmotionRecommendAllResponse> result = bookService.getBooksByEmotionDesc(request);
         return ResponseEntity.ok(result);
     }
+
 }

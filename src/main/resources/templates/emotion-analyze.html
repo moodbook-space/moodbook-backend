@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>책 감정분석</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; }
+    .container { max-width: 900px; margin: 40px auto; background: #fff; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 28px; }
+    h2 { text-align: center; margin-bottom: 24px; font-weight: 400; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px; border-bottom: 1px solid #e5e7eb; }
+    th { background: #667eea; color: white; font-size: 14px; letter-spacing: 1px; }
+    tr:last-child td { border-bottom: none; }
+    .btn { padding: 7px 16px; border-radius: 20px; border: none; background: #667eea; color: white; font-weight: 500; cursor: pointer; font-size: 13px; }
+    .btn-save { background: #38ef7d; color: #fff; }
+    .result-cell { font-size: 12px; background: #f3f4f6; border-radius: 7px; padding: 7px; }
+    .status-success { color: #22c55e; font-weight: bold; }
+    .status-error { color: #ef4444; font-weight: bold; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>📚 책 리스트 감정 분석</h2>
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>제목</th>
+      <th>설명</th>
+      <th>감정분석</th>
+      <th>DB 저장</th>
+      <th>분석결과</th>
+      <th>저장상태</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="book : ${books}">
+      <td th:text="${book.bookId}"></td>
+      <td th:text="${book.title}"></td>
+      <td th:text="${book.description}"></td>
+      <td>
+        <button type="button" class="btn"
+                th:attr="data-id=${book.bookId},data-title=${book.title},data-description=${book.description}"
+                onclick="analyzeEmotion(this)">분석</button>
+      </td>
+      <td>
+        <button type="button" class="btn btn-save"
+                th:attr="data-id=${book.bookId},data-title=${book.title},data-description=${book.description},data-isbn13=${book.isbn13}"
+                onclick="saveEmotion(this)">저장</button>
+      </td>
+      <td>
+        <div class="result-cell" th:attr="id='result-' + ${book.bookId}"></div>
+      </td>
+      <td>
+        <span th:attr="id='status-' + ${book.bookId}"></span>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  async function analyzeEmotion(btn) {
+    const id = btn.getAttribute('data-id');
+    const title = btn.getAttribute('data-title');
+    const description = btn.getAttribute('data-description');
+    const body = { title, description };
+
+    btn.textContent = '분석중...';
+    btn.disabled = true;
+    document.getElementById('result-' + id).textContent = '분석 중...';
+
+    try {
+      const resp = await fetch('/api/emotion/analyze', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      const data = await resp.json();
+      document.getElementById('result-' + id).textContent = JSON.stringify(data, null, 2);
+      document.getElementById('status-' + id).textContent = "";
+    } catch (error) {
+      document.getElementById('result-' + id).textContent = '분석 실패: ' + error.message;
+    } finally {
+      btn.textContent = '분석';
+      btn.disabled = false;
+    }
+  }
+
+  async function saveEmotion(btn) {
+    const id = btn.getAttribute('data-id');
+    const title = btn.getAttribute('data-title');
+    const description = btn.getAttribute('data-description');
+    const isbn13 = btn.getAttribute('data-isbn13');
+    const statusElement = document.getElementById('status-' + id);
+
+    btn.textContent = '저장중...';
+    btn.disabled = true;
+    statusElement.textContent = '저장 중...';
+
+    const body = { bookId: id, isbn13, bookTitle: title, description };
+
+    try {
+      const resp = await fetch('/api/emotion/save', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      if (resp.ok) {
+        statusElement.textContent = "✅ 저장 완료!";
+        statusElement.className = "status-success";
+      } else {
+        statusElement.textContent = "❌ 저장 실패!";
+        statusElement.className = "status-error";
+      }
+    } catch (error) {
+      statusElement.textContent = "❌ 네트워크 오류!";
+      statusElement.className = "status-error";
+    } finally {
+      btn.textContent = '저장';
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>
