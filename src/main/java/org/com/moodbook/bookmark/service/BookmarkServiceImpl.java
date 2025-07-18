@@ -25,17 +25,10 @@ public class BookmarkServiceImpl implements BookmarkService {
 
   // 유저에게 북마크 추가하기
   public BookmarkResponseDTO addBookmark(Long memberId, Long bookId) {
-    Optional<Member> member = memberRepository.findById(memberId);
-    Optional<Book> book = bookRepository.findById(bookId);
-
-    // 유저가 있는가?
-    if (member.isEmpty()) {
-      throw BaseException.MEMBER_NOT_FOUND;
-    }
-    // 책은 존재하는가?
-    if (book.isEmpty()) {
-      throw BaseException.BOOK_NOT_FOUND;
-    }
+    Member member = memberRepository.findById(memberId).orElseThrow(() ->
+        BaseException.MEMBER_NOT_FOUND);
+    Book book = bookRepository.findById(bookId).orElseThrow(() ->
+        BaseException.BOOK_NOT_FOUND);
 
     // 먼저 해당하는 북마크가 이미 존재하는지 확인해야 함!
     if (bookmarkRepository.existsByMember_IdAndBook_Id(memberId, bookId)) {
@@ -43,18 +36,16 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     // 없다면, 추가한다
-    Bookmark bookmark = Bookmark.of(member.get(), book.get());
+    Bookmark bookmark = Bookmark.of(member, book);
 
-    try {
-      bookmarkRepository.save(bookmark);
-    } catch (Exception e) {
-      throw BaseException.INTERNAL_SERVER_ERROR;
-    }
+    bookmarkRepository.save(bookmark);
+
     return BookmarkResponseDTO.of(bookmark);
   }
 
   // 사용자의 모든 북마크 정보 반환
   @Override
+  @Transactional(readOnly = true)
   public List<BookmarkResponseDTO> getBookmark(Long memberId) {
     //모든 북마크 정보 찾기
     return bookmarkRepository.findAllByMember_IdOrderByCreatedAtDesc(memberId)
