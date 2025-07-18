@@ -177,11 +177,12 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   public ChatRoomMemberResponse approveJoinChatRoom(ApproveJoinRequest request) {
 
     Long chatRoomMemberId = request.getChatRoomMemberId();
+    Long roomId = request.getRoomId();
     Long approveId = request.getApproveId();
     boolean approve = request.isApprove();
 
-    ChatRoomMember joinRequest = chatRoomMemberRepository.findById(chatRoomMemberId)
-        .orElseThrow(() -> new BaseException(ErrorCode.JOIN_REQUEST_NOT_FOUND));
+
+    ChatRoomMember joinRequest = chatRoomMemberRepository.findByChatRoomIdAndMemberId(roomId, chatRoomMemberId);
 
     ChatRoom chatRoom = joinRequest.getChatRoom();
     Member owner = chatRoom.getOwner();
@@ -193,6 +194,12 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     if (approve) {
       joinRequest.setStatus(ChatRoomMemberStatus.APPROVED);
       joinRequest.setRole(ChatRoomMemberRole.MEMBER);
+      chatRoomMemberRepository.save(joinRequest);
+    } else {
+      joinRequest.setStatus(ChatRoomMemberStatus.REJECTED);
+      joinRequest.setRole(ChatRoomMemberRole.REJECTED);
+      chatRoomMemberRepository.save(joinRequest);
+    }
       ChatRoomMember saved = chatRoomMemberRepository.save(joinRequest);
 
       // 가입 상태 변경 후 채팅방 멤버 쪽으로 알림 전송

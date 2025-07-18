@@ -111,5 +111,14 @@ public class MemberServiceImpl implements MemberService {
 
   //회원가입
 
+  // 내정보 가지고오기
+  @Override
+  @Transactional(readOnly = true)
+  public MemberDTO getMyInfo(Long memberId) {
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+    return MemberDTO.toDto(member);
+  }
+
 
 }

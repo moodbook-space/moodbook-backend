@@ -6,6 +6,7 @@ import lombok.Setter;
 
 @Data
 public class ApproveJoinRequest {
+  private Long roomId;
 
   private Long approveId;
   private Long chatRoomMemberId;
