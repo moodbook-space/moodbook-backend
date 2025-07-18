@@ -63,7 +63,7 @@ public class AdminMemberController {
   /** 🔹 5. 이미지 S3 서버에 올리기 **/
   @PostMapping("/uploadImage")
   public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("image") MultipartFile image) {
-    String imageUrl = awss3Service.uploadFile(image);
+    String imageUrl = awss3Service.uploadFile(image).getUrl();
     return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
   }
 }
