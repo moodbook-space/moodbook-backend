@@ -1,6 +1,7 @@
 package org.com.moodbook.book.service;
 
 import java.util.List;
+import org.com.moodbook.book.dto.BookEmotionAnalyzeResponse;
 import org.com.moodbook.book.dto.BookEmotionRecommendAllRequest;
 import org.com.moodbook.book.dto.BookEmotionRecommendAllResponse;
 import org.com.moodbook.book.dto.BookEmotionRecommendRequest;
@@ -28,5 +29,7 @@ public interface BookService {
   /** 감정 별 책 추천 내림차순 **/
   List<BookEmotionRecommendAllResponse> getBooksByEmotionDesc(BookEmotionRecommendAllRequest request);
 
+  /** 책 전체 조회 **/
+  List<BookEmotionAnalyzeResponse> getAllBooksForEmotionAnalyze();
 
-}
+  }

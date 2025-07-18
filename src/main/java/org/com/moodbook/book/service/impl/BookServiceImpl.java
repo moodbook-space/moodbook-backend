@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.com.moodbook.book.dto.BookEmotionAnalyzeResponse;
 import org.com.moodbook.book.dto.BookEmotionRecommendAllRequest;
 import org.com.moodbook.book.dto.BookEmotionRecommendAllResponse;
 import org.com.moodbook.book.dto.BookEmotionRecommendRequest;
@@ -36,6 +37,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -117,23 +119,29 @@ public class BookServiceImpl implements BookService {
     return bookRepository.findAllWithViewCount(pageable);
   }
 
-  /** 감정 별 책 추천 Top10 **/
   @Override
   @Transactional(readOnly = true)
   public List<BookEmotionRecommendResponse> getBooksByEmotionTop10(BookEmotionRecommendRequest request) {
-
     int minScore = 4;
     int maxScore = 5;
     int limit = 10;
-
     String emotionTag = request.getEmotionTag();
 
-    Query query = new Query();
-    query.addCriteria(Criteria.where("scores." + emotionTag).gte(minScore).lte(maxScore));
-    query.fields().include("isbn13");
-    query.limit(limit);
+    System.out.println("emotionTag: " + emotionTag);
+    System.out.println("Aggregation 조건: " + Criteria.where("scores." + emotionTag).gte(minScore).lte(maxScore));
 
-    List<BookEmotionScore> emotionScores = mongoTemplate.find(query, BookEmotionScore.class);
+    Aggregation agg = Aggregation.newAggregation(
+        Aggregation.match(Criteria.where("scores." + emotionTag).gte(minScore).lte(maxScore)),
+        Aggregation.sample(limit)
+    );
+
+    List<BookEmotionScore> emotionScores =
+        mongoTemplate.aggregate(agg, "emotion_scores", BookEmotionScore.class).getMappedResults();
+
+    System.out.println("emotionScores.size(): " + emotionScores.size());
+    for (BookEmotionScore bes : emotionScores) {
+      System.out.println("BookEmotionScore: " + bes.getBookTitle() + ", isbn13: " + bes.getIsbn13() + ", score: " + bes.getScores().get(emotionTag));
+    }
 
     List<String> isbn13List = emotionScores.stream()
         .map(BookEmotionScore::getIsbn13)
@@ -141,12 +149,20 @@ public class BookServiceImpl implements BookService {
         .distinct()
         .collect(Collectors.toList());
 
+    System.out.println("isbn13List: " + isbn13List);
+
     List<Book> books = bookRepository.findByIsbn13In(isbn13List);
+
+    System.out.println("books.size(): " + books.size());
+    for (Book b : books) {
+      System.out.println("Book: " + b.getTitle() + ", isbn13: " + b.getIsbn13());
+    }
 
     return books.stream()
         .map(BookEmotionRecommendResponse::from)
         .collect(Collectors.toList());
   }
+
 
   // 더보기
   @Override
@@ -188,5 +204,15 @@ public class BookServiceImpl implements BookService {
       recentBookViewRepository.save(view);
     }
   }
+
+  // 분석을 위한 책에 관련된 책 소개 전체 조회
+  public List<BookEmotionAnalyzeResponse> getAllBooksForEmotionAnalyze() {
+
+    return bookRepository.findAll().stream()
+        .map(BookEmotionAnalyzeResponse::from)
+        .collect(Collectors.toList());
+  }
+
+
 
 }
