@@ -23,4 +23,5 @@ public class MeetingSummaryResponse {
   private List<String> tags;
   private LocalDateTime createdAt;
   private boolean likedByMe;
+  private Long chatRoomId;
 }
