@@ -5,6 +5,8 @@ import org.com.moodbook.admin.member.dto.AdminMemberDTO;
 import org.com.moodbook.admin.member.repository.AdminMemberProfileRepository;
 import org.com.moodbook.admin.member.repository.AdminMemberRepository;
 import org.com.moodbook.admin.member.service.AdminMemberService;
+import org.com.moodbook.common.constants.MemberStatus;
+import org.com.moodbook.common.constants.Role;
 import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.common.exception.ErrorCode;
 import org.com.moodbook.member.entity.Member;
@@ -43,12 +45,16 @@ public class AdminMemberServiceImpl implements AdminMemberService {
 
 
   @Override
-  public void deleteMember(Long memberId) {
-    if (!adminMemberProfileRepository.existsById(memberId)) {
-      throw new BaseException(ErrorCode.MEMBER_NOT_FOUND);
+  public void deActivateMember(Long memberId) {
+    Member member = adminMemberRepository.findById(memberId)
+        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+    if(member.getRole()== Role.USER){
+
     }
-    adminMemberProfileRepository.deleteById(memberId);
-    adminMemberRepository.deleteById(memberId);
+
+    member.setStatus(MemberStatus.DEACTIVATED);
+
+    adminMemberRepository.save(member);
   }
 
 
