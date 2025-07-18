@@ -17,7 +17,7 @@ import org.hibernate.annotations.Where;
 @Table(name = "post")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "post_type", discriminatorType = DiscriminatorType.STRING)
-@SQLDelete(sql = "UPDATE posts SET deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE post SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
 @Getter
 @Setter
