@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>책 추가</title>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sidebar {
+      position: fixed;
+      width: 180px;
+      height: 100vh;
+      background: linear-gradient(to bottom, #2c3e50, #34495e);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sidebar img {
+      width: 100px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar button {
+      width: 100%;
+      padding: 10px;
+      background-color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    .container {
+      margin-left: 200px;
+      padding: 30px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
+      width: 300px;
+      padding: 8px;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    .search-box button {
+      padding: 8px 15px;
+      font-size: 16px;
+      background-color: #ccc;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .scrollable {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid #333;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+
+    .add-btn {
+      color: blue;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .cover-img {
+      width: 50px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <img src="/images/logo.png" alt="logo">
+  <button onclick="location.href='/admin'">관리자페이지</button>
+  <button onclick="location.href='/admin/book'">책 조회/제거</button>
+</div>
+
+<div class="container">
+  <h1>책 추가</h1>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="책 제목 또는 키워드 입력">
+    <button onclick="searchBooks()">검색</button>
+  </div>
+
+  <div class="scrollable">
+    <table id="resultTable">
+      <thead>
+      <tr>
+        <th>커버</th>
+        <th>제목</th>
+        <th>저자</th>
+        <th>추가</th>
+      </tr>
+      </thead>
+      <tbody>
+      <!-- 검색 결과 행이 여기에 삽입됩니다 -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  async function searchBooks() {
+    const keyword = document.getElementById("searchInput").value;
+    if (!keyword.trim()) return;
+
+    const response = await fetch(`/api/admin/book/add?keyword=${encodeURIComponent(keyword)}`);
+    const books = await response.json();
+
+    const tbody = document.querySelector("#resultTable tbody");
+    tbody.innerHTML = ""; // 기존 내용 비움
+
+    books.forEach(book => {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td><img src="${book.coverImage}" class="cover-img"></td>
+        <td>${book.title}</td>
+        <td>${book.author}</td>
+        <td><span class="add-btn" onclick='addBook(${JSON.stringify(book)})'>+</span></td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function addBook(book) {
+    const res = await fetch("/api/admin/book/add", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(book)
+    });
+
+    if (res.ok) {
+      alert("책이 추가되었습니다.");
+    } else {
+      alert("추가 실패");
+    }
+  }
+</script>
+</body>
+</html>

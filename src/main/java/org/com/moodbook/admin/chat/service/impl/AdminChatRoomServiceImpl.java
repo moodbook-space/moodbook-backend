@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 @RequiredArgsConstructor
 @Service
 @Transactional
@@ -37,6 +38,7 @@ public class AdminChatRoomServiceImpl implements AdminChatRoomService {
 
   //채팅방 검색
   @Override
+  @Transactional(readOnly = true)
   public Page<AdminChatRoomDTO> searchChats(String query, Pageable pageable) {
     if (query == null || query.isBlank()) {
       return adminChatRepository.findAllPaging(pageable); // 기존 전체 목록

@@ -20,5 +20,5 @@ public interface AdminMemberService {
   void updateMember(Long memberId, AdminMemberDTO dto);
 
   /** 멤버 탈퇴 */
-  void deleteMember(Long memberId);
+  void deActivateMember(Long memberId);
 }

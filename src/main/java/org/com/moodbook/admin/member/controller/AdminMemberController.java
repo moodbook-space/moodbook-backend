@@ -54,10 +54,10 @@ public class AdminMemberController {
     adminMemberService.updateMember(memberId, dto);
   }
 
-  /** 🔹 4. 유저 삭제 (탈퇴) **/
-  @DeleteMapping("/{memberId}")
-  public void deleteMember(@PathVariable Long memberId) {
-    adminMemberService.deleteMember(memberId);
+  /** 🔹 4. 유저 삭제 (soft delete) **/
+  @PutMapping("/delete/{memberId}")
+  public void deactivateMember(@PathVariable Long memberId) {
+    adminMemberService.deActivateMember(memberId);
   }
 
   /** 🔹 5. 이미지 S3 서버에 올리기 **/

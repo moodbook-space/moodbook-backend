@@ -30,5 +30,15 @@ public class AdminMainController {
     return "admin/member";
   }
 
+  @GetMapping("/book")
+  public String bookPage(){
+    return "admin/book";
+  }
+
+  @GetMapping("/book_add")
+  public String book_addPage(){
+   return "admin/book_add";
+  }
+
 
 }
