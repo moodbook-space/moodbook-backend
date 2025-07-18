@@ -35,6 +35,9 @@ public class BaseException extends RuntimeException {
     public static final BaseException REVIEW_FORBIDDEN = new BaseException(ErrorCode.REVIEW_FORBIDDEN);
     public static final BaseException REVIEW_NOT_FOUND = new BaseException(ErrorCode.REVIEW_NOT_FOUND);
 
+    public static final BaseException LEADER_NOT_FOUND = new BaseException(ErrorCode.LEADER_NOT_FOUND);
+    public static final BaseException NOTIFICATION_NOT_FOUND = new BaseException(ErrorCode.NOTIFICATION_NOT_FOUND);
+
     private final ErrorCode errorCode;
 
     // 의도적인 예외이므로 stack trace 제거 (불필요한 예외처리 비용 제거)

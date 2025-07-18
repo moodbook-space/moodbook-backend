@@ -55,6 +55,9 @@ public enum ErrorCode {
 
   REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_NOT_FOUND", "리뷰를 찾을 수 없습니다."),
 
+  NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTIFICATION_NOT_FOUND", "알림을 찾을 수 없습니다."),
+  LEADER_NOT_FOUND(HttpStatus.NOT_FOUND, "LEADER_NOT_FOUND", "채팅방 리더를 찾을 수 없습니다."),
+
   /* 500 - Internal Server Error */
   INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버에 오류가 발생했습니다."),
   AWSS3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3_UPLOAD_ERROR", "S3 사진 업로드에 실패했습니다"),
