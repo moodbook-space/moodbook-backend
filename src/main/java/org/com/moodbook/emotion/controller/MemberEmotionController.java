@@ -1,6 +1,8 @@
 package org.com.moodbook.emotion.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.com.moodbook.emotion.dto.MemberEmotionDTO;
@@ -23,7 +25,12 @@ public class MemberEmotionController {
   private final MemberEmotionService memberEmotionService;
 
   @PostMapping
-  @Operation(summary = "사용자에게 감정 추가", description = "사용자가 원래 가지고있던 감정 리스트를 모두 삭제하고, 새로 들어온 감정 리스트를 추가한다.")
+  @Operation(summary = "사용자에게 감정 추가",
+      description = "사용자가 원래 가지고있던 감정 리스트를 모두 삭제하고, 새로 들어온 감정 리스트를 추가한다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "감정 리스트 삭제 및 추가에 성공하였습니다."),
+      @ApiResponse(responseCode = "500", description = "감정 리스트 삭제 및 추가에 실패하였습니다.")
+  })
   public ResponseEntity<?> addEmotionsToMember(
       @AuthenticationPrincipal CustomMemberDetails customMemberDetails,
       @RequestBody MemberEmotionDTO request) {
@@ -34,6 +41,10 @@ public class MemberEmotionController {
 
   @GetMapping
   @Operation(summary = "사용자의 감정 가져오기", description = "토큰의 사용자 정보를 기반으로 기분 리스트를 불러온다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "토큰의 사용자 정보를 기반으로 기분 리스트를 불러왔습니다."),
+      @ApiResponse(responseCode = "500", description = "토큰의 사용자 정보를 기반으로 기분 리스트를 불러오는데 실패했습니다.")
+  })
   public ResponseEntity<?> getEmotions(
       @AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
     MemberEmotionDTO memberEmotionDTO = memberEmotionService.getEmotions(
