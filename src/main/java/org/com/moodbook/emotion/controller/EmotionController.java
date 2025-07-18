@@ -1,5 +1,9 @@
 package org.com.moodbook.emotion.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/emotion")
+@Tag(name = "EmotionController", description = "감정 분석을 다루기 위한 컨트롤러")
 public class EmotionController {
 
   private final EmotionAnalyzer emotionAnalyzer;
@@ -31,6 +36,11 @@ public class EmotionController {
   private final MongoTemplate mongoTemplate;
   private final BookService bookService;
 
+  @Operation(summary = "감정 분석 기능 제공하여 데이터 추가", description = "")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "감정 분석 "),
+      @ApiResponse(responseCode = "500", description = "")
+  })
   @PostMapping("/analyze")
   public Map<String, Integer> analyzeEmotion(@RequestBody Map<String, String> request) throws Exception {
 
@@ -42,7 +52,11 @@ public class EmotionController {
   }
 
 
-
+  @Operation(summary = "감정 저장", description = "")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "감정 저장에 성공하였습니다."),
+      @ApiResponse(responseCode = "500", description = "감정 저장에 실패하였습니다.")
+  })
   @PostMapping("/save")
   public ResponseEntity<BookEmotionScoreResponse> saveEmotion(
       @RequestBody BookEmotionScoreRequest request) throws Exception {
