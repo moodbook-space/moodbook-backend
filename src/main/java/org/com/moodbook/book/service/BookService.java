@@ -29,7 +29,11 @@ public interface BookService {
   /** 감정 별 책 추천 내림차순 **/
   List<BookEmotionRecommendAllResponse> getBooksByEmotionDesc(BookEmotionRecommendAllRequest request);
 
-  /** 책 전체 조회 **/
+  /** 감정 분석 후 책 전체 조회 **/
   List<BookEmotionAnalyzeResponse> getAllBooksForEmotionAnalyze();
+
+  /** 책 전체 조회 **/
+  Page<BookResponse> getAllBooks(Pageable pageable);
+
 
   }

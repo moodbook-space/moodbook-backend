@@ -213,6 +213,11 @@ public class BookServiceImpl implements BookService {
         .collect(Collectors.toList());
   }
 
+  @Override
+  @Transactional(readOnly = true)
+  public Page<BookResponse> getAllBooks(Pageable pageable) {
+    return bookRepository.findAllByCreatedAt(pageable);
+  }
 
 
 }

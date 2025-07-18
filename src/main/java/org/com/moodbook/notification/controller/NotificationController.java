@@ -1,5 +1,9 @@
 package org.com.moodbook.notification.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.com.moodbook.notification.dto.NotificationResponse;
@@ -22,12 +26,18 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/notification")
+@Tag(name = "NotificationController", description = "알림 기능에 대한 컨트롤러")
 @RestController
 public class NotificationController {
 
     private final NotificationService notificationService;
 
     /** 구독 확인 **/
+    @Operation(summary = "구독 확인", description = "SSE 연결을 위한 구독을 진행합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "SSE 구독에 성공하였습니다."),
+        @ApiResponse(responseCode = "500", description = "SSE 구독에 실패하였습니다.")
+    })
     @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> subscribe(@AuthenticationPrincipal CustomMemberDetails memberDetails,
         @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
@@ -35,6 +45,11 @@ public class NotificationController {
     }
 
     /** 사용자별 알림 조회 **/
+    @Operation(summary = "사용자별 알림 조회", description = "사용자별로 자신이 받은 알림을 조회합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "사용자별 알림 조회에 성공하였습니다."),
+        @ApiResponse(responseCode = "500", description = "사용자별 알림 조회에 실패하였습니다.")
+    })
     @GetMapping("/{memberId}")
     public ResponseEntity<List<NotificationResponse>> getNotifications(@PathVariable("memberId") Long memberId) {
         List<NotificationResponse> notifications = notificationService.getNotificationsByUserId(memberId);
@@ -42,6 +57,11 @@ public class NotificationController {
     }
 
     /** 사용자별 알림 수정 **/
+    @Operation(summary = "사용자별 알림 수정", description = "사용자별로 자신이 받은 알림에 대한 읽음 처리를 합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "사용자별 알림 수정에 성공하였습니다."),
+        @ApiResponse(responseCode = "500", description = "사용자별 알림 수정에 실패하였습니다.")
+    })
     @PatchMapping("/{notificationId}")
     public ResponseEntity<UpdateNotificationResponse> updateNotifications(
         @PathVariable("notificationId") Long notificationId,
@@ -53,6 +73,11 @@ public class NotificationController {
     }
 
     /** 사용자별 알림 삭제 **/
+    @Operation(summary = "사용자별 알림 삭제", description = "사용자별로 자신이 받은 알림을 삭제합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "사용자별 알림 삭제에 성공하였습니다."),
+        @ApiResponse(responseCode = "500", description = "사용자별 알림 삭제에 실패하였습니다.")
+    })
     @DeleteMapping("/{notificationId}")
     public ResponseEntity<NotificationResponse> deleteNotifications(
         @PathVariable("notificationId") Long notificationId,

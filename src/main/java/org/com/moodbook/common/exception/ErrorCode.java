@@ -21,7 +21,7 @@ public enum ErrorCode {
   INVALID_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", "잘못된 요청입니다."),
   INVALID_ACTION(HttpStatus.BAD_REQUEST, "INVALID_ACTION", "올바른 작업이 아닙니다."),
   ALREADY_IN_BOOKMARK(HttpStatus.BAD_REQUEST, "ALREADY_IN_BOOKMARK", "이미 북마크에 존재하는 도서입니다"),
-
+  ALREADY_VERIFIED(HttpStatus.BAD_REQUEST,"ALREADY_VERIFIED","이미 인증된 메일입니다"),
 
   /* 401 - Unauthorized */
   AUTHENTICATION_FAILED(HttpStatus.BAD_REQUEST, "AUTHENTICATION_FAILED", "인증에 실패했습니다."),
