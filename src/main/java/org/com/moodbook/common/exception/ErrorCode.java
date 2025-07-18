@@ -52,16 +52,16 @@ public enum ErrorCode {
   JOIN_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "JOIN_REQUEST_NOT_FOUND", "신청 요청을 찾을 수 없습니다."),
   COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "COMMENT_NOT_FOUND", "댓글을 찾을 수 없습니다."),
   POST_NOT_FOUND(HttpStatus.BAD_REQUEST, "POST_NOT_FOUND", "게시글을 찾을 수 없습니다."),
-
   REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_NOT_FOUND", "리뷰를 찾을 수 없습니다."),
-
   NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTIFICATION_NOT_FOUND", "알림을 찾을 수 없습니다."),
   LEADER_NOT_FOUND(HttpStatus.NOT_FOUND, "LEADER_NOT_FOUND", "채팅방 리더를 찾을 수 없습니다."),
+  AWSS3_NO_FILE(HttpStatus.BAD_REQUEST, "AWSS3_NO_FILE", "S3에 해당 파일이 없습니다."),
 
   /* 500 - Internal Server Error */
   INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버에 오류가 발생했습니다."),
-  AWSS3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3_UPLOAD_ERROR", "S3 사진 업로드에 실패했습니다"),
-  AWSS3_GET_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3_GET_ERROR", "S3에서 사진 조회에 실패했습니다.");
+  AWSS3_UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AWSS3_UNKNOWN_ERROR", "S3 연결 과정에서 에러가 발생했습니다"),
+  AWSS3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AWSS3_UPLOAD_ERROR", "S3 사진 업로드에 실패했습니다"),
+  AWSS3_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AWSS3_DELETE_ERROR", "S3에서 사진 삭제에 실패했습니다.");
 
   private final HttpStatus httpStatus;
   private final String code;
