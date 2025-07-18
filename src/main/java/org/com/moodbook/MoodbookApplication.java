@@ -9,9 +9,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableJpaAuditing
 public class MoodbookApplication {
-    // dev 브랜치 생성
-    public static void main(String[] args) {
-        SpringApplication.run(MoodbookApplication.class, args);
-    }
+
+  // dev 브랜치 생성
+  public static void main(String[] args) {
+    SpringApplication.run(MoodbookApplication.class, args);
+  }
 
 }

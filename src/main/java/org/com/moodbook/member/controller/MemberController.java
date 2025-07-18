@@ -1,5 +1,9 @@
 package org.com.moodbook.member.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.com.moodbook.member.dto.LoginResponseDTO;
 import org.com.moodbook.member.dto.MemberDTO;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
 @RestController
+@Tag(name = "MemberController", description = "로그인과 회원가입을 담당합니다.")
 @RequestMapping("/api/oauth")
 public class MemberController {
   private final MemberService memberService;
@@ -27,6 +32,11 @@ public class MemberController {
   /**
    * [POST] 임시 회원가입
    */
+  @Operation(summary = "임시 회원가입", description = "이메일 인증 이전의 회원가입을 진행합니다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "회원가입에 성공하였습니다."),
+      @ApiResponse(responseCode = "500", description = "회원가입에 실패하였습니다.")
+  })
   @PostMapping("/tempSignUp")
   public ResponseEntity<MemberDTO>  tempSignUp(@RequestBody MemberTempJoinDTO dto) {
 
@@ -37,6 +47,11 @@ public class MemberController {
   /**
    * [POST] 로그인
    */
+  @Operation(summary = "로그인", description = "로그인을 진행합니다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "로그인에 성공하였습니다."),
+      @ApiResponse(responseCode = "500", description = "로그인에 실패하였습니다.")
+  })
   @PostMapping("/login")
   public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginDto){
     //

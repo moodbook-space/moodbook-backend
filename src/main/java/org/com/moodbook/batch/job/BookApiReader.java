@@ -137,7 +137,7 @@ public class BookApiReader implements ItemReader<BatchBookResponse> {
         return pages;
     }
 
-    private List<BatchBookResponse> fetchBooksByKeywordAndPage(String keyword, int page,
+    public List<BatchBookResponse> fetchBooksByKeywordAndPage(String keyword, int page,
         Gson gson, Set<String> seenIsbn13) {
 
         List<BatchBookResponse> result = new ArrayList<>();

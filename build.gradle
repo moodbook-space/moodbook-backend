@@ -79,6 +79,9 @@ dependencies {
 
     // web-socket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    // elasticsearch
+    // implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 }
 
 // querydsl

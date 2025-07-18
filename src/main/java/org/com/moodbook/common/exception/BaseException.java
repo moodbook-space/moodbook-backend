@@ -31,9 +31,13 @@ public class BaseException extends RuntimeException {
     public static final BaseException BOOK_NOT_FOUND = new BaseException(ErrorCode.BOOK_NOT_FOUND);
     public static final BaseException ALREADY_IN_BOOKMARK = new BaseException(ErrorCode.ALREADY_IN_BOOKMARK);
     public static final BaseException BOOKMARK_NOT_FOUND = new BaseException(ErrorCode.BOOKMARK_NOT_FOUND);
+    public static final BaseException ALREADY_VERIFIED = new BaseException(ErrorCode.ALREADY_VERIFIED);
 
     public static final BaseException REVIEW_FORBIDDEN = new BaseException(ErrorCode.REVIEW_FORBIDDEN);
     public static final BaseException REVIEW_NOT_FOUND = new BaseException(ErrorCode.REVIEW_NOT_FOUND);
+
+    public static final BaseException LEADER_NOT_FOUND = new BaseException(ErrorCode.LEADER_NOT_FOUND);
+    public static final BaseException NOTIFICATION_NOT_FOUND = new BaseException(ErrorCode.NOTIFICATION_NOT_FOUND);
 
     private final ErrorCode errorCode;
 

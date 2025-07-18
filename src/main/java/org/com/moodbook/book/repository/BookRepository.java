@@ -40,7 +40,17 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     """)
   Page<BookResponse> findAllWithViewCount(Pageable pageable);
 
-  List<Book> findAllByOrderByReputationDesc();
+  @Query("""
+        SELECT new org.com.moodbook.book.dto.BookResponse(
+            b.id, b.isbn13, b.title, b.author, b.publisher, b.pubDate,
+            b.reputation, b.coverImage, b.description, b.categoryName,
+            b.createdAt, coalesce(bc.viewCount, 0)
+        )
+        FROM Book b
+        LEFT JOIN BookCount bc ON b.id = bc.book.id
+        ORDER BY b.pubDate DESC
+    """)
+  Page<BookResponse> findAllByCreatedAt(Pageable pageable);
 
   List<Book> findByIsbn13In(Collection<String> isbn13);
 

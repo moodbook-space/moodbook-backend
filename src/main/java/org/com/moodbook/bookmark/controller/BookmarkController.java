@@ -1,6 +1,8 @@
 package org.com.moodbook.bookmark.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +28,12 @@ public class BookmarkController {
 
   private final BookmarkServiceImpl bookmarkService;
 
-  @PostMapping("")
   @Operation(summary = "북마크에 추가하기", description = "요청한 유저에게 bookId에 해당하는 책을 추가해준다")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "북마크 추가에 성공하였습니다."),
+      @ApiResponse(responseCode = "500", description = "북마크 추가에 실패하였습니다.")
+  })
+  @PostMapping("")
   ResponseEntity<?> addBookmark(@RequestBody BookmarkRequestDTO request,
       @AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
     BookmarkResponseDTO bookmarkResponseDTO = bookmarkService.addBookmark(
@@ -35,8 +41,12 @@ public class BookmarkController {
     return ResponseEntity.ok(bookmarkResponseDTO);
   }
 
-  @GetMapping("")
   @Operation(summary = "북마크 목록 불러오기", description = "요청한 유저의 북마크 목록을 불러온다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "북마크 목록을 조회하였습니다."),
+      @ApiResponse(responseCode = "500", description = "북마크 목록 조회에 실패하였습니다.")
+  })
+  @GetMapping("")
   ResponseEntity<?> getBookmark(@AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
     List<BookmarkResponseDTO> bookmarks = bookmarkService.getBookmark(customMemberDetails.getId());
     if (bookmarks.isEmpty()) {
@@ -46,8 +56,12 @@ public class BookmarkController {
     return ResponseEntity.ok(bookmarks);
   }
 
-  @DeleteMapping("/{bookId}")
   @Operation(summary = "북마크에서 책 삭제하기", description = "북마크에서 Pathvariable에 지정된 책을 삭제한다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "북마크에서 책을 삭제하였습니다."),
+      @ApiResponse(responseCode = "500", description = "북마크에서 책을 삭제하지 못했습니다.")
+  })
+  @DeleteMapping("/{bookId}")
   ResponseEntity<?> deleteBookmark(@PathVariable Long bookId,
       @AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
     bookmarkService.deleteBookmark(bookId, customMemberDetails.getId());

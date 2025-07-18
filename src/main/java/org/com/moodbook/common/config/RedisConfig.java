@@ -10,17 +10,19 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class RedisConfig {
 
+  //redis 연결 팩토리 설정
   @Bean
   public RedisConnectionFactory redisConnectionFactory() {
     return new LettuceConnectionFactory(); // application.yml의 host/port를 따름
   }
 
+  //RedisTemplate 설정(Key,Value모두 String 기반)
   @Bean
   public RedisTemplate<String, String > redisTemplate() {
     RedisTemplate<String, String > redisTemplate = new RedisTemplate<>();
     redisTemplate.setConnectionFactory(redisConnectionFactory());
 
-    //문자열 기반 직렬화 설정(key,Value 모두)
+    //문자열 기반 직렬화 설정(key,Value 동일하게)
     redisTemplate.setKeySerializer(new StringRedisSerializer());
     redisTemplate.setValueSerializer(new StringRedisSerializer());
 

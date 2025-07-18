@@ -33,9 +33,15 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
 
                 .requestMatchers("/api/oauth/**").permitAll()
+                .requestMatchers("/api/chat-rooms/**").permitAll()
+                .requestMatchers("/chat-rooms/**").permitAll()
+                .requestMatchers("/api/notification/**").permitAll()
                 .requestMatchers(
+                    "/redis/test",
+                    "/email/**",
                     "/api/oauth/",
-                    "/admin/",
+                    "/admin/**",
+                    "/api/admin/**",
                     "/api/books/**",
                     "/api/recent-books/**",
                     "/api/reviews/**",
@@ -44,8 +50,8 @@ public class SecurityConfig {
                     "/swagger-ui.html",
                     "/chat.html",
                     "/main.html",
-                    "/images/",
-                    "/sounds/",
+                    "/images/**",
+                    "/sounds/**",
                     "/favicon.ico",
                     "/error",
                     "/emotion/**",
