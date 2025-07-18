@@ -29,5 +29,9 @@ public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMember, 
 
 
 
-
+  long countByChatRoom_IdAndStatus(Long chatRoomId, ChatRoomMemberStatus status);
 }
+
+
+
+
