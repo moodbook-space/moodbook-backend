@@ -7,8 +7,11 @@ import org.com.moodbook.member.dto.LoginRequestDTO;
 import org.com.moodbook.member.dto.MemberTempJoinDTO;
 import org.com.moodbook.member.service.MemberService;
 import org.com.moodbook.security.authentication.service.AuthenticationService;
+import org.com.moodbook.security.core.CustomMemberDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +45,12 @@ public class MemberController {
     return ResponseEntity.status(HttpStatus.OK).body(tokenResponse);
   }
 
+  @GetMapping("/me")
+  public ResponseEntity<MemberDTO> getMyInfo(@AuthenticationPrincipal CustomMemberDetails memberDetails) {
+    Long memberId = memberDetails.getId();
+    MemberDTO dto = memberService.getMyInfo(memberId);
+    return ResponseEntity.ok(dto);
+  }
 
 
 }
