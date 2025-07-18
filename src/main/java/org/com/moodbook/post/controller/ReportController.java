@@ -157,7 +157,7 @@ public class ReportController {
   /**
    * 내가 쓴 독후감을 조회하기 위한 엔드포인트 (마이페이지)
    */
-  @GetMapping("/api/reports/my")
+  @GetMapping("/my")
   @Operation(summary = "마이 페이지에서 독후감 조회",
       description = "마이 페이지에서 독후감을 조회합니다.")
   @ApiResponses({
