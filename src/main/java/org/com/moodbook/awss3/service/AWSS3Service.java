@@ -1,12 +1,13 @@
 package org.com.moodbook.awss3.service;
 
+import org.com.moodbook.awss3.dto.AWSS3DTO;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface AWSS3Service {
 
-  boolean doesObjectExist(String filename);
+  AWSS3DTO uploadFile(MultipartFile file);
 
-  String getFileUrl(String filename);
+  void deleteFile(AWSS3DTO awss3DTO);
 
-  String uploadFile(MultipartFile file);
+  void doesObjectExist(AWSS3DTO awss3DTO);
 }
