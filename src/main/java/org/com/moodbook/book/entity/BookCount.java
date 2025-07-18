@@ -41,4 +41,7 @@ public class BookCount {
         this.viewCount++;
     }
 
+    public void setBook(Book book) {
+        this.book = book;
+    }
 }
