@@ -70,14 +70,14 @@ public class ChatRoomController {
   }
 
   @PostMapping("/members/approve")
-  public ResponseEntity<Void> approveJoinChatRoom(
+  public ResponseEntity<ChatRoomMemberResponse> approveJoinChatRoom(
       @RequestBody ApproveJoinRequest request,
       @AuthenticationPrincipal CustomMemberDetails memberDetails
   ) {
     Long memberId = memberDetails.getId();
     request.setApproveId(memberId); // 세션에서 받아서 approveId에 주입
-    chatRoomService.approveJoinChatRoom(request);
-    return ResponseEntity.ok().build();
+    ChatRoomMemberResponse response = chatRoomService.approveJoinChatRoom(request);
+    return ResponseEntity.ok(response);
   }
 
 

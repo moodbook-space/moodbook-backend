@@ -23,8 +23,8 @@ public class EmotionInitializer {
     for (EmotionTag emotionTag : EmotionTag.values()) {
       if (!emotionRepository.existsByEmotion(emotionTag)) {
         emotionRepository.save(new Emotion(emotionTag));
+        log.info("{} 감정 태그에 추가됨", emotionTag);
       }
-      log.info("{} 감정 태그에 추가됨", emotionTag);
     }
   }
 
