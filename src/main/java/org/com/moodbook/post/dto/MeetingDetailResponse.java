@@ -28,4 +28,5 @@ public class MeetingDetailResponse {
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
   private boolean likedByMe;
+  private Long chatRoomId;
 }

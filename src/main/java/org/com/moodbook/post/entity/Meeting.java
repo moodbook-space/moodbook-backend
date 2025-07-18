@@ -39,7 +39,7 @@ public class Meeting extends BasePost {
   private String location;
 
 
-  @Column(name = "chat_room_id", length = 100)
-  private String chatRoomId;
+  @Column(name = "chat_room_id")
+  private Long chatRoomId;
 }
 
