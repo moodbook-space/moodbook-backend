@@ -117,7 +117,7 @@
     if(response.ok){
       const data = await response.json();
       // 예시) 토큰 저장 (선택)
-      // localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("accessToken", data.accessToken);
       window.location.href = "/chat-rooms"; // 성공시 이동!
     } else {
       const err = await response.json();
