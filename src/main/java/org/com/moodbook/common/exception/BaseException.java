@@ -26,8 +26,10 @@ public class BaseException extends RuntimeException {
     public static final BaseException EMOTION_NOT_FOUND = new BaseException(ErrorCode.EMOTION_NOT_FOUND);
     public static final BaseException CHATROOM_NOT_FOUND = new BaseException(ErrorCode.CHATROOM_NOT_FOUND);
     public static final BaseException INTERNAL_SERVER_ERROR = new BaseException(ErrorCode.INTERNAL_SERVER_ERROR);
+    public static final BaseException AWSS3_UNKNOWN_ERROR = new  BaseException(ErrorCode.AWSS3_UNKNOWN_ERROR);
     public static final BaseException AWSS3_UPLOAD_ERROR = new BaseException(ErrorCode.AWSS3_UPLOAD_ERROR);
-    public static final BaseException AWSS3_GET_ERROR = new BaseException(ErrorCode.AWSS3_GET_ERROR);
+    public static final BaseException AWSS3_NO_FILE = new BaseException(ErrorCode.AWSS3_NO_FILE);
+    public static final BaseException AWSS3_DELETE_ERROR = new BaseException(ErrorCode.AWSS3_DELETE_ERROR);
     public static final BaseException BOOK_NOT_FOUND = new BaseException(ErrorCode.BOOK_NOT_FOUND);
     public static final BaseException ALREADY_IN_BOOKMARK = new BaseException(ErrorCode.ALREADY_IN_BOOKMARK);
     public static final BaseException BOOKMARK_NOT_FOUND = new BaseException(ErrorCode.BOOKMARK_NOT_FOUND);
