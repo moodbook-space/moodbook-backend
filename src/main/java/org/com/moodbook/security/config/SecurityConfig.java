@@ -54,9 +54,11 @@ public class SecurityConfig {
                     "/api/emotion/**",
                     "/api/books/**",
                     "/login",
-                    "signup"
+                    "signup",
+                    "emotion-analyze"
                 ).permitAll()
-
+                .requestMatchers("/api/chat-rooms/**").authenticated()
+                .requestMatchers("/chat-rooms/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)//filter등록
