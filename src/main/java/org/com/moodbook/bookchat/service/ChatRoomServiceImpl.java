@@ -151,13 +151,13 @@ public class ChatRoomServiceImpl implements ChatRoomService {
   @Override
   @Transactional
   public void approveJoinChatRoom(ApproveJoinRequest request) {
-
     Long chatRoomMemberId = request.getChatRoomMemberId();
+    Long roomId = request.getRoomId();
     Long approveId = request.getApproveId();
     boolean approve = request.isApprove();
 
-    ChatRoomMember joinRequest = chatRoomMemberRepository.findById(chatRoomMemberId)
-        .orElseThrow(() -> new BaseException(ErrorCode.JOIN_REQUEST_NOT_FOUND));
+
+    ChatRoomMember joinRequest = chatRoomMemberRepository.findByChatRoomIdAndMemberId(roomId, chatRoomMemberId);
 
     ChatRoom chatRoom = joinRequest.getChatRoom();
     Member owner = chatRoom.getOwner();
@@ -169,12 +169,12 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     if (approve) {
       joinRequest.setStatus(ChatRoomMemberStatus.APPROVED);
       joinRequest.setRole(ChatRoomMemberRole.MEMBER);
+      chatRoomMemberRepository.save(joinRequest);
     } else {
       joinRequest.setStatus(ChatRoomMemberStatus.REJECTED);
       joinRequest.setRole(ChatRoomMemberRole.REJECTED);
+      chatRoomMemberRepository.save(joinRequest);
     }
-
-    chatRoomMemberRepository.save(joinRequest);
   }
 
 
