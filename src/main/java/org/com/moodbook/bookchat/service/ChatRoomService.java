@@ -29,7 +29,7 @@ public interface ChatRoomService {
   ChatRoomMemberResponse requestJoinChatRoom(Long roomId, Long memberId);
 
   // 방장 : 입장 승인/거절
-  void approveJoinChatRoom(ApproveJoinRequest request);
+  ChatRoomMemberResponse approveJoinChatRoom(ApproveJoinRequest request);
 
   // 방 내 멤버/대기자 리스트 조회 (상태별 채팅 멤버 조회)
   List<ChatRoomMemberResponse> getMembers(Long roomId, ChatRoomMemberStatus status);

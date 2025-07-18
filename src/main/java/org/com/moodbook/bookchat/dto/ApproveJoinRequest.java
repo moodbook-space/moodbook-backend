@@ -1,12 +1,12 @@
 package org.com.moodbook.bookchat.dto;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
+@Data
 public class ApproveJoinRequest {
 
-  @Setter
   private Long approveId;
   private Long chatRoomMemberId;
   private boolean approve;

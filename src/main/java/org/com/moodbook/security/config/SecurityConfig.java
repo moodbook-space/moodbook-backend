@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/oauth/**").permitAll()
                 .requestMatchers("/api/chat-rooms/**").permitAll()
                 .requestMatchers("/chat-rooms/**").permitAll()
+                .requestMatchers("/api/notification/**").permitAll()
                 .requestMatchers(
                     "/api/oauth/",
                     "/admin/",
