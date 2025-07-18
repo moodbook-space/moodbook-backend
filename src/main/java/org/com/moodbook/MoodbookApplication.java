@@ -9,10 +9,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 @EnableJpaAuditing
-@EnableElasticsearchRepositories(basePackages = {
-    "org.com.moodbook.post.search",
-    "org.com.moodbook.book.search"
-})
 public class MoodbookApplication {
 
   // dev 브랜치 생성
