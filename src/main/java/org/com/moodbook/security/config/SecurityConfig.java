@@ -33,8 +33,6 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
 
                 .requestMatchers("/api/oauth/**").permitAll()
-                .requestMatchers("/api/chat-rooms/**").permitAll()
-                .requestMatchers("/chat-rooms/**").permitAll()
                 .requestMatchers(
                     "/api/oauth/",
                     "/admin/",
@@ -54,8 +52,7 @@ public class SecurityConfig {
                     "/api/emotion/**",
                     "/api/books/**",
                     "/login",
-                    "signup",
-                    "emotion-analyze"
+                    "/signup"
                 ).permitAll()
                 .requestMatchers("/api/chat-rooms/**").authenticated()
                 .requestMatchers("/chat-rooms/**").authenticated()
