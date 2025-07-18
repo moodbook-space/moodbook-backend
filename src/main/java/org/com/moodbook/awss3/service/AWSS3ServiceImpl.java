@@ -3,12 +3,14 @@ package org.com.moodbook.awss3.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.com.moodbook.awss3.dto.AWSS3DTO;
 import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.common.util.AWSS3Uploader;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @Service
 @Slf4j
@@ -25,37 +27,37 @@ public class AWSS3ServiceImpl implements AWSS3Service {
    * @return 업로드된 파일의 S3 URL
    */
   @Override
-  public String uploadFile(MultipartFile file) {
-    return awsS3Uploader.upload(file);
+  public AWSS3DTO uploadFile(MultipartFile file) {
+    return AWSS3DTO.of(awsS3Uploader.upload(file));
   }
 
-  /**
-   * S3에 해당 파일이 존재하는지 확인
-   * @param filename 확인할 파일 이름 (Key)
-   * @return 존재 여부(bool)
-   */
+  /** S3에서 파일을 삭제한다. */
   @Override
-  public boolean doesObjectExist(String filename) {
+  public void deleteFile(AWSS3DTO awss3DTO) {
+
+    // 일단 파일이 있는지 확인한다.
+    doesObjectExist(awss3DTO);
+
+    // 그리고 삭제를 수행
+    awsS3Uploader.delete(awss3DTO.getUrl());
+  }
+
+  @Override
+  // 파일이 존재하는지 확인한다. 파일이 없으면 알아서 에러 던지게 됨
+  public void doesObjectExist(AWSS3DTO awss3DTO) {
     try {
       HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
           .bucket("${aws.s3.bucketName}")
-          .key(filename)
+          .key(awss3DTO.getUrl())
           .build();
       s3Client.headObject(headObjectRequest);
-      return true;
 
-    } catch (Exception e) {
-      throw BaseException.AWSS3_GET_ERROR;
+    } catch (S3Exception e) {
+       // 404에러는 파일이 없을 경우를 나타냄
+       if (e.statusCode() == 404)
+         throw BaseException.AWSS3_NO_FILE;
+    } catch (Exception e) { // 이외에는 그냥 에러
+      throw BaseException.INTERNAL_SERVER_ERROR;
     }
-  }
-
-  /**
-   * S3에서 파일명 기반으로 public URL 가져오기
-   * @param filename 가져올 파일 이름
-   * @return S3 URL
-   */
-  @Override
-  public String getFileUrl(String filename) {
-    return String.format("https://%s.s3.%s.amazonaws.com/%s", "${cloud.aws.s3.bucketName}", "${cloud.aws.region.static}", filename);
   }
 }
