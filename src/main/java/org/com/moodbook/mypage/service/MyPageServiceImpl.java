@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.com.moodbook.awss3.dto.AWSS3DTO;
 import org.com.moodbook.awss3.service.AWSS3Service;
 import org.com.moodbook.common.exception.BaseException;
-import org.com.moodbook.emotion.repository.MemberEmotionRepository;
 import org.com.moodbook.member.entity.Member;
 import org.com.moodbook.member.entity.MemberProfile;
 import org.com.moodbook.member.repository.MemberRepository;
@@ -19,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 public class MyPageServiceImpl implements MyPageService {
 
-  private final MemberEmotionRepository memberEmotionRepository;
   private final MemberRepository memberRepository;
   private final AWSS3Service awsS3Service;
 
@@ -32,9 +30,8 @@ public class MyPageServiceImpl implements MyPageService {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> BaseException.MEMBER_NOT_FOUND);
 
-    // 멤버 기반으로 memberProfile, 그 멤버가 가진 감정들 불러와서 넣어주기
-    return MyPageResponse.of(member.getMemberProfile(),
-        memberEmotionRepository.findAllEmotionByMemberId(memberId));
+    // 멤버 기반으로 memberProfile 가져와서 필요한 정보 채우기
+    return MyPageResponse.of(member.getMemberProfile());
   }
 
   // 닉네임 업데이트에 사용해야 할 함수
@@ -49,8 +46,7 @@ public class MyPageServiceImpl implements MyPageService {
     member.getMemberProfile().setNickname(updateNicknameDTO.getNickname());
 
     // 완료된 결과 반환
-    return MyPageResponse.of(member.getMemberProfile(),
-        memberEmotionRepository.findAllEmotionByMemberId(memberId));
+    return MyPageResponse.of(member.getMemberProfile());
   }
 
   @Override
@@ -70,7 +66,6 @@ public class MyPageServiceImpl implements MyPageService {
     memberProfile.setMyImage(awsS3Service.uploadFile(image).getUrl());
 
     // 결과 반환하기
-    return MyPageResponse.of(memberProfile,
-        memberEmotionRepository.findAllEmotionByMemberId(memberId));
+    return MyPageResponse.of(memberProfile);
   }
 }
