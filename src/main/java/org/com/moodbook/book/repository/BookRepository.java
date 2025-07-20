@@ -7,6 +7,7 @@ import org.com.moodbook.book.dto.BookResponse;
 import org.com.moodbook.book.entity.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -52,6 +53,12 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     """)
   Page<BookResponse> findAllByCreatedAt(Pageable pageable);
 
+  /* N + 1 문제 처리 */
+  @EntityGraph(attributePaths = "bookCount")
   List<Book> findByIsbn13In(Collection<String> isbn13);
+
+  /* N + 1 문제 처리 */
+  @Query("SELECT b FROM Book b LEFT JOIN FETCH b.bookCount")
+  List<Book> findAllBooks();
 
 }
