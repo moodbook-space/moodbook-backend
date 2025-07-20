@@ -94,7 +94,7 @@ public class NotificationService {
 
     /** 사용자별 알림 조회 **/
     @Transactional(readOnly = true)
-    public List<NotificationResponse> getNotificationsByUserId(Long memberId) {
+    public List<NotificationResponse> getNotificationsByMemberId(Long memberId) {
         List<Notifications> notifications = notificationRepository.findByMemberIdOrderByCreatedAtDesc(memberId);
         return notifications.stream().map(NotificationResponse::fromEntity).toList();
     }
@@ -134,7 +134,7 @@ public class NotificationService {
 
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllEmitterStartWithByUsername(member.getEmail());
 
-        System.out.println(sseEmitters);
+        log.info(sseEmitters.toString());
 
         NotificationResponse notificationResponse = NotificationResponse.fromEntity(notifications);
 
