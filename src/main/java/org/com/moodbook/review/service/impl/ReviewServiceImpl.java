@@ -51,10 +51,14 @@ public class ReviewServiceImpl implements ReviewService {
      * 리뷰 조회
      */
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<ReviewResponse> getReviewsByBookId(Long bookId, Pageable pageable) {
-        return reviewRepository.findByBookId(bookId, pageable)
-            .map(ReviewResponse::fromEntity);
+        if (bookId == null) {
+            throw new BaseException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        Page<Review> reviews = reviewRepository.findByBookId(bookId, pageable);
+        return reviews.map(ReviewResponse::fromEntity);
     }
 
     /**
