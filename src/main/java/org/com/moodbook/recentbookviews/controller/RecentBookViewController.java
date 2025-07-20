@@ -9,7 +9,7 @@ import org.com.moodbook.recentbookviews.service.RecentBookViewService;
 import org.com.moodbook.security.core.CustomMemberDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,7 +29,7 @@ public class RecentBookViewController {
     @Operation(summary = "최근에 본 도서 조회")
     public ResponseEntity<ApiResponse<Page<RecentBookViewResponse>>> getRecentBooks(
         @AuthenticationPrincipal CustomMemberDetails memberDetails,
-        @PageableDefault(size = 5, page = 0, direction = Direction.DESC) Pageable pageable) {
+        @PageableDefault(size = 5, sort = "viewedAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Long memberId = memberDetails.getId();
         Page<RecentBookViewResponse> recentBooks =
             recentBookViewService.getRecentBookViews(memberId, pageable);
