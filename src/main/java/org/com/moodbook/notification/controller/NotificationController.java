@@ -52,7 +52,7 @@ public class NotificationController {
     })
     @GetMapping("/{memberId}")
     public ResponseEntity<List<NotificationResponse>> getNotifications(@PathVariable("memberId") Long memberId) {
-        List<NotificationResponse> notifications = notificationService.getNotificationsByUserId(memberId);
+        List<NotificationResponse> notifications = notificationService.getNotificationsByMemberId(memberId);
         return ResponseEntity.ok(notifications);
     }
 
