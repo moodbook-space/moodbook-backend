@@ -12,6 +12,8 @@ public interface RecentBookViewRepository extends JpaRepository<RecentBookView, 
 
     Optional<RecentBookView> findByMemberIdAndBookId(Long userId, Long bookId);
 
-    Page<RecentBookView> findByMemberId(Long memberId, Pageable pageable);
+//    Page<RecentBookView> findByMemberId(Long memberId, Pageable pageable);
+
+//    Page<RecentBookView> findRecentViewsWithBookByMemberId(Long memberId, Pageable pageable);
 
 }
