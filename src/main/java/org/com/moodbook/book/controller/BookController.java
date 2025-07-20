@@ -60,7 +60,7 @@ public class BookController {
     })
     @GetMapping("")
     public ResponseEntity<Page<BookResponse>> getBooks(
-        @PageableDefault(size = 10, page = 0) Pageable pageable
+        @PageableDefault(size = 100, page = 0) Pageable pageable
     ) {
         Page<BookResponse> books = bookService.getAllBooks(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(books);

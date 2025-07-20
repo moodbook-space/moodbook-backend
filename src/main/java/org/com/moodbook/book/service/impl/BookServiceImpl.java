@@ -21,6 +21,7 @@ import org.com.moodbook.book.entity.Book;
 import org.com.moodbook.book.entity.BookCount;
 
 import org.com.moodbook.book.entity.QBook;
+import org.com.moodbook.book.entity.QBookCount;
 import org.com.moodbook.book.repository.BookCountRepository;
 import org.com.moodbook.book.repository.BookRepository;
 import org.com.moodbook.book.service.BookService;
@@ -65,6 +66,7 @@ public class BookServiceImpl implements BookService {
 
     List<Book> content = queryFactory
         .selectFrom(book)
+        .leftJoin(book.bookCount).fetchJoin()
         .orderBy(
             book.reputation.desc().nullsLast(),         // 1차 정렬: 평점
             book.createdAt.desc()                       // 2차 정렬: 생성일
@@ -127,9 +129,6 @@ public class BookServiceImpl implements BookService {
     int limit = 10;
     String emotionTag = request.getEmotionTag();
 
-    System.out.println("emotionTag: " + emotionTag);
-    System.out.println("Aggregation 조건: " + Criteria.where("scores." + emotionTag).gte(minScore).lte(maxScore));
-
     Aggregation agg = Aggregation.newAggregation(
         Aggregation.match(Criteria.where("scores." + emotionTag).gte(minScore).lte(maxScore)),
         Aggregation.sample(limit)
@@ -138,25 +137,13 @@ public class BookServiceImpl implements BookService {
     List<BookEmotionScore> emotionScores =
         mongoTemplate.aggregate(agg, "emotion_scores", BookEmotionScore.class).getMappedResults();
 
-    System.out.println("emotionScores.size(): " + emotionScores.size());
-    for (BookEmotionScore bes : emotionScores) {
-      System.out.println("BookEmotionScore: " + bes.getBookTitle() + ", isbn13: " + bes.getIsbn13() + ", score: " + bes.getScores().get(emotionTag));
-    }
-
     List<String> isbn13List = emotionScores.stream()
         .map(BookEmotionScore::getIsbn13)
         .filter(Objects::nonNull)
         .distinct()
         .collect(Collectors.toList());
 
-    System.out.println("isbn13List: " + isbn13List);
-
     List<Book> books = bookRepository.findByIsbn13In(isbn13List);
-
-    System.out.println("books.size(): " + books.size());
-    for (Book b : books) {
-      System.out.println("Book: " + b.getTitle() + ", isbn13: " + b.getIsbn13());
-    }
 
     return books.stream()
         .map(BookEmotionRecommendResponse::from)
@@ -208,7 +195,7 @@ public class BookServiceImpl implements BookService {
   // 분석을 위한 책에 관련된 책 소개 전체 조회
   public List<BookEmotionAnalyzeResponse> getAllBooksForEmotionAnalyze() {
 
-    return bookRepository.findAll().stream()
+    return bookRepository.findAllBooks().stream()
         .map(BookEmotionAnalyzeResponse::from)
         .collect(Collectors.toList());
   }
