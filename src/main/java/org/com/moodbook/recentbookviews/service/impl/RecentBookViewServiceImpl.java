@@ -1,11 +1,13 @@
 package org.com.moodbook.recentbookviews.service.impl;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.common.exception.ErrorCode;
 import org.com.moodbook.recentbookviews.dto.RecentBookViewResponse;
 import org.com.moodbook.recentbookviews.entity.RecentBookView;
+import org.com.moodbook.recentbookviews.repository.RecentBookViewQueryRepository;
 import org.com.moodbook.recentbookviews.repository.RecentBookViewRepository;
 import org.com.moodbook.recentbookviews.service.RecentBookViewService;
 import org.springframework.dao.DataAccessException;
@@ -19,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class RecentBookViewServiceImpl implements RecentBookViewService {
 
-    private final RecentBookViewRepository recentBookViewRepository;
+    private final RecentBookViewQueryRepository recentBookViewQueryRepository;
 
     /**
      * 회원별 최근 조회한 책 확인
@@ -32,8 +34,8 @@ public class RecentBookViewServiceImpl implements RecentBookViewService {
         }
 
         try {
-            Page<RecentBookView> recentViews = recentBookViewRepository.findByMemberId(memberId,
-                pageable);
+            Page<RecentBookView> recentViews =
+                recentBookViewQueryRepository.findRecentViewsWithBookByMemberId(memberId, pageable);
             return recentViews.map(RecentBookViewResponse::fromEntity);
         } catch (DataAccessException e) {
             log.error("데이터베이스 접근 중 오류 발생: {}", e.getMessage(), e);
