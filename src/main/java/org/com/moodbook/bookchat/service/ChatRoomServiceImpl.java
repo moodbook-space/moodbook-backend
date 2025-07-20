@@ -165,8 +165,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         Long approveId = request.getApproveId();
         boolean approve = request.isApprove();
 
-        ChatRoomMember joinRequest = chatRoomMemberRepository.findByChatRoomIdAndMemberId(roomId,
-            chatRoomMemberId);
+        // 1. ID로 직접 조회
+        ChatRoomMember joinRequest = chatRoomMemberRepository.findById(chatRoomMemberId)
+            .orElseThrow(() -> new BaseException(ErrorCode.JOIN_REQUEST_NOT_FOUND));
 
         ChatRoom chatRoom = joinRequest.getChatRoom();
         Member owner = chatRoom.getOwner();
