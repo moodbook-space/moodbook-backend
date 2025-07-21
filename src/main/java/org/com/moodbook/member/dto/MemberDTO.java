@@ -20,10 +20,10 @@ public class MemberDTO {
   private String email;
   private String password;
   private String name;
-  private Role role;
+  private String role;
   private String contact;
   private boolean emailVerified;
-  private MemberStatus status;
+  private String status;
 
 
   public Member toEntity() {
@@ -32,9 +32,9 @@ public class MemberDTO {
         .email(email)
         .password(password)
         .name(name)
-        .role(role)
+        .role(Enum.valueOf(Role.class, role))
         .contact(contact)
-        .status(status)
+        .status(Enum.valueOf(MemberStatus.class, status))
         .emailVerified(emailVerified)
         .build();
   }
@@ -45,9 +45,9 @@ public class MemberDTO {
         .email(entity.getEmail())
         .password(entity.getPassword())
         .name(entity.getName())
-        .role(entity.getRole())
+        .role(entity.getRole().name())
         .contact(entity.getContact())
-        .status(entity.getStatus())
+        .status(entity.getStatus().name())
         .emailVerified(entity.isEmailVerified())
         .build();
   }
