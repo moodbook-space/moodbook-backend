@@ -7,13 +7,19 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.com.moodbook.common.exception.BaseException;
+import org.com.moodbook.common.exception.ErrorCode;
 import org.com.moodbook.security.core.CustomMemberDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value.Str;
 
 @Component
 @RequiredArgsConstructor
@@ -92,6 +98,46 @@ public class JwtTokenProvider {
       return false;
     }
   }
+
+
+  //  토큰에서 Claims를 추출
+  private Claims parseClaims(String token) {
+    try {
+      return Jwts.parserBuilder()
+          .setSigningKey(secretKey)
+          .build()
+          .parseClaimsJws(token)
+          .getBody();
+    }catch (ExpiredJwtException e) {
+      return e.getClaims();
+    }
+
+  }
+  // AccessToken 남은 만료 시간 계산
+  public long getAccessTokenRemainingTime(String token) {
+    Claims claims = parseClaims(token);
+    Date expiration = claims.getExpiration();
+    return expiration.getTime() - new Date().getTime();
+  }
+  // 저장되어 있는 token 추출 메서드
+  public String getCurrentToken(){
+    ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+    if(attributes == null) {
+      throw new BaseException(ErrorCode.ACCESS_TOKEN_NOT_FOUND);
+    }
+
+    HttpServletRequest request = attributes.getRequest();
+    String bearerToken = request.getHeader("Authorization");//헤더에서 추출
+
+    // "Bearer " 로 시작하면 실제 토큰만 잘라서 반환
+    if(bearerToken != null && bearerToken.startsWith("Bearer ")) {
+      return bearerToken.substring(7);// "Bearer " 이후의 토큰 반환
+    }
+    throw new BaseException(ErrorCode.ACCESS_TOKEN_NOT_FOUND);
+    }
+
+
+
 
 
 }
