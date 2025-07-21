@@ -9,6 +9,7 @@ import org.com.moodbook.mypage.dto.UpdateNicknameDTO;
 import org.com.moodbook.mypage.service.MyPageService;
 import org.com.moodbook.security.core.CustomMemberDetails;
 import org.com.moodbook.security.core.CustomUserDetailsService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,7 +48,7 @@ public class MyPageController {
 
     MyPageResponse myPageResponse = myPageService.updateMyPageInfo(customMemberDetails.getId(),
         updateNicknameDTO);
-    return ResponseEntity.ok(myPageResponse);
+    return ResponseEntity.status(HttpStatus.OK).body(myPageResponse);
   }
 
   @PatchMapping("/image")
@@ -56,6 +57,8 @@ public class MyPageController {
       @RequestParam("image") MultipartFile image,
       @AuthenticationPrincipal CustomMemberDetails memberDetails) {
 
-    return ResponseEntity.ok(myPageService.updateMyImage(memberDetails.getId(), image));
+    MyPageResponse response = myPageService.updateMyImage(memberDetails.getId(), image);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+
   }
 }
