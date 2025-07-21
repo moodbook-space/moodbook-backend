@@ -5,7 +5,7 @@ FROM openjdk:17-jdk
 WORKDIR /app
 
 # jar파일 등 빌드 결과물을 컨테이너에 복사 (호스트 -> 컨테이너)
-COPY build/libs/moodbook-0.0.1-SNAPSHOT.jar /app/moodbook-0.0.1-SNAPSHOT.jar
+COPY app.jar /app/app.jar
 
 # 컨테이너 실행시 기본으로 실행할 명령
-CMD ["sh", "-c", "java -jar /app/moodbook-0.0.1-SNAPSHOT.jar --spring.profiles.active=${SPRING_PROFILES_ACTIVE}"]
+CMD ["sh", "-c", "java -jar /app/app.jar --spring.profiles.active=${SPRING_PROFILES_ACTIVE}"]
