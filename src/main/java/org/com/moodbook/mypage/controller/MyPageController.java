@@ -1,6 +1,7 @@
 package org.com.moodbook.mypage.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.com.moodbook.mypage.dto.MyPageResponse;
@@ -30,7 +31,8 @@ public class MyPageController {
   // 북마크 리스트 가져오기
   @GetMapping("/profile")
   @Operation(summary = "프로필 출력에 필요한 정보 수집", description = "닉네임, 프로필사진, 기분 리스트를 전달한다.")
-  public ResponseEntity<?> getMyPageInfo(
+  @ApiResponses()
+  public ResponseEntity<MyPageResponse> getMyPageInfo(
       @AuthenticationPrincipal CustomMemberDetails memberDetails) {
 
     MyPageResponse myPageResponse = myPageService.getMyPageInfo(memberDetails.getId());
@@ -39,7 +41,7 @@ public class MyPageController {
 
   @PatchMapping("/profile")
   @Operation(summary = "닉네임 변경", description = "닉네임 변경 시에 호출되는 api")
-  public ResponseEntity<?> updateMyPageInfo(
+  public ResponseEntity<MyPageResponse> updateMyPageInfo(
       @RequestBody UpdateNicknameDTO updateNicknameDTO,
       @AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
 
@@ -50,7 +52,7 @@ public class MyPageController {
 
   @PatchMapping("/image")
   @Operation(summary = "프로필 사진 변경", description = "프로필 사진 변경 시에 호출되는 api, 데이터 전송 시에 multipart/form-data로 전송해야 함")
-  public ResponseEntity<?> updateMyImage(
+  public ResponseEntity<MyPageResponse> updateMyImage(
       @RequestParam("image") MultipartFile image,
       @AuthenticationPrincipal CustomMemberDetails memberDetails) {
 
