@@ -12,7 +12,7 @@ spring:
             enable: true
 
   profiles:
-    default: local  # 기본 실행 프로필 지정
+    default: prod  # 기본 실행 프로필 지정
 
 server:
   port: 8080
