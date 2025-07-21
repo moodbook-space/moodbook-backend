@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/notification/**").permitAll()
                 .requestMatchers(
                     "/redis/test",
-                    "/email/**",
+                    "/auth/**",
                     "/api/oauth/",
                     "/admin/**",
                     "/api/admin/**",
@@ -58,7 +58,7 @@ public class SecurityConfig {
                     "/api/emotion/**",
                     "/api/books/**",
                     "/login",
-                    "/signup"
+                    "/signUp"
                 ).permitAll()
                 .requestMatchers("/api/chat-rooms/**").authenticated()
                 .requestMatchers("/chat-rooms/**").authenticated()

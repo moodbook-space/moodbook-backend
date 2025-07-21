@@ -5,6 +5,7 @@ import static org.com.moodbook.common.exception.ErrorCode.EMAIL_NOT_VERIFIED;
 import static org.com.moodbook.common.exception.ErrorCode.INVALID_PASSWORD;
 import static org.com.moodbook.common.exception.ErrorCode.MEMBER_DEACTIVATED;
 
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.com.moodbook.common.constants.Gender;
 import org.com.moodbook.common.constants.MemberStatus;
@@ -18,10 +19,12 @@ import org.com.moodbook.member.dto.MemberTempJoinDTO;
 import org.com.moodbook.member.entity.Member;
 import org.com.moodbook.member.entity.MemberProfile;
 import org.com.moodbook.member.repository.MemberRepository;
+import org.com.moodbook.security.authentication.repository.AuthenticationRepository;
 import org.com.moodbook.security.authentication.service.AuthenticationService;
 import org.com.moodbook.security.authentication.service.EmailAuthenticationService;
 import org.com.moodbook.security.jwt.JwtProperties;
 import org.com.moodbook.security.jwt.JwtTokenProvider;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,12 +42,14 @@ public class MemberServiceImpl implements MemberService {
   private final JwtProperties jwtProperties;
   private final AuthenticationService authenticationService;
   private final EmailAuthenticationService emailAuthenticationService;
+  private final AuthenticationRepository authenticationRepository;
+  private final RedisTemplate<String, String> redisTemplate;
 
   //임시 회원가입 진행
   @Override
   @Transactional
   public MemberDTO tempjoin(
-       MemberTempJoinDTO dto) {
+      MemberTempJoinDTO dto) {
 
     if (memberRepository.existsByEmail(dto.getEmail())) {
       throw new BaseException(ErrorCode.ALREADY_EXIST_EMAIL);
@@ -56,7 +61,6 @@ public class MemberServiceImpl implements MemberService {
     Role role = Role.valueOf(dto.getRole());
     Gender gender = Gender.valueOf(dto.getGender());
     MemberStatus status = MemberStatus.valueOf(dto.getStatus());
-
 
     Member member = Member.builder()
         .email(dto.getEmail())
@@ -118,6 +122,41 @@ public class MemberServiceImpl implements MemberService {
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
     return MemberDTO.toDto(member);
+  }
+
+
+  @Override
+  public void logout(Long requesterId, Long targetId) {
+
+    Member requester = memberRepository.findById(requesterId)
+        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+
+    // 요청자가 본인이 아닌데 관리자가 아니라면 예외 처리
+    if (!requesterId.equals(targetId) && requester.getRole() != Role.ADMIN) {
+      throw new BaseException(ErrorCode.UNAUTHORIZED_ACCESS);
+    }
+
+    //대상 사용자가 실제 존재하는지 확인
+    Member target = memberRepository.findById(targetId)
+        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+
+    //인증 정보 삭제(로그 아웃)->authentication에 저장 된 refresh토큰 삭제
+    authenticationRepository.deleteByMember_Id(targetId);
+
+    //요청 헤더에서 현재 AccessToken추출
+    String accessToken = jwtTokenProvider.getCurrentToken();
+
+    //토큰 만료 시간 계산
+    long remainingTime = jwtTokenProvider.getAccessTokenRemainingTime(accessToken);
+
+    //블랙리스트 저장 (남은 시간만큼 유효하게)
+    redisTemplate.opsForValue().set(
+        "access-token-blacklist:" + accessToken,
+        "logout",
+        Duration.ofMillis(remainingTime)
+    );
+
+
   }
 
 

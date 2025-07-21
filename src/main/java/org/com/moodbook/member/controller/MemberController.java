@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "MemberController", description = "로그인과 회원가입을 담당합니다.")
 @RequestMapping("/api/oauth")
 public class MemberController {
+
   private final MemberService memberService;
   private final AuthenticationService authenticationService;
 
@@ -38,7 +40,7 @@ public class MemberController {
       @ApiResponse(responseCode = "500", description = "회원가입에 실패하였습니다.")
   })
   @PostMapping("/tempSignUp")
-  public ResponseEntity<MemberDTO>  tempSignUp(@RequestBody MemberTempJoinDTO dto) {
+  public ResponseEntity<MemberDTO> tempSignUp(@RequestBody MemberTempJoinDTO dto) {
 
     MemberDTO result = memberService.tempjoin(dto);
     return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -53,18 +55,50 @@ public class MemberController {
       @ApiResponse(responseCode = "500", description = "로그인에 실패하였습니다.")
   })
   @PostMapping("/login")
-  public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginDto){
+  public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginDto) {
     //
-     LoginResponseDTO tokenResponse = memberService.login(loginDto);
+    LoginResponseDTO tokenResponse = memberService.login(loginDto);
 
     return ResponseEntity.status(HttpStatus.OK).body(tokenResponse);
   }
 
+
+  /**
+   * 로그아웃 (본인 or 관리자)
+   *
+   * @param memberDetails 현재 로그인한 사용자 정보
+   * @param targetId      로그아웃 대상 ID (선택)
+   */
+  //로그 아웃
+  @Operation(summary = "로그아웃", description = "회원 본인 또는 관리자가 특정 사용자를 로그아웃함")
+  @ApiResponses({
+      @ApiResponse(responseCode = "204", description = "로그 아웃 성공"),
+      @ApiResponse(responseCode = "403", description = "권한이 없습니다"),
+      @ApiResponse(responseCode = "404", description = "사용자가 존재하지 않습니다")
+  })
+  @PostMapping("/logout/{targetId}")
+  public ResponseEntity<String> logout(
+      @AuthenticationPrincipal CustomMemberDetails memberDetails,
+      @PathVariable("targetId") Long targetId) {
+    Long requestId = memberDetails.getId();//로그인한 사용자 아이디
+    Long logoutId = (targetId != null) ? targetId : requestId;
+
+    memberService.logout(requestId, logoutId);
+
+    return ResponseEntity.status(HttpStatus.OK).body("로그아웃 되었습니다");
+  }
+
+  @Operation(summary = "멤버 아이디 조회", description = "")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "조회에 성공했습니다."),
+      @ApiResponse(responseCode = "403", description = "권한이 없습니다")
+  })
   @GetMapping("/me")
-  public ResponseEntity<MemberDTO> getMyInfo(@AuthenticationPrincipal CustomMemberDetails memberDetails) {
+  public ResponseEntity<MemberDTO> getMyInfo(
+      @AuthenticationPrincipal CustomMemberDetails memberDetails) {
     Long memberId = memberDetails.getId();
     MemberDTO dto = memberService.getMyInfo(memberId);
-    return ResponseEntity.ok(dto);
+    return ResponseEntity.status(HttpStatus.OK).body(dto);
   }
 
 

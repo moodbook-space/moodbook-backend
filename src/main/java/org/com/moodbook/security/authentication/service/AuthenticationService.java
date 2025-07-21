@@ -7,5 +7,7 @@ import org.com.moodbook.member.entity.Member;
 public interface AuthenticationService {
 
   LoginResponseDTO issueTokenAndStore(MemberDTO memberDTO);
+  String reIssueAccessToken(String refreshToken);
+
 
 }

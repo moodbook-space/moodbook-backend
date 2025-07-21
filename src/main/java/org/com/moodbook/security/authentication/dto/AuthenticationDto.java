@@ -17,7 +17,7 @@ public class AuthenticationDto {
 
 
   private Long id;
-  private Member member_id;
+  private Member member;
   private String token;
   private String refreshToken;
   private String tokenType;
@@ -29,8 +29,7 @@ public class AuthenticationDto {
   public static AuthenticationDto toDto(AuthenticationEntity entity) {
     return AuthenticationDto.builder()
         .id(entity.getId())
-        .member_id(entity.getMember_id())
-        .token(entity.getToken())
+        .member(entity.getMember())
         .refreshToken(entity.getRefreshToken())
         .tokenType(entity.getTokenType())
         .build();
@@ -40,8 +39,7 @@ public class AuthenticationDto {
   public AuthenticationEntity toEntity() {
     return AuthenticationEntity.builder()
         .id(id)
-        .member_id(member_id)
-        .token(token)
+        .member(member)
         .refreshToken(refreshToken)
         .tokenType(tokenType)
         .build();
