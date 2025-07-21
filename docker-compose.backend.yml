@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  backend:
+    container_name: ${PROJECT_NAME}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: moodbook_backend
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - TZ=Asia/Seoul                       # 한국 시간 설정
+
+      # MySQL
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+
+      # MongoDB
+      - MONGODB_URI=${MONGODB_URI}
+      - MONGODB_DATABASE=${MONGODB_DATABASE}
+
+      # Redis
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+
+      # AWS S3
+      - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+
+      # JWT
+      - JWT_SECRET=${JWT_SECRET}
+
+      # Aladin API
+      - ALADIN_API_KEY=${ALADIN_API_KEY}
+      - ALADIN_BASE_URL=${ALADIN_BASE_URL}
+
+      # OpenAI
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_URL=${OPENAI_URL}
+      - OPENAI_MODEL=${OPENAI_MODEL}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro      # 한국 시간 설정
+    restart: always

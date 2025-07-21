@@ -1,20 +1,20 @@
 spring:
-  config:
-    activate:
-      on-profile: prod
-
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/${DB_NAME}
-    username: root
-    password: 1234
-
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?serverTimezone=Asia/Seoul
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
   jpa:
     generate-ddl: true
-    show-sql: true
     open-in-view: false
+    show-sql: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
+
+  batch:
+    jdbc:
+      initialize-schema: never
+    job:
+      enabled: false
 
   sql:
     init:
@@ -22,4 +22,37 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb+srv://moodbookuser:moodbookpass@moodbookemotion.e9qbkki.mongodb.net/?retryWrites=true&w=majority&appName=MoodBookEmotion
+      uri: ${MONGODB_URI}
+      database: ${MONGODB_DATABASE}
+
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      timeout: 6000
+
+cloud:
+  aws:
+    s3:
+      bucketName: ${AWS_S3_BUCKET_NAME}
+    stack:
+      auto: false
+    region:
+      static: ${AWS_REGION}
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+
+aladin:
+  api:
+    key: ${ALADIN_API_KEY}
+    base-url: ${ALADIN_BASE_URL}
+
+jwt:
+  secretKey: ${JWT_SECRET}
+  access-token-expiration-ms: 1800000
+  refresh-token-expiration-ms: 6048020000
+
+openai:
+  api-key: ${OPENAI_API_KEY}
+  url: ${OPENAI_URL}
+  model: ${OPENAI_MODEL}
