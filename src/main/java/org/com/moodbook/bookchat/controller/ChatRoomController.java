@@ -165,4 +165,21 @@ public class ChatRoomController {
     return ResponseEntity.ok().build();
   }
 
+  @GetMapping("/isMember")
+  public ResponseEntity<Boolean> isMember(
+      @AuthenticationPrincipal CustomMemberDetails memberDetails,
+      @RequestParam Long roomId
+  ) {
+    if (memberDetails == null) {
+      return ResponseEntity.ok(false);
+    }
+    Long memberId = memberDetails.getId();
+
+    // 2. 실제 멤버 여부 체크
+    boolean isMember = chatRoomService.isMember(roomId, memberId);
+
+    return ResponseEntity.ok(isMember);
+  }
+
+
 }

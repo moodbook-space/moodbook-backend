@@ -4,6 +4,7 @@ import static org.com.moodbook.common.constants.NotifyType.CHAT_APPLY;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.com.moodbook.bookchat.dto.ApproveJoinRequest;
 import org.com.moodbook.bookchat.dto.ChatRoomMemberResponse;
@@ -17,7 +18,6 @@ import org.com.moodbook.bookchat.entity.ChatRoomMemberStatus;
 import org.com.moodbook.bookchat.entity.ChatRoomStatus;
 import org.com.moodbook.bookchat.repository.ChatRoomMemberRepository;
 import org.com.moodbook.bookchat.repository.ChatRoomRepository;
-import org.com.moodbook.common.constants.NotifyType;
 import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.common.exception.ErrorCode;
 import org.com.moodbook.member.entity.Member;
@@ -150,10 +150,17 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             .build();
         chatRoomMemberRepository.save(waitJoinMember);
 
-        // 채팅방 멤버 가입 신청 알림
-        chatRoomNotificationHelper.notifyJoinRequest(chatRoom, member);
 
-        return ChatRoomMemberResponse.from(waitJoinMember);
+        ChatRoomMember savedMember = chatRoomMemberRepository.findByChatRoomAndMember(chatRoom, member)
+            .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+
+
+//        // 채팅방 멤버 가입 신청 알림
+//        chatRoomNotificationHelper.notifyJoinRequest(chatRoom, member);
+
+        System.out.println(member.getName());
+
+        return ChatRoomMemberResponse.from(savedMember);
     }
 
     @Override
@@ -162,17 +169,18 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
         Long chatRoomMemberId = request.getChatRoomMemberId();
         Long roomId = request.getRoomId();
-        Long approveId = request.getApproveId();
+        Long ownerId = request.getApproveId();
         boolean approve = request.isApprove();
+        ChatRoomMember joinRequest = chatRoomMemberRepository.findByChatRoomIdAndMemberId(roomId, chatRoomMemberId);
 
-        // 1. ID로 직접 조회
-        ChatRoomMember joinRequest = chatRoomMemberRepository.findById(chatRoomMemberId)
-            .orElseThrow(() -> new BaseException(ErrorCode.JOIN_REQUEST_NOT_FOUND));
-
-        ChatRoom chatRoom = joinRequest.getChatRoom();
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+            .orElseThrow(() -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND));
         Member owner = chatRoom.getOwner();
+        System.out.println(chatRoomMemberId);
+        Member member = memberRepository.findById(chatRoomMemberId)
+            .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
 
-        if (!owner.getId().equals(approveId)) {
+        if (!owner.getId().equals(ownerId)) {
             throw new BaseException(ErrorCode.CHAT_ROOM_MEMBER_NOT_LEADER);
         }
 
@@ -182,8 +190,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
             ChatRoomMember saved = chatRoomMemberRepository.save(joinRequest);
 
-            // 가입 상태 변경 후 채팅방 멤버 쪽으로 알림 전송
-            chatRoomNotificationHelper.notifyApproval(saved);
+            // 채팅방 멤버 가입 신청 알림
+            chatRoomNotificationHelper.notifyJoinRequest(chatRoom, member);
 
             return ChatRoomMemberResponse.from(saved);
         } else {
@@ -245,5 +253,14 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         }
 
         chatRoomMemberRepository.delete(chatRoomMember);
+    }
+
+    @Override
+    public boolean isMember(Long chatRoomId, Long memberId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+            .orElseThrow(() -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND));
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+        return chatRoomMemberRepository.existsByChatRoomAndMember(chatRoom, member);
     }
 }

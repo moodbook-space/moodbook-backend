@@ -39,4 +39,6 @@ public interface ChatRoomService {
 
   // 방 나가기
   void leaveRoom(Long chatRoomId, Long memberId);
+
+  boolean isMember(Long chatRoomId, Long memberId);
 }
