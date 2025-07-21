@@ -54,8 +54,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     return LoginResponseDTO.builder()
         .accessToken(accessToken)
         .refreshToken(refreshToken)
-        .tokenType("Bearer ")
-        .member(MemberDTO.toDto(member))
         .build();
   }
 
