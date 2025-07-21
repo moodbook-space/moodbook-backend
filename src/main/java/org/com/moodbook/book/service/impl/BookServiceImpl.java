@@ -11,6 +11,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.com.moodbook.batch.dto.BatchBookResponse;
+import org.com.moodbook.book.dto.AladinBookResponse;
 import org.com.moodbook.book.dto.BookEmotionAnalyzeResponse;
 import org.com.moodbook.book.dto.BookEmotionRecommendAllRequest;
 import org.com.moodbook.book.dto.BookEmotionRecommendAllResponse;
@@ -34,6 +36,7 @@ import org.com.moodbook.member.entity.Member;
 import org.com.moodbook.member.repository.MemberRepository;
 import org.com.moodbook.recentbookviews.entity.RecentBookView;
 import org.com.moodbook.recentbookviews.repository.RecentBookViewRepository;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -205,6 +208,7 @@ public class BookServiceImpl implements BookService {
   public Page<BookResponse> getAllBooks(Pageable pageable) {
     return bookRepository.findAllByCreatedAt(pageable);
   }
+
 
 
 }

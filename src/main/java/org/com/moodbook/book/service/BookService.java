@@ -1,6 +1,7 @@
 package org.com.moodbook.book.service;
 
 import java.util.List;
+import org.com.moodbook.book.dto.AladinBookResponse;
 import org.com.moodbook.book.dto.BookEmotionAnalyzeResponse;
 import org.com.moodbook.book.dto.BookEmotionRecommendAllRequest;
 import org.com.moodbook.book.dto.BookEmotionRecommendAllResponse;
@@ -34,6 +35,5 @@ public interface BookService {
 
   /** 책 전체 조회 **/
   Page<BookResponse> getAllBooks(Pageable pageable);
-
 
   }

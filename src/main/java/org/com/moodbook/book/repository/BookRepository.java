@@ -61,4 +61,5 @@ public interface BookRepository extends JpaRepository<Book, Long> {
   @Query("SELECT b FROM Book b LEFT JOIN FETCH b.bookCount")
   List<Book> findAllBooks();
 
+  Book findByIsbn13(String isbn13);
 }
