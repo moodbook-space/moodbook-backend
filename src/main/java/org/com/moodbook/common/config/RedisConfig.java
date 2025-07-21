@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
@@ -27,6 +28,18 @@ public class RedisConfig {
     redisTemplate.setValueSerializer(new StringRedisSerializer());
 
     return redisTemplate;
+  }
+  //
+  @Bean
+  public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory) {
+    // Redis의 pub/sub 메시지를 수신하고 처리하는 리스너 컨테이너 객체를 생성
+    RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+    // Redis와 연결할 . 있도록 redisConnectionFactory를 생성
+    // 이 factory는 Redis 서버에 연결하는 역할
+    container.setConnectionFactory(redisConnectionFactory);
+    // 구성된 컨테이너를 반환해서 Spring이 관리하도하도록 하는 역활
+    // 이 컨테이너는 TTL 만료 등 Redis에서 발생한 이벤트를 수신
+    return container;
   }
 
 
