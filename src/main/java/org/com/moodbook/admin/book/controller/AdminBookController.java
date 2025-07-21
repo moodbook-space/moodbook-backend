@@ -56,7 +56,7 @@ public class AdminBookController {
     return ResponseEntity.ok(books);
   }
 
-  @PutMapping("/add/")
+  @PutMapping("/add")
   public ResponseEntity<String> addBook(
       @RequestBody BatchBookResponse batchBookResponse
   ) {
