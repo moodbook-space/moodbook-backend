@@ -25,7 +25,7 @@ public class AWSS3Controller {
   @PostMapping("/s3/upload")
   @Operation(summary = "S3에 파일 업로드하는 컨트롤러")
   @ApiResponse(responseCode = "200", description = "정상적으로 파일이 업로드 되었습니다.")
-  public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
+  public ResponseEntity<AWSS3DTO> uploadFile(@RequestParam("file") MultipartFile file) {
     AWSS3DTO awss3DTO = awss3Service.uploadFile(file);
     return ResponseEntity.ok(awss3DTO);
   }
