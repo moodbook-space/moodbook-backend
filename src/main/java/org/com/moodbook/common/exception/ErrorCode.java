@@ -2,6 +2,7 @@ package org.com.moodbook.common.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Http;
 import org.springframework.http.HttpStatus;
 
 @Getter
@@ -28,16 +29,16 @@ public enum ErrorCode {
   EXPIRED_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "EXPIRED_ACCESS_TOKEN", "Access Token이 만료되었습니다. 토큰을 재발급해주세요"),
   ACCESS_DENIED(HttpStatus.FORBIDDEN, "ACCESS_DENIED", "접근 권한이 없습니다."),
   EMAIL_NOT_VERIFIED(HttpStatus.UNAUTHORIZED,"EMAIL_NOT_VERIFIED","이메일 인증 후 진행해주세요"),
-
+  UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED,"UNAUTHORIZED_ACCESS","권한이 없습니다"),
   /* 403 - Forbidden */
   FORBIDDEN(HttpStatus.FORBIDDEN, "FORBIDDEN", "접근할 수 있는 권한이 없습니다."),
   EXPIRED_OR_PREVIOUS_REFRESH_TOKEN(HttpStatus.FORBIDDEN, "EXPIRED_OR_PREVIOUS_REFRESH_TOKEN",
       "만료되었거나 이전에 발급된 Refresh Token입니다."),
   MEMBER_DEACTIVATED(HttpStatus.UNAUTHORIZED,"MEMBER_DEACTIVATED","비활성화된 멤버입니다"),
   CHAT_ROOM_MEMBER_NOT_LEADER(HttpStatus.UNAUTHORIZED,"CHAT_ROOM_MEMBER_NOT_LEADER","방장 권한이 없습니다."),
-
+  INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED,"INVALID_REFRESH_TOKEN","유효하지 않는 토큰입니다"),
   REVIEW_FORBIDDEN(HttpStatus.UNAUTHORIZED, "REVIEW_FORBIDDEN", "본인의 리뷰만 수정/삭제할 수 있습니다."),
-
+  REFRESH_TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED,"REFRESH_TOKEN_MISMATCH","리프레쉬 토큰이 불일치 합니다"),
 
   /* 404 - Not Found */
   BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOK_NOT_FOUND", "해당 책을 찾을 수 없습니다."),
@@ -45,7 +46,7 @@ public enum ErrorCode {
   MEETING_NOT_FOUND(HttpStatus.NOT_FOUND, "MEETING_NOT_FOUND", "해당 모임을 찾을 수 없습니다."),
   EMOTION_NOT_FOUND(HttpStatus.NOT_FOUND, "EMOTION_NOT_FOUND", "해당 감정을 찾을 수 없습니다."),
   BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOKMARK_NOT_FOUND", "북마크에 해당 책이 존재하지 않습니다."),
-
+  REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND,"REFRESH_TOKEN_NOT_FOUND","리프레쉬 토큰은 없습니다"),
   MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND,"MEMBER_NOT_FOUND","해당 사용자를 찾을 수 없습니다"),
   CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CHATROOM_REQUEST_NOT_FOUND", "해당 채팅방을 찾을 수 없습니다."),
   INVALID_PASSWORD(HttpStatus.NOT_FOUND,"INVALID_PASSWORD","비밀번호가 일치하지 않습니다"),
@@ -56,7 +57,7 @@ public enum ErrorCode {
   NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTIFICATION_NOT_FOUND", "알림을 찾을 수 없습니다."),
   LEADER_NOT_FOUND(HttpStatus.NOT_FOUND, "LEADER_NOT_FOUND", "채팅방 리더를 찾을 수 없습니다."),
   AWSS3_NO_FILE(HttpStatus.BAD_REQUEST, "AWSS3_NO_FILE", "S3에 해당 파일이 없습니다."),
-
+  ACCESS_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND,"ACCESS_TOKEN_NOT_FOUND","토큰이 존재하지 않습니다"),
   /* 500 - Internal Server Error */
   INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버에 오류가 발생했습니다."),
   AWSS3_UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AWSS3_UNKNOWN_ERROR", "S3 연결 과정에서 에러가 발생했습니다"),
