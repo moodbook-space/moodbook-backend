@@ -18,6 +18,10 @@ public interface MemberService {
   // 내 정보 가지고 오기
   MemberDTO getMyInfo(Long memberId);
 
+  //로그 아웃
+  void logout(Long requestId,Long targetId);
+
+
 
 
 }
