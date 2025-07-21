@@ -5,4 +5,6 @@ public interface EmailAuthenticationService {
   void sendEmail(String toEmail);
 
   void verifyToken(String token);
+
+  void cleanupByExpiredToken(String expiredKey);
 }
