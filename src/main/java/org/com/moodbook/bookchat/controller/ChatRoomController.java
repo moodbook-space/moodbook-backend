@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.com.moodbook.bookchat.dto.*;
 import org.com.moodbook.bookchat.entity.ChatRoomMemberStatus;
 import org.com.moodbook.bookchat.service.ChatRoomService;
-import org.com.moodbook.member.entity.Member;
 import org.com.moodbook.member.repository.MemberRepository;
 import org.com.moodbook.security.core.CustomMemberDetails;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +42,7 @@ public class ChatRoomController {
 
     if (request.getOwner() == null) {
 
-      request.setOwner(new MemberDTO(memberId, memberName));
+      request.setOwner(new ChatMemberDTO(memberId, memberName));
     }
     return ResponseEntity.ok(chatRoomService.createRoom(request));
   }

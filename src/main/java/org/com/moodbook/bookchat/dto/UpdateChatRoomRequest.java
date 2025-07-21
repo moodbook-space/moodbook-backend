@@ -9,7 +9,7 @@ public class UpdateChatRoomRequest {
   private String role;
   private String title;
   private int limitMembers;
-  private MemberDTO owner;
+  private ChatMemberDTO owner;
   private Long chatRoomId;
   private Long memberId;
 

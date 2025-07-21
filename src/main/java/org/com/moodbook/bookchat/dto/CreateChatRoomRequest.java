@@ -9,6 +9,6 @@ public class CreateChatRoomRequest {
   private int limitMembers;
 
   @Setter
-  private MemberDTO owner;
+  private ChatMemberDTO owner;
 
 }

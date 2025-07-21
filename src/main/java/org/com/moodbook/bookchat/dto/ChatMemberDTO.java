@@ -3,11 +3,11 @@ package org.com.moodbook.bookchat.dto;
 import lombok.Getter;
 
 @Getter
-public class MemberDTO {
+public class ChatMemberDTO {
   private Long memberId;
   private String memberName;
 
-  public MemberDTO(Long memberId, String memberName) {
+  public ChatMemberDTO(Long memberId, String memberName) {
     this.memberId = memberId;
     this.memberName = memberName;
   }
