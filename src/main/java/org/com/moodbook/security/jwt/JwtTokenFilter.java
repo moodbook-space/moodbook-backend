@@ -13,6 +13,7 @@ import org.com.moodbook.security.core.CustomMemberDetails;
 import org.com.moodbook.security.core.CustomUserDetailsService;
 import org.com.moodbook.threadlocal.TraceIdHolder;
 import org.hibernate.annotations.Filter;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -27,6 +28,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
   private final JwtTokenProvider jwtTokenProvider;
   private final CustomUserDetailsService customUserDetailsService;
+  private final RedisTemplate<String, String> redisTemplate;
 
 
   @Override
@@ -63,6 +65,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
       TraceIdHolder.set(traceId);                 // TraceId ThreadLocal에 저장
 
       String accessToken = extractTokenFromRequest(request);      // 요청 헤더에서 토큰 추출
+
+      if (StringUtils.hasText(accessToken)) {
+        String blacklistKey = "access-token-blacklist:" + accessToken;
+        if (redisTemplate.hasKey(blacklistKey)) {
+          // 로그아웃 된 토큰이므로 인증 차단
+          log.warn("해당 토큰은 사용이 불가능합니다: {}", accessToken);
+          response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+          response.getWriter().write("이미 로그아웃 된 토큰입니다");
+          return;
+        }
+      }
 
       if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
         UsernamePasswordAuthenticationToken authenticationToken = getAuthentication(
