@@ -28,10 +28,8 @@ public class AuthenticationEntity {
 
   @ManyToOne
   @JoinColumn(name = "member_id")
-  private Member member_id;
+  private Member member;
 
-  @Column(nullable = false)
-  private String token;
 
   @Column(nullable = false)
   private String refreshToken;
