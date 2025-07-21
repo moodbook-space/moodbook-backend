@@ -34,13 +34,15 @@ public class BaseException extends RuntimeException {
     public static final BaseException ALREADY_IN_BOOKMARK = new BaseException(ErrorCode.ALREADY_IN_BOOKMARK);
     public static final BaseException BOOKMARK_NOT_FOUND = new BaseException(ErrorCode.BOOKMARK_NOT_FOUND);
     public static final BaseException ALREADY_VERIFIED = new BaseException(ErrorCode.ALREADY_VERIFIED);
-
+    public static final BaseException REFRESH_TOKEN_NOT_FOUND = new BaseException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
     public static final BaseException REVIEW_FORBIDDEN = new BaseException(ErrorCode.REVIEW_FORBIDDEN);
     public static final BaseException REVIEW_NOT_FOUND = new BaseException(ErrorCode.REVIEW_NOT_FOUND);
-
+    public static final BaseException INVALID_REFRESH_TOKEN = new BaseException(ErrorCode.INVALID_REFRESH_TOKEN);
     public static final BaseException LEADER_NOT_FOUND = new BaseException(ErrorCode.LEADER_NOT_FOUND);
     public static final BaseException NOTIFICATION_NOT_FOUND = new BaseException(ErrorCode.NOTIFICATION_NOT_FOUND);
-
+    public static final BaseException REFRESH_TOKEN_MISMATCH = new BaseException(ErrorCode.REFRESH_TOKEN_MISMATCH);
+    public static final BaseException UNAUTHORIZED_ACCESS = new BaseException(ErrorCode.UNAUTHORIZED_ACCESS);
+    public static final BaseException ACCESS_TOKEN_NOT_FOUND = new BaseException(ErrorCode.ACCESS_TOKEN_NOT_FOUND);
     private final ErrorCode errorCode;
 
     // 의도적인 예외이므로 stack trace 제거 (불필요한 예외처리 비용 제거)
