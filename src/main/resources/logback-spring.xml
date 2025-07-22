@@ -87,7 +87,7 @@
   <!-- 특정 패키지(여기서는 org.boot.backend5project)만 따로 레벨 지정 가능
        additive="false"면, 해당 패키지 로그는 상위(root)에 전달되지 않음 -->
   <logger
-    name="org.boot.backend5Project"
+    name="org.com.moodbook"
     level="DEBUG, INFO, WARN, ERROR"
     additive="false" >
     <appender-ref ref="STDOUT"/>
