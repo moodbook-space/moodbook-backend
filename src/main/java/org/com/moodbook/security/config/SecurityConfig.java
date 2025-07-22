@@ -59,7 +59,9 @@ public class SecurityConfig {
                     "/api/emotion/**",
                     "/api/books/**",
                     "/login",
-                    "/signUp"
+                    "/signUp",
+                    "/books/**",
+                    "/api/books/**"
                 ).permitAll()
                 .requestMatchers("/api/chat-rooms/**").authenticated()
                 .requestMatchers("/chat-rooms/**").authenticated()
