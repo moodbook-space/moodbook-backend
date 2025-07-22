@@ -4,7 +4,7 @@
   <!-- 로그 파일이 저장될 경로 변수 -->
   <property
     name="LOG_PATH"
-    value="logs"
+    value="/home/ubuntu/moodbook/logs"
   />
 
   <!-- 파일 로그 출력 패턴: 색상 X (ELK 연동용) -->
