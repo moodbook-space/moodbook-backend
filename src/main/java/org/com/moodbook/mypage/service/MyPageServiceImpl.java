@@ -7,8 +7,10 @@ import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.member.entity.Member;
 import org.com.moodbook.member.entity.MemberProfile;
 import org.com.moodbook.member.repository.MemberRepository;
+import org.com.moodbook.mypage.dto.MyPageModifyRequest;
+import org.com.moodbook.mypage.dto.MyPageModifyResponse;
 import org.com.moodbook.mypage.dto.MyPageResponse;
-import org.com.moodbook.mypage.dto.UpdateNicknameDTO;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +22,7 @@ public class MyPageServiceImpl implements MyPageService {
 
   private final MemberRepository memberRepository;
   private final AWSS3Service awsS3Service;
+  private final PasswordEncoder passwordEncoder;
 
   @Override
   @Transactional(readOnly = true)
@@ -34,23 +37,50 @@ public class MyPageServiceImpl implements MyPageService {
     return MyPageResponse.of(member.getMemberProfile());
   }
 
+  @Override
+  @Transactional(readOnly = true)
+  public MyPageModifyResponse getMyPageModifyInfo(Long memberId) {
+
+    // 멤버가 없으면 에러 반환
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> BaseException.MEMBER_NOT_FOUND);
+
+    // 멤버가 있다면, Profile까지 가져오기
+    MemberProfile memberProfile = member.getMemberProfile();
+
+    // 필요한 정보 생성해서 반환
+    return MyPageModifyResponse.of(member, memberProfile);
+  }
+
   // 닉네임 업데이트에 사용해야 할 함수
   @Override
-  public MyPageResponse updateMyPageInfo(Long memberId, UpdateNicknameDTO updateNicknameDTO) {
+  public MyPageModifyResponse updateMyPageInfo(Long memberId,
+      MyPageModifyRequest myPageModifyRequest) {
 
     // 멤버가 없으면 에러 발생
     Member member = memberRepository.findById(memberId)
         .orElseThrow(() -> BaseException.MEMBER_NOT_FOUND);
 
+    // 멤버 존재시 MemberProfile도 불러오기
+    MemberProfile memberProfile = member.getMemberProfile();
+
+    // Password 암호화
+    String encodedPwd = passwordEncoder.encode(myPageModifyRequest.getPassword());
+
     // JPA기반으로 업데이트 수행
-    member.getMemberProfile().setNickname(updateNicknameDTO.getNickname());
+    member.setName(myPageModifyRequest.getName());
+    member.setPassword(encodedPwd);
+    member.setContact(myPageModifyRequest.getContact());
+
+    memberProfile.setNickname(myPageModifyRequest.getNickname());
+    memberProfile.setAddress(myPageModifyRequest.getAddress());
 
     // 완료된 결과 반환
-    return MyPageResponse.of(member.getMemberProfile());
+    return MyPageModifyResponse.of(member, memberProfile);
   }
 
   @Override
-  public MyPageResponse updateMyImage(Long memberId, MultipartFile image) {
+  public MyPageModifyResponse updateMyImage(Long memberId, MultipartFile image) {
 
     // 먼저, 멤버 찾고 경로 DTO형태로 만들기
     Member member = memberRepository.findById(memberId)
@@ -66,6 +96,6 @@ public class MyPageServiceImpl implements MyPageService {
     memberProfile.setMyImage(awsS3Service.uploadFile(image).getUrl());
 
     // 결과 반환하기
-    return MyPageResponse.of(memberProfile);
+    return MyPageModifyResponse.of(member, memberProfile);
   }
 }
