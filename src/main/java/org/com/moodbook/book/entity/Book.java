@@ -57,8 +57,5 @@ public class Book extends BaseTime {
   @OneToOne(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
   private BookCount bookCount;
 
-  public void setBookCount(BookCount bookCount) {
-    this.bookCount = bookCount;
-    bookCount.setBook(this);
-  }
+
 }
