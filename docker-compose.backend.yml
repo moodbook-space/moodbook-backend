@@ -53,4 +53,5 @@ services:
       - OPENAI_MODEL=${OPENAI_MODEL}
     volumes:
       - /etc/localtime:/etc/localtime:ro      # 한국 시간 설정
+      - /home/ubuntu/moodbook/logs:/logs
     restart: always
