@@ -1,7 +1,5 @@
 package org.com.moodbook.common.config;
 
-import io.lettuce.core.ClientOptions;
-import io.lettuce.core.SslOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,14 +20,24 @@ public class RedisConfig {
   @Value("${spring.data.redis.port}")
   private int redisPort;
 
+  @Value("${spring.profiles.active:local}")
+  private String activeProfile;
+
   //redis 연결 팩토리 설정
   @Bean
   public RedisConnectionFactory redisConnectionFactory() {
     RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration(redisHost, redisPort);
 
-    LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-                                          .useSsl()
-                                          .build();
+    LettuceClientConfiguration clientConfig;
+
+    if ("prod".equals(activeProfile)) {
+      clientConfig = LettuceClientConfiguration.builder()
+          .useSsl()
+          .disablePeerVerification() // 운영 인증서 신뢰 설정은 실환경에 맞게 구성
+          .build();
+    } else {
+      clientConfig = LettuceClientConfiguration.builder().build();
+    }
 
     return new LettuceConnectionFactory(redisConfig, clientConfig); // application.yml의 host/port를 따름
   }
