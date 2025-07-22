@@ -35,7 +35,7 @@ public class BookmarkController {
       @ApiResponse(responseCode = "500", description = "북마크 추가에 실패하였습니다.")
   })
   @PostMapping("")
-  ResponseEntity<BookmarkResponseDTO> addBookmark(@RequestBody BookmarkRequestDTO request,
+  public ResponseEntity<BookmarkResponseDTO> addBookmark(@RequestBody BookmarkRequestDTO request,
       @AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
     BookmarkResponseDTO bookmarkResponseDTO = bookmarkService.addBookmark(
         customMemberDetails.getId(), request.getBookId());
@@ -48,7 +48,8 @@ public class BookmarkController {
       @ApiResponse(responseCode = "500", description = "북마크 목록 조회에 실패하였습니다.")
   })
   @GetMapping("")
-  ResponseEntity<List<BookmarkResponseDTO>> getBookmark(@AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
+  public ResponseEntity<List<BookmarkResponseDTO>> getBookmark(
+      @AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
     List<BookmarkResponseDTO> bookmarks = bookmarkService.getBookmark(customMemberDetails.getId());
 
     return ResponseEntity.status(HttpStatus.OK).body(bookmarks);
@@ -60,7 +61,7 @@ public class BookmarkController {
       @ApiResponse(responseCode = "500", description = "북마크에서 책을 삭제하지 못했습니다.")
   })
   @DeleteMapping("/{bookId}")
-  ResponseEntity<Void> deleteBookmark(@PathVariable Long bookId,
+  public ResponseEntity<Void> deleteBookmark(@PathVariable Long bookId,
       @AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
     bookmarkService.deleteBookmark(bookId, customMemberDetails.getId());
     return ResponseEntity.status(HttpStatus.OK).build();
