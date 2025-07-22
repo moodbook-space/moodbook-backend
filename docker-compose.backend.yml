@@ -20,6 +20,12 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
 
+      # ElasticSearch
+      - ELASTICSEARCH_URI=${ELASTICSEARCH_URI}
+
+      # Logstash
+      - LOG_CONSOLE_PATTERN=${LOG_CONSOLE_PATTERN}
+
       # MongoDB
       - MONGODB_URI=${MONGODB_URI}
       - MONGODB_DATABASE=${MONGODB_DATABASE}
