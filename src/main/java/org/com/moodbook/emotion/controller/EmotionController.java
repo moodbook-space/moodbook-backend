@@ -41,7 +41,7 @@ public class EmotionController {
       @ApiResponse(responseCode = "200", description = "감정 분석 "),
       @ApiResponse(responseCode = "500", description = "")
   })
-  @PostMapping("/analyze")
+  @GetMapping("/analyze")
   public Map<String, Integer> analyzeEmotion(@RequestBody Map<String, String> request) throws Exception {
 
     String description = request.get("description");
@@ -50,7 +50,6 @@ public class EmotionController {
     }
     return emotionAnalyzer.analyzeEmotion(description);
   }
-
 
   @Operation(summary = "감정 저장", description = "")
   @ApiResponses({

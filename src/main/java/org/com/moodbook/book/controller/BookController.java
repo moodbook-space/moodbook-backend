@@ -94,7 +94,7 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.OK).body(trendingBooks);
     }
 
-    @PostMapping("/recommend/emotion/top10")
+    @GetMapping("/recommend/emotion/top10")
     @Operation(summary = "감정별 인기 추천 도서 Top10",
         description = "감정별 인기 추천 도서 조회를 합니다.")
     @ApiResponses({
@@ -108,7 +108,7 @@ public class BookController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/recommend/emotion/all")
+    @GetMapping("/recommend/emotion/all")
     @Operation(summary = "모든 감정별 추천 도서",
         description = "감정별 추천 도서를 모두 조회합니다.")
     @ApiResponses({

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>책 리스트</title>
+  <style>
+    .autocomplete-wrap {
+      position: relative;
+      width: 250px; /* input과 autocomplete width 맞추기 */
+      display: block;
+    }
+    #searchInput {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px 10px;
+      font-size: 16px;
+    }
+    .autocomplete-items {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      border: 1px solid #aaa;
+      max-height: 160px;
+      overflow-y: auto;
+      background: #fff;
+      z-index: 99;
+      box-sizing: border-box;
+    }
+    .autocomplete-item {
+      padding: 7px 10px;
+      cursor: pointer;
+      font-size: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    .autocomplete-item:last-child {
+      border-bottom: none;
+    }
+    .autocomplete-item:hover {
+      background: #f4f7fa;
+    }
+    form[autocomplete="off"] {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+<h2>책 리스트</h2>
+
+<!-- 검색창 -->
+<form th:action="@{/books}" method="get" autocomplete="off">
+  <div class="autocomplete-wrap">
+    <input type="text" id="searchInput" name="keyword" th:value="${keyword}" placeholder="제목 또는 저자 검색" autocomplete="off"/>
+    <div id="autocomplete-list" class="autocomplete-items"></div>
+  </div>
+  <button type="submit">검색</button>
+</form>
+
+<table border="1" style="width: 100%; max-width: 800px;">
+  <thead>
+  <tr>
+    <th>제목</th>
+    <th>저자</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="book : ${books.content}">
+    <td th:text="${book.title}">제목</td>
+    <td th:text="${book.author}">저자</td>
+  </tr>
+  </tbody>
+</table>
+
+<!-- 페이지네이션 -->
+<div style="margin-top:10px;">
+  <a th:if="${!books.first}" th:href="@{/books(keyword=${keyword},page=${books.number - 1})}">이전</a>
+  <span th:text="${books.number + 1}">1</span> /
+  <span th:text="${books.totalPages}">1</span>
+  <a th:if="${!books.last}" th:href="@{/books(keyword=${keyword},page=${books.number + 1})}">다음</a>
+</div>
+
+<script>
+  const input = document.getElementById("searchInput");
+  const list = document.getElementById("autocomplete-list");
+  let timer;
+  input.addEventListener("input", function() {
+    clearTimeout(timer);
+    const value = input.value.trim();
+    if (!value) { list.innerHTML = ""; return; }
+    timer = setTimeout(() => {
+      fetch(`/api/books/autocomplete?keyword=${encodeURIComponent(value)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!Array.isArray(data) || data.length === 0) {
+          list.innerHTML = "";
+          return;
+        }
+        list.innerHTML = data.map(title =>
+            `<div class="autocomplete-item" onclick="document.getElementById('searchInput').value='${title.replace(/'/g, "\\'")}';document.getElementById('autocomplete-list').innerHTML=''">${title}</div>`
+        ).join('');
+      });
+    }, 200);
+  });
+
+  // 포커스 아웃 시 자동완성창 닫기
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.autocomplete-wrap')) {
+      list.innerHTML = "";
+    }
+  });
+</script>
+
+</body>
+</html>

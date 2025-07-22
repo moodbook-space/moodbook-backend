@@ -60,7 +60,9 @@ public class SecurityConfig {
                     "/api/books/**",
                     "/actuator/prometheus",     //프로메테우스
                     "/login",
-                    "/signUp"
+                    "/signUp",
+                    "/books/**",
+                    "/api/books/**"
                 ).permitAll()
                 .requestMatchers("/api/chat-rooms/**").authenticated()
                 .requestMatchers("/chat-rooms/**").authenticated()

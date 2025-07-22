@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "book_count")
@@ -28,6 +29,7 @@ public class BookCount {
     private Long id;
 
     /** 도서와 1:1 관계 **/
+    @Setter
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", nullable = false, unique = true)
     private Book book;
@@ -41,7 +43,4 @@ public class BookCount {
         this.viewCount++;
     }
 
-    public void setBook(Book book) {
-        this.book = book;
-    }
 }
