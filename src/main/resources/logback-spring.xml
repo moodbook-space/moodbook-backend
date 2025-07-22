@@ -4,7 +4,7 @@
   <!-- 로그 파일이 저장될 경로 변수 -->
   <property
     name="LOG_PATH"
-    value="/home/ubuntu/moodbook/logs"
+    value="logs"
   />
 
   <!-- 파일 로그 출력 패턴: 색상 X (ELK 연동용) -->
@@ -16,9 +16,9 @@
   <!-- 운영 환경(prod) 전용 로그 설정 -->
   <!-- 콘솔 출력 없이 파일(app.log)에만 로그가 기록됨  -->
   <springProfile name="prod">
-      <root level="INFO">
-          <appender-ref ref="FILE"/>
-      </root>
+    <root level="INFO">
+      <appender-ref ref="FILE"/>
+    </root>
   </springProfile>
 
   <!-- ==========================
