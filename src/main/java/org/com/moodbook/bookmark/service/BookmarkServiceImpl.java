@@ -47,14 +47,8 @@ public class BookmarkServiceImpl implements BookmarkService {
   @Override
   @Transactional(readOnly = true)
   public List<BookmarkResponseDTO> getBookmark(Long memberId) {
-    //모든 북마크 정보 찾기
-    return bookmarkRepository.findAllByMember_IdOrderByCreatedAtDesc(memberId)
-        // 값을 Java Stream으로 만든다. For each랑 비슷함
-        .stream()
-        // Bookmark 객체를 BookmarkResponseDTO로 변환한다. .map은 stream에서 지원하는 함수임
-        .map(BookmarkResponseDTO::of)
-        // 매핑된 결과를 리스트로 반환
-        .toList();
+    //모든 북마크 정보 찾기, N+1 해결을 위한 코드 수정
+    return bookmarkRepository.findAllBookInfoByMemberIdOrderByCreatedAtDesc(memberId);
   }
 
   // 특정 유저에게서 북마크 삭제
