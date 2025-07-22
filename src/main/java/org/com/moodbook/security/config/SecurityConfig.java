@@ -58,6 +58,7 @@ public class SecurityConfig {
                     "/emotion/**",
                     "/api/emotion/**",
                     "/api/books/**",
+                    "/actuator/prometheus",     //프로메테우스
                     "/login",
                     "/signUp"
                 ).permitAll()
