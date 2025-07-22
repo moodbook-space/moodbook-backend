@@ -20,6 +20,9 @@ spring:
     init:
       mode: never
 
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URI}
+
   data:
     mongodb:
       uri: ${MONGODB_URI}
@@ -29,6 +32,21 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
       timeout: 6000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+    health:
+      show-details: always
+  health:
+    elasticsearch:
+      enabled: false
+  prometheus:
+    metrics:
+      export:
+        enabled: true
 
 cloud:
   aws:
@@ -56,3 +74,7 @@ openai:
   api-key: ${OPENAI_API_KEY}
   url: ${OPENAI_URL}
   model: ${OPENAI_MODEL}
+
+logging:
+  pattern:
+    console: ${LOG_CONSOLE_PATTERN}
