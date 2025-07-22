@@ -1,0 +1,61 @@
+{
+  "settings": {
+    "index.max_ngram_diff": 18,
+    "analysis": {
+      "tokenizer": {
+        "ngram_tokenizer": {
+          "type": "ngram",
+          "min_gram": 2,
+          "max_gram": 20,
+          "token_chars": ["letter", "digit"]
+        },
+        "autocomplete_edge_ngram": {
+          "type": "edge_ngram",
+          "min_gram": 1,
+          "max_gram": 20,
+          "token_chars": ["letter", "digit"]
+        }
+      },
+      "analyzer": {
+        "ngram_analyzer": {
+          "tokenizer": "ngram_tokenizer",
+          "filter": ["lowercase"]
+        },
+        "autocomplete_edge_ngram_analyzer": {
+          "tokenizer": "autocomplete_edge_ngram",
+          "filter": ["lowercase"]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "text",
+        "fields": {
+          "ngram": {
+            "type": "text",
+            "analyzer": "ngram_analyzer"
+          },
+          "autocomplete": {
+            "type": "text",
+            "analyzer": "autocomplete_edge_ngram_analyzer",
+            "search_analyzer": "standard"
+          }
+        }
+      },
+      "isbn13": {
+        "type": "keyword"
+      },
+      "author": {
+        "type": "text"
+      },
+      "reputation": {
+        "type": "float"
+      },
+      "coverImage": {
+        "type": "keyword"
+      }
+    }
+  }
+}
