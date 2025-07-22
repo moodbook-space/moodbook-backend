@@ -1,0 +1,56 @@
+{
+  "properties": {
+    "id": {
+      "type": "long"
+    },
+    "title": {
+      "type": "text",
+      "fields": {
+        "ngram": {
+          "type": "text",
+          "analyzer": "ngram_analyzer",
+          "search_analyzer": "standard"
+        },
+        "autocomplete": {
+          "type": "text",
+          "analyzer": "autocomplete_edge_ngram_analyzer",
+          "search_analyzer": "standard"
+        }
+      }
+    },
+    "content": {
+      "type": "text",
+      "analyzer": "standard"
+    },
+    "viewCount": {
+      "type": "integer"
+    },
+    "likeCount": {
+      "type": "integer"
+    },
+    "memberId": {
+      "type": "long"
+    },
+    "moodTags": {
+      "type": "keyword"
+    },
+    "meetingType": {
+      "type": "keyword"
+    },
+    "startAt": {
+      "type": "date"
+    },
+    "endAt": {
+      "type": "date"
+    },
+    "capacity": {
+      "type": "integer"
+    },
+    "location": {
+      "type": "keyword"
+    },
+    "chatRoomId": {
+      "type": "long"
+    }
+  }
+}
