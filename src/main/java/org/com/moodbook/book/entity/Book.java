@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.com.moodbook.common.model.BaseTime;
 
 @Entity
@@ -54,6 +55,7 @@ public class Book extends BaseTime {
   private String categoryName;
 
   /** 연관관계 매핑 추가 **/
+  @Setter
   @OneToOne(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
   private BookCount bookCount;
 
