@@ -10,6 +10,7 @@ import org.com.moodbook.book.entity.Book;
 
 @Getter
 @NoArgsConstructor
+@Builder
 public class BookResponse {
 
     private Long bookId;

@@ -46,6 +46,7 @@ public class SecurityConfig {
                     "/api/books/**",
                     "/api/recent-books/**",
                     "/api/reviews/**",
+                    "/api/openai/**",
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html",

@@ -37,7 +37,7 @@ public class EmotionAnalyzer {
     Map<String, Object> userMsg = Map.of("role", "user", "content", prompt);
     Map<String, Object> bodyMap = new HashMap<>();
     bodyMap.put("model", model);
-    bodyMap.put("messages", List.of(systemMsg, userMsg));
+    bodyMap.put("input", List.of(systemMsg, userMsg));
 
     ObjectMapper mapper = new ObjectMapper();
     String requestBody = mapper.writeValueAsString(bodyMap);
@@ -54,12 +54,12 @@ public class EmotionAnalyzer {
     System.out.println("gpt 응답: " + response.body());
 
     JsonNode root = mapper.readTree(response.body());
-    JsonNode choices = root.path("choices");
-    if (!choices.isArray() || choices.size() == 0) {
+    JsonNode output = root.path("output");
+    if (!output.isArray() || output.size() == 0) {
       throw new IllegalStateException("GPT 응답에 choices가 없음");
     }
 
-    String content = choices.get(0).path("message").path("content").asText();
+    String content = output.get(0).path("content").get(0).path("text").asText();
     content = content.replaceAll("(?i)```json", "").replaceAll("(?i)```", "").trim();
 
     Pattern jsonPattern = Pattern.compile("\\{[\\s\\S]*?\\}");

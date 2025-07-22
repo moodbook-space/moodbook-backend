@@ -62,7 +62,8 @@ public enum ErrorCode {
   INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버에 오류가 발생했습니다."),
   AWSS3_UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AWSS3_UNKNOWN_ERROR", "S3 연결 과정에서 에러가 발생했습니다"),
   AWSS3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AWSS3_UPLOAD_ERROR", "S3 사진 업로드에 실패했습니다"),
-  AWSS3_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AWSS3_DELETE_ERROR", "S3에서 사진 삭제에 실패했습니다.");
+  AWSS3_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AWSS3_DELETE_ERROR", "S3에서 사진 삭제에 실패했습니다."),
+  EMOTION_SAVE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"EMOTION_SAVE_ERROR","감정 분석,저장에 실패했습니다.");
 
   private final HttpStatus httpStatus;
   private final String code;
