@@ -1,8 +1,13 @@
 package org.com.moodbook.common.config;
 
+import io.lettuce.core.ClientOptions;
+import io.lettuce.core.SslOptions;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
@@ -11,10 +16,22 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class RedisConfig {
 
+  @Value("${spring.data.redis.host}")
+  private String redisHost;
+
+  @Value("${spring.data.redis.port}")
+  private int redisPort;
+
   //redis 연결 팩토리 설정
   @Bean
   public RedisConnectionFactory redisConnectionFactory() {
-    return new LettuceConnectionFactory(); // application.yml의 host/port를 따름
+    RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration(redisHost, redisPort);
+
+    LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+                                          .useSsl()
+                                          .build();
+
+    return new LettuceConnectionFactory(redisConfig, clientConfig); // application.yml의 host/port를 따름
   }
 
   //RedisTemplate 설정(Key,Value모두 String 기반)
