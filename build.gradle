@@ -44,6 +44,15 @@ dependencies {
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+    // Spring Boot Actuator   매트릭/모니터링
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // 프로메테우스
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // ElasticSearch
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    implementation 'co.elastic.clients:elasticsearch-java'
 
     // gson
     implementation 'com.google.code.gson:gson:2.10.1'
