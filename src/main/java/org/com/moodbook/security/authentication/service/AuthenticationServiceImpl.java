@@ -47,15 +47,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     AuthenticationEntity entity = AuthenticationEntity.builder()
         .member(member)
         .refreshToken(refreshToken)
-        .tokenType("Bearer ")
         .build();
 
     authenticationRepository.save(entity);
     return LoginResponseDTO.builder()
         .accessToken(accessToken)
         .refreshToken(refreshToken)
-        .tokenType("Bearer ")
-        .member(MemberDTO.toDto(member))
         .build();
   }
 
