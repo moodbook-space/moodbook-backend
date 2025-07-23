@@ -1,17 +1,13 @@
 package org.com.moodbook.post.dto;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.com.moodbook.post.entity.Comment;
 
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class CommentResponse {
   private Long id;
@@ -21,4 +17,16 @@ public class CommentResponse {
   private LocalDateTime createdAt;
   private boolean isMine;
   private List<CommentResponse> replies;
+
+  public static CommentResponse withoutReplies(Comment c, Long memberId) {
+    return CommentResponse.builder()
+        .id(c.getId())
+        .authorId(c.getAuthor().getId())
+        .authorName(c.getAuthor().getName())
+        .content(c.getContent())
+        .createdAt(c.getCreatedAt())
+        .isMine(c.getAuthor().getId().equals(memberId))
+        .replies(Collections.emptyList())
+        .build();
+  }
 }
