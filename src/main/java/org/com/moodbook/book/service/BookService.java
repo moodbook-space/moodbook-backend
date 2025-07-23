@@ -1,19 +1,20 @@
 package org.com.moodbook.book.service;
 
 import java.util.List;
-import org.com.moodbook.book.dto.AladinBookResponse;
 import org.com.moodbook.book.dto.BookEmotionAnalyzeResponse;
 import org.com.moodbook.book.dto.BookEmotionRecommendAllRequest;
 import org.com.moodbook.book.dto.BookEmotionRecommendAllResponse;
 import org.com.moodbook.book.dto.BookEmotionRecommendRequest;
 import org.com.moodbook.book.dto.BookEmotionRecommendResponse;
-import org.com.moodbook.book.dto.BookRequest;
 import org.com.moodbook.book.dto.BookResponse;
-import org.com.moodbook.emotion.entity.BookEmotionScore;
+import org.com.moodbook.book.entity.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value.Bool;
 
 public interface BookService {
+
+  List<BookResponse> saveAllBooks(List<Book> books);
 
   /** 알라딘 평점 기준 추천 **/
   Page<BookResponse> getRecommendedBooks(Pageable pageable);
