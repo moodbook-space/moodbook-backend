@@ -174,9 +174,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
       ChatRoomMember joinRequest = chatRoomMemberRepository.findByChatRoomIdAndMemberId(roomId,
           chatRoomMemberId);
 
-      ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-          .orElseThrow(() -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND));
-      Member owner = chatRoom.getOwner();
 //        System.out.println(chatRoomMemberId);
 //        Member member = memberRepository.findById(chatRoomMemberId)
 //            .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
