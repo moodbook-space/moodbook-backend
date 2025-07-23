@@ -33,7 +33,8 @@ spring:
       mode: never
 
   elasticsearch:
-    uris: "http://43.203.174.101:9200"
+    uris: ${ELASTICSEARCH_URL}
+    host: ${ELASTICSEARCH_HOST}
 
   data:
     mongodb:
