@@ -13,7 +13,6 @@ import org.com.moodbook.post.dto.ReportSummaryResponse;
 import org.com.moodbook.post.dto.UpdateReportRequest;
 import org.com.moodbook.post.service.ReportService;
 import org.com.moodbook.security.core.CustomMemberDetails;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

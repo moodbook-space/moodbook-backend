@@ -1,11 +1,8 @@
 package org.com.moodbook.post.service;
 
-import java.util.List;
 import org.com.moodbook.post.dto.ChatLinkRequest;
 import org.com.moodbook.post.dto.CreateMeetingRequest;
 import org.com.moodbook.post.dto.MeetingDetailResponse;
-import org.com.moodbook.post.dto.MeetingJoinDto;
-import org.com.moodbook.post.dto.MeetingJoinResponseRequest;
 import org.com.moodbook.post.dto.MeetingSummaryResponse;
 import org.com.moodbook.post.dto.UpdateMeetingRequest;
 import org.springframework.data.domain.Page;
