@@ -4,6 +4,7 @@ package org.com.moodbook.security.core;
 import java.util.Collection;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
+import org.com.moodbook.common.constants.MemberStatus;
 import org.com.moodbook.member.entity.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,6 +23,8 @@ public class CustomMemberDetails implements UserDetails {
   public String getUserEmail() {
     return member.getEmail();
   }
+
+  public MemberStatus getStatus(){return  member.getStatus();}
 
   @Override
   public String getUsername() {return member.getName();}
