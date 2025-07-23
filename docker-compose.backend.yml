@@ -9,6 +9,8 @@ services:
     image: moodbook_backend
     ports:
       - "${APP_PORT}:${APP_PORT}"
+    env_file:
+      - .env
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - JAVA_TOOL_OPTIONS=-Xms512m -Xmx512m     # JVM 메모리 관리
