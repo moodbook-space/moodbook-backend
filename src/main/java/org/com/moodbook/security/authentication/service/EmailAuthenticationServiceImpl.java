@@ -3,6 +3,7 @@ package org.com.moodbook.security.authentication.service;
 import java.time.Duration;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.com.moodbook.common.constants.MemberStatus;
 import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.common.exception.ErrorCode;
 import org.com.moodbook.common.util.EmailUtil;
@@ -91,6 +92,64 @@ public class EmailAuthenticationServiceImpl implements EmailAuthenticationServic
         memberRepository.delete(member);
       }
     }
+
+
+  }
+
+  //비밀번호 재설정 인증 이메일 발송
+  @Override
+  public void sendPasswordResetEmail(String email) {
+    // 1.사용자의 존재 여부 확인
+    Member member = memberRepository.findByEmail(email)
+        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+    // 2.회원 상태 확인 (탈퇴한 회원인지)
+    if (member.getStatus() == MemberStatus.DEACTIVATED){
+      throw new BaseException(ErrorCode.MEMBER_ALREADY_DEACTIVATED);
+    }
+    // 3.이메일 인증 여부 확인
+    if (!member.isEmailVerified()){
+      throw new BaseException(ErrorCode.EMAIL_NOT_VERIFIED);
+    }
+    // 4. 재설정 용 토큰 생성
+    String token = UUID.randomUUID().toString();
+
+    //5. Redis 저장 (TTL 10분)
+    String redisKey = "password-reset:" + token;
+    redisTemplate.opsForValue().set(redisKey, token, Duration.ofMinutes(10));
+    redisTemplate.opsForValue().set(token, email,Duration.ofMinutes(10));
+
+    // 6. 이메일 전송
+    String subject = "[MoodBook] 비밀번호 재설정 요청";
+    String body = "<h3>비밀번호 재설정 요청</h3>"
+        +  "<p>아래 링크를 클릭하여 비밀번호를 재설정 하세요<p>"
+        + "<a href='http://localhost:8080/auth/reset-password?token=" + token + "'>비밀번호 재설정하기</a>";
+
+    emailUtil.sendEmail(email, subject, body);
+
+  }
+
+  @Override
+  public void resetPassword(String token, String newPassword) {
+    // 1. Redis에 해당 토큰 존재 여부 확인
+    String redisKey = "password-reset:" + token;
+    Boolean isValid = redisTemplate.hasKey(redisKey);
+
+    if (!isValid){
+      throw new BaseException(ErrorCode.INVALID_TOKEN);
+    }
+
+    // 2.이메일 조회
+    String email = redisTemplate.opsForValue().get(token);
+    if (email == null) {
+      throw new BaseException(ErrorCode.INVALID_TOKEN);
+    }
+
+    // 3.회원 존재 여부 확인
+    Member member = memberRepository.findByEmail(email)
+        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+
+    // 4.
+
 
 
   }
