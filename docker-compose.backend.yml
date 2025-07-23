@@ -44,6 +44,10 @@ services:
       # JWT
       - JWT_SECRET=${JWT_SECRET}
 
+      # Mail
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+
       # Aladin API
       - ALADIN_API_KEY=${ALADIN_API_KEY}
       - ALADIN_BASE_URL=${ALADIN_BASE_URL}
