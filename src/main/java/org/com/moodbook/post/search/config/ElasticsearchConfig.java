@@ -6,6 +6,7 @@ import co.elastic.clients.transport.rest_client.RestClientTransport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
@@ -13,10 +14,13 @@ import org.springframework.scheduling.annotation.Async;
 @Configuration
 public class ElasticsearchConfig {
 
+  @Value("${spring.elasticsearch.host}")
+  private String host;
+
   @Bean
   public RestClient restClient() {
     return RestClient.builder(
-        HttpHost.create("http://43.203.174.101:9200")
+        HttpHost.create(host)
     ).build();
   }
 
