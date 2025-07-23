@@ -17,24 +17,24 @@ public interface BookService {
   List<BookResponse> saveAllBooks(List<Book> books);
 
   /** 알라딘 평점 기준 추천 **/
-  Page<BookResponse> getRecommendedBooks(Pageable pageable);
+  Page<BookResponse> getRecommendedBooks(Pageable pageablem, Long memberId);
 
   /** 책 상세 조회 **/
   BookResponse getBookById(Long id, Long memberId);
 
   /** 책 조회수별로 조회 **/
-  Page<BookResponse> getTrendingBooks(Pageable pageable);
+  Page<BookResponse> getTrendingBooks(Pageable pageable, Long memberId);
 
   /** 감정 별 책 추천 Top10 **/
-  List<BookEmotionRecommendResponse> getBooksByEmotionTop10(BookEmotionRecommendRequest request);
+  List<BookEmotionRecommendResponse> getBooksByEmotionTop10(BookEmotionRecommendRequest request, Long memberId);
 
   /** 감정 별 책 추천 내림차순 **/
-  List<BookEmotionRecommendAllResponse> getBooksByEmotionDesc(BookEmotionRecommendAllRequest request);
+  List<BookEmotionRecommendAllResponse> getBooksByEmotionDesc(BookEmotionRecommendAllRequest request, Long memberId);
 
   /** 감정 분석 후 책 전체 조회 **/
   List<BookEmotionAnalyzeResponse> getAllBooksForEmotionAnalyze();
 
   /** 책 전체 조회 **/
-  Page<BookResponse> getAllBooks(Pageable pageable);
+  Page<BookResponse> getAllBooks(Pageable pageable, Long memberId);
 
   }
