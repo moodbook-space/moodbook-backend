@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,10 +41,10 @@ public class MemberController {
       @ApiResponse(responseCode = "500", description = "회원가입에 실패하였습니다.")
   })
   @PostMapping("/tempSignUp")
-  public ResponseEntity<MemberDTO> tempSignUp(@RequestBody MemberTempJoinDTO dto) {
+  public ResponseEntity<String> tempSignUp(@RequestBody MemberTempJoinDTO dto) {
 
     MemberDTO result = memberService.tempjoin(dto);
-    return ResponseEntity.status(HttpStatus.OK).body(result);
+    return ResponseEntity.status(HttpStatus.OK).body("회원가입이 완료 되었습니다.\n 이메일 인증 후 로그인해주세요" );
   }
 
   /**
@@ -99,6 +100,26 @@ public class MemberController {
     Long memberId = memberDetails.getId();
     MemberDTO dto = memberService.getMyInfo(memberId);
     return ResponseEntity.status(HttpStatus.OK).body(dto);
+  }
+
+  @Operation(summary = "회원 탈퇴(비활성화)",description = "MemberStatus를 deactivated로 변경")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200",description = "탈퇴가 완료 되었습니다"),
+      @ApiResponse(responseCode = "403",description = "권한이 없습니다"),
+      @ApiResponse(responseCode = "404",description = "탈퇴할 회원이 존재하지 않습니다"),
+      @ApiResponse(responseCode = "409",description = "이미 탈퇴 처리 된 회원입니다")
+  })
+  @PatchMapping("/deactivate/{targetId}")
+  public ResponseEntity<String> deactivateMember(
+      @AuthenticationPrincipal CustomMemberDetails memberDetails,
+      @PathVariable("targetId") Long targetId
+  ){
+    Long requestId = memberDetails.getId();//비활성화 진행하는 아이디값
+    memberService.deactivate(requestId, targetId);
+
+    return ResponseEntity.status(HttpStatus.OK).body("회원 탈퇴가 완료 되었습니다");
+
+
   }
 
 
