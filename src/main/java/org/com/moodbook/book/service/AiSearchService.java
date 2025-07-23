@@ -8,5 +8,4 @@ public interface AiSearchService {
   AIResponse askQuestion(String prompt);
 
   BookResponse fetchBookByIsbn13(String isbn13);
-
 }

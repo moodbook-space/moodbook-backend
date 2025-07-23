@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/openai")
 public class AISearchController {
 
-
   private final AiSearchService aiSearchService;
 
   @Operation(summary = "ai검색을 통한 책 추천",description = "openai의 response를 이용해 db에 없던 책은 자동으로 db에 추가까지 해줍니다 ")
