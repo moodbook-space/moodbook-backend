@@ -46,9 +46,10 @@ public class BookController {
         @ApiResponse(responseCode = "500", description = "도서 리스트 반환 오류")
     })
     public ResponseEntity<Page<BookResponse>> getRecommendedBooks(
-        @PageableDefault(size = 10, page = 0)
-        Pageable pageable) {
-        Page<BookResponse> recommendedBooks = bookService.getRecommendedBooks(pageable);
+        @PageableDefault(size = 10, page = 0) Pageable pageable,
+        @AuthenticationPrincipal CustomMemberDetails memberDetails) {
+        Long memberId = (memberDetails != null) ? memberDetails.getId() : null;
+        Page<BookResponse> recommendedBooks = bookService.getRecommendedBooks(pageable, memberId);
         return ResponseEntity.status(HttpStatus.OK).body(recommendedBooks);
     }
 
@@ -60,9 +61,11 @@ public class BookController {
     })
     @GetMapping("")
     public ResponseEntity<Page<BookResponse>> getBooks(
-        @PageableDefault(size = 100, page = 0) Pageable pageable
+        @PageableDefault(size = 100, page = 0) Pageable pageable,
+        @AuthenticationPrincipal CustomMemberDetails memberDetails
     ) {
-        Page<BookResponse> books = bookService.getAllBooks(pageable);
+        Long memberId = (memberDetails != null) ? memberDetails.getId() : null;
+        Page<BookResponse> books = bookService.getAllBooks(pageable, memberId);
         return ResponseEntity.status(HttpStatus.OK).body(books);
     }
 
@@ -75,22 +78,23 @@ public class BookController {
     })
     public ResponseEntity<BookResponse> getBookDetail(
         @PathVariable Long bookId, @AuthenticationPrincipal CustomMemberDetails memberDetails) {
-        Long memberId = memberDetails.getId();
+        Long memberId = (memberDetails != null) ? memberDetails.getId() : null;
         BookResponse book = bookService.getBookById(bookId, memberId);
         return ResponseEntity.status(HttpStatus.OK).body(book);
     }
 
     @GetMapping("/trending")
-    @Operation(summary = "책 조회수별 도서 조회",
-        description = "책 조회수별로 도서 조회를 합니다.")
+    @Operation(summary = "조회수별 도서 조회",
+        description = "조회수별로 도서 조회를 합니다.")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "도서 상세 정보 조회 성공"),
-        @ApiResponse(responseCode = "500", description = "도서 상세 정보 조회 실패")
+        @ApiResponse(responseCode = "200", description = "조회수별 도서 조회 성공"),
+        @ApiResponse(responseCode = "500", description = "조회수별 도서 조회 실패")
     })
     public ResponseEntity<Page<BookResponse>> getTrendingBooks(
         @PageableDefault(size = 20, page = 0)
-        Pageable pageable) {
-        Page<BookResponse> trendingBooks = bookService.getTrendingBooks(pageable);
+        Pageable pageable, @AuthenticationPrincipal CustomMemberDetails memberDetails) {
+        Long memberId = (memberDetails != null) ? memberDetails.getId() : null;
+        Page<BookResponse> trendingBooks = bookService.getTrendingBooks(pageable, memberId);
         return ResponseEntity.status(HttpStatus.OK).body(trendingBooks);
     }
 
@@ -102,9 +106,11 @@ public class BookController {
         @ApiResponse(responseCode = "500", description = "인기 추천 도서 정보 조회 실패")
     })
     public ResponseEntity<List<BookEmotionRecommendResponse>> getBooksByEmotionTop10(
-        @RequestBody @Valid BookEmotionRecommendRequest request
+        @RequestBody @Valid BookEmotionRecommendRequest request,
+        @AuthenticationPrincipal CustomMemberDetails memberDetails
     ) {
-        List<BookEmotionRecommendResponse> result = bookService.getBooksByEmotionTop10(request);
+        Long memberId = (memberDetails != null) ? memberDetails.getId() : null;
+        List<BookEmotionRecommendResponse> result = bookService.getBooksByEmotionTop10(request, memberId);
         return ResponseEntity.ok(result);
     }
 
@@ -117,12 +123,14 @@ public class BookController {
     })
     public ResponseEntity<List<BookEmotionRecommendAllResponse>> getBooksByEmotionAll(
         @RequestBody @Valid BookEmotionRecommendAllRequest request,
+        @AuthenticationPrincipal CustomMemberDetails memberDetails,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size
     ) {
+        Long memberId = (memberDetails != null) ? memberDetails.getId() : null;
         request.setPage(page);
         request.setSize(size);
-        List<BookEmotionRecommendAllResponse> result = bookService.getBooksByEmotionDesc(request);
+        List<BookEmotionRecommendAllResponse> result = bookService.getBooksByEmotionDesc(request, memberId);
         return ResponseEntity.ok(result);
     }
 
