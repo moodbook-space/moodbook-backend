@@ -32,6 +32,10 @@ spring:
     init:
       mode: never
 
+  spring:
+    elasticsearch:
+      uris: ${ELASTICSEARCH_URI}
+
   data:
     mongodb:
       uri: ${MONGODB_URI}
@@ -41,11 +45,6 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
       timeout: 6000
-
-    elasticsearch:
-      client:
-        rest:
-          uris: "http://43.203.174.101:9200"
 
   security:
     oauth2:
