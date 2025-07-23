@@ -7,4 +7,8 @@ public interface EmailAuthenticationService {
   void verifyToken(String token);
 
   void cleanupByExpiredToken(String expiredKey);
+
+  void sendPasswordResetEmail(String email);
+
+  void resetPassword(String token,String newPassword);
 }

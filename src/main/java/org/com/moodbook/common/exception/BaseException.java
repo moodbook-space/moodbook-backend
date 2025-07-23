@@ -43,6 +43,7 @@ public class BaseException extends RuntimeException {
     public static final BaseException REFRESH_TOKEN_MISMATCH = new BaseException(ErrorCode.REFRESH_TOKEN_MISMATCH);
     public static final BaseException UNAUTHORIZED_ACCESS = new BaseException(ErrorCode.UNAUTHORIZED_ACCESS);
     public static final BaseException ACCESS_TOKEN_NOT_FOUND = new BaseException(ErrorCode.ACCESS_TOKEN_NOT_FOUND);
+    public static final BaseException MEMBER_ALREADY_DEACTIVATED = new BaseException(ErrorCode.MEMBER_ALREADY_DEACTIVATED);
     public static final BaseException EMOTION_SAVE_ERROR = new BaseException(ErrorCode.EMOTION_SAVE_ERROR);
     private final ErrorCode errorCode;
 

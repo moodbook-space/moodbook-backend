@@ -7,6 +7,7 @@ import static org.com.moodbook.common.exception.ErrorCode.MEMBER_DEACTIVATED;
 
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
+import org.com.moodbook.common.constants.AWSS3Constants;
 import org.com.moodbook.common.constants.Gender;
 import org.com.moodbook.common.constants.MemberStatus;
 import org.com.moodbook.common.constants.Role;
@@ -45,6 +46,11 @@ public class MemberServiceImpl implements MemberService {
   private final AuthenticationRepository authenticationRepository;
   private final RedisTemplate<String, String> redisTemplate;
 
+  private Member findMemberOrThrow(Long memberId) {
+    return memberRepository.findById(memberId)
+        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+  }
+
   //임시 회원가입 진행
   @Override
   @Transactional
@@ -58,24 +64,23 @@ public class MemberServiceImpl implements MemberService {
       throw new BaseException(ErrorCode.ALREADY_EXIST_CONTACT);
     }
 
-    Role role = Role.valueOf(dto.getRole());
+
     Gender gender = Gender.valueOf(dto.getGender());
-    MemberStatus status = MemberStatus.valueOf(dto.getStatus());
+
 
     Member member = Member.builder()
         .email(dto.getEmail())
+        .role(Role.USER)
         .password(passwordEncoder.encode(dto.getPassword()))
-        .role(role)
+        .status(MemberStatus.ACTIVATED)
         .name(dto.getName())
         .contact(dto.getContact())
-        .emailVerified(dto.isEmailVerified())
-        .status(status)
         .build();
 
     MemberProfile profile = MemberProfile.builder()
         .gender(gender)
         .address(dto.getAddress())
-        .myImage(dto.getMyImage())
+        .myImage(AWSS3Constants.DEFAULT_PROFILE_IMAGE)
         .nickname(dto.getNickname())
         .build();
 
@@ -128,24 +133,21 @@ public class MemberServiceImpl implements MemberService {
   @Override
   public void logout(Long requesterId, Long targetId) {
 
-    Member requester = memberRepository.findById(requesterId)
-        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+    //요청자
+    Member requester = findMemberOrThrow(requesterId);
+    //로그아웃 대상자
+    Member target = findMemberOrThrow(targetId);
 
-    // 요청자가 본인이 아닌데 관리자가 아니라면 예외 처리
-    if (!requesterId.equals(targetId) && requester.getRole() != Role.ADMIN) {
+    // 요청자가 본인이 아닌데 아니라면 예외 처리
+    if (!requester.getId().equals(target.getId())) {
       throw new BaseException(ErrorCode.UNAUTHORIZED_ACCESS);
     }
-
-    //대상 사용자가 실제 존재하는지 확인
-    Member target = memberRepository.findById(targetId)
-        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
 
     //인증 정보 삭제(로그 아웃)->authentication에 저장 된 refresh토큰 삭제
     authenticationRepository.deleteByMember_Id(targetId);
 
     //요청 헤더에서 현재 AccessToken추출
     String accessToken = jwtTokenProvider.getCurrentToken();
-
     //토큰 만료 시간 계산
     long remainingTime = jwtTokenProvider.getAccessTokenRemainingTime(accessToken);
 
@@ -157,6 +159,28 @@ public class MemberServiceImpl implements MemberService {
     );
 
 
+  }
+
+  @Override
+  public void deactivate(Long requestId, Long targetId) {
+
+    // 1.탈퇴 대상 사용자 조회
+    Member deactivateMember = findMemberOrThrow(requestId);
+
+    // 2.요청자 조회
+    Member requester =  findMemberOrThrow(targetId);
+
+    // 3.요청자가 관리자 이거나 또는 본인인지 확인
+    if (!requester.getId().equals(deactivateMember.getId()) && requester.getRole() != Role.ADMIN) {
+      throw new BaseException(ErrorCode.UNAUTHORIZED_ACCESS);
+
+    }
+    if (deactivateMember.getStatus() == MemberStatus.DEACTIVATED) {
+      throw new BaseException(ErrorCode.MEMBER_ALREADY_DEACTIVATED);
+    }
+
+    // 5.상태 비활성화 처리
+    deactivateMember.setStatus(MemberStatus.DEACTIVATED);
   }
 
 

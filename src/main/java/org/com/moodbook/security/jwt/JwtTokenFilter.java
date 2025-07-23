@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.com.moodbook.common.constants.MemberStatus;
 import org.com.moodbook.security.core.CustomMemberDetails;
 import org.com.moodbook.security.core.CustomUserDetailsService;
 import org.com.moodbook.threadlocal.TraceIdHolder;
@@ -66,6 +67,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
       String accessToken = extractTokenFromRequest(request);      // 요청 헤더에서 토큰 추출
 
+      //블랙 리스트 확인
       if (StringUtils.hasText(accessToken)) {
         String blacklistKey = "access-token-blacklist:" + accessToken;
         if (redisTemplate.hasKey(blacklistKey)) {
@@ -76,10 +78,22 @@ public class JwtTokenFilter extends OncePerRequestFilter {
           return;
         }
       }
+      //토큰 유효성 검사 및 인증 처리
 
       if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
         UsernamePasswordAuthenticationToken authenticationToken = getAuthentication(
             accessToken);
+        if(authenticationToken != null) {
+          CustomMemberDetails memberDetails = (CustomMemberDetails) authenticationToken.getPrincipal();
+
+          //상태 확인: 비활성화 된 회원이면 403응답 반환
+          if (memberDetails.getStatus() == MemberStatus.DEACTIVATED){
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write("비활성화 된 계정입니다");
+            return;
+
+          }
+        }
         // 토큰에서 사용자를 꺼내서 담은 사용자 인증 객체
 
         authenticationToken.setDetails(
