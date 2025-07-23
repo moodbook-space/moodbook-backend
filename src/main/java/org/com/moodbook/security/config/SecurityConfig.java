@@ -101,6 +101,8 @@ public class SecurityConfig {
             config.setAllowedOriginPatterns(List.of(
                 "http://localhost:5173",
                 "http://localhost:8080",
+                "http://localhost:3000",
+                "http://127.0.0.1:3000",
                 "http://moodbook.live",
                 "https://moodbook.live",
                 "http://43.200.89.83",
