@@ -59,4 +59,7 @@ public class Member extends BaseTime {
         this.memberProfile = memberProfile;
         memberProfile.setMember(this);
     }
+    public void updateStatus(MemberStatus status) {
+        this.status = status;
+    }
 }
