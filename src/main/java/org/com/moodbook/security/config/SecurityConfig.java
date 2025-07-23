@@ -1,5 +1,7 @@
 package org.com.moodbook.security.config;
 
+import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.com.moodbook.security.jwt.JwtTokenFilter;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -27,8 +31,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+            .cors(cors -> cors
+                .configurationSource(corsConfigurationSource())
+            )
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/ws-chat/**") // ⭐️ SockJS/WebSocket CSRF 예외처리!
+                .ignoringRequestMatchers("/ws-chat/**")
                 .disable()
             )
             .authorizeHttpRequests(auth -> auth
@@ -77,5 +84,32 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
         throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        return request -> {
+            CorsConfiguration config = new CorsConfiguration();
+
+            // 필요한 헤더만 명시, 필요시 변경 가능
+            config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+
+            // HTTP 메소드 사용시 변경 가능
+            config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
+
+            // 허용할 url
+            config.setAllowedOriginPatterns(List.of(
+                "http://localhost:5173",
+                "http://localhost:8080",
+                "http://moodbook.live",
+                "https://moodbook.live",
+                "http://43.200.89.83",
+                "https://43.200.89.83"
+            ));
+
+            // 자격 증명(쿠키, 토큰) 허용
+            config.setAllowCredentials(true);
+            return config;
+        };
     }
 }
