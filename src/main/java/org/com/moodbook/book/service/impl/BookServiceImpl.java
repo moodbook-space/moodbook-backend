@@ -4,15 +4,12 @@ import static org.com.moodbook.common.exception.BaseException.BOOK_NOT_FOUND;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.com.moodbook.batch.dto.BatchBookResponse;
-import org.com.moodbook.book.dto.AladinBookResponse;
 import org.com.moodbook.book.dto.BookEmotionAnalyzeResponse;
 import org.com.moodbook.book.dto.BookEmotionRecommendAllRequest;
 import org.com.moodbook.book.dto.BookEmotionRecommendAllResponse;
@@ -23,11 +20,10 @@ import org.com.moodbook.book.entity.Book;
 import org.com.moodbook.book.entity.BookCount;
 
 import org.com.moodbook.book.entity.QBook;
-import org.com.moodbook.book.entity.QBookCount;
+import org.com.moodbook.book.eventlistener.event.BookCreatedEvent;
 import org.com.moodbook.book.repository.BookCountRepository;
 import org.com.moodbook.book.repository.BookRepository;
 import org.com.moodbook.book.service.BookService;
-import org.com.moodbook.common.constants.EmotionTag;
 import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.common.exception.ErrorCode;
 import org.com.moodbook.emotion.entity.BookEmotionScore;
@@ -36,14 +32,14 @@ import org.com.moodbook.member.entity.Member;
 import org.com.moodbook.member.repository.MemberRepository;
 import org.com.moodbook.recentbookviews.entity.RecentBookView;
 import org.com.moodbook.recentbookviews.repository.RecentBookViewRepository;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +56,18 @@ public class BookServiceImpl implements BookService {
   private final BookEmotionScoreRepository bookEmotionScoreRepository;
   private final MemberRepository memberRepository;
   private final RecentBookViewRepository recentBookViewRepository;
+
+  @Autowired
+  private ApplicationEventPublisher publisher;
+
+  @Override
+  public List<BookResponse> saveAllBooks(List<Book> books) {
+    bookRepository.saveAll(books);
+    publisher.publishEvent(new BookCreatedEvent(books));
+
+    return books.stream().map(BookResponse::from).collect(Collectors.toList());
+
+  }
 
   /** Recommendation (기준: 알라딘 평점순 - 높은 순으로) **/
   @Override
