@@ -1,21 +1,18 @@
 package org.com.moodbook.post.repository;
 
-
+import java.util.List;
 import org.com.moodbook.post.entity.Comment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import java.util.List;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-  /**
-   * 최상위 댓글만, postId 기준, 시간순 조회
-   */
-  List<Comment> findByPostIdAndParentCommentIsNullOrderByCreatedAtAsc(Long postId);
+  // 페이징 가능한 최상위 댓글 조회
+  Page<Comment> findByPostIdAndParentCommentIsNullOrderByCreatedAtAsc(Long postId, Pageable pageable);
 
-  /**
-   * 특정 댓글의 대댓글 조회(시간순)
-   */
+  // 대댓글 이상 전체 트리 조회의 시작점
   List<Comment> findByParentCommentIdOrderByCreatedAtAsc(Long parentCommentId);
 }

@@ -94,6 +94,9 @@ dependencies {
 
     // env 적용
     implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+
+    // Jackson DataType
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
 // querydsl

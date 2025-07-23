@@ -1,6 +1,8 @@
 package org.com.moodbook.post.search.document;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.time.Instant;
+import java.time.ZoneId;
 import lombok.*;
 import org.com.moodbook.post.entity.Meeting;
 import org.springframework.data.annotation.Id;
@@ -31,8 +33,8 @@ public class MeetingEsDocument {
 
   // Meeting 전용 필드
   private String meetingType;
-  private LocalDateTime startAt;
-  private LocalDateTime endAt;
+  private Instant startAt;
+  private Instant endAt;
   private Integer capacity;
   private String location;
   private Long chatRoomId;
@@ -51,8 +53,8 @@ public class MeetingEsDocument {
                 .toList()
         )
         .meetingType(m.getMeetingType().name())
-        .startAt(m.getStartAt())
-        .endAt(m.getEndAt())
+        .startAt(m.getStartAt().atZone(ZoneId.systemDefault()).toInstant())
+        .endAt(m.getEndAt().atZone(ZoneId.systemDefault()).toInstant())
         .capacity(m.getCapacity())
         .location(m.getLocation())
         .chatRoomId(m.getChatRoomId())
