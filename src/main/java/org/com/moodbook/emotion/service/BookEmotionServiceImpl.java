@@ -44,8 +44,18 @@ public class BookEmotionServiceImpl implements BookEmotionService {
   public BookEmotionScoreResponse saveEmotionScore(BookEmotionScoreRequest bookEmotionRequest)
       throws Exception {
     String description = bookEmotionRequest.getDescription();
+    String title = bookEmotionRequest.getBookTitle();
+    String gptAnalyzeContent;
 
-    Map<String, Integer> bookEmotionScoreMap = emotionAnalyzer.analyzeEmotion(description);
+    if (description == null || title.isEmpty()) {
+      gptAnalyzeContent = title;
+    }
+    else {
+      gptAnalyzeContent = description;
+    }
+
+
+    Map<String, Integer> bookEmotionScoreMap = emotionAnalyzer.analyzeEmotion(gptAnalyzeContent);
 
     Map<EmotionTag, Integer> emotionScoreEnumMap = toEnumMap(bookEmotionScoreMap);
 
