@@ -34,7 +34,7 @@ spring:
 
   elasticsearch:
     uris: ${ELASTICSEARCH_URL}
-    host: ${ELASTICSEARCH_HOST}
+    host: ${ELASTICSEARCH_URL}
 
   data:
     mongodb:
