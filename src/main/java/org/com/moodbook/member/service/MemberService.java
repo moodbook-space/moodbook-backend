@@ -21,6 +21,11 @@ public interface MemberService {
   //로그 아웃
   void logout(Long requestId,Long targetId);
 
+  //회원탈퇴(soft delete)->status를 deactivated로 변경
+  void deactivate(Long requestId,Long targetId);
+
+
+
 
 
 
