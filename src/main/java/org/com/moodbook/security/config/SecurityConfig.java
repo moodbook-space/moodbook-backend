@@ -31,8 +31,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+            .cors(cors -> cors
+                .configurationSource(corsConfigurationSource())
+            )
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/ws-chat/**") // ⭐️ SockJS/WebSocket CSRF 예외처리!
+                .ignoringRequestMatchers("/ws-chat/**")
                 .disable()
             )
             .authorizeHttpRequests(auth -> auth
