@@ -9,10 +9,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.regex.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class EmotionAnalyzer {
 
   @Value("${openai.api-key}")
@@ -51,15 +53,15 @@ public class EmotionAnalyzer {
         .build();
 
     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-    System.out.println("gpt 응답: " + response.body());
+    log.info("gpt 응답: {}", response.body());
 
     JsonNode root = mapper.readTree(response.body());
     JsonNode choices = root.path("choices");
-    if (!choices.isArray() || choices.size() == 0) {
+    if (!choices.isArray() || choices.isEmpty()) {
       throw new IllegalStateException("GPT 응답에 choices가 없음");
     }
 
-    String content = choices.get(0).path("content").get(0).path("text").asText();
+    String content = choices.get(0).path("message").path("content").asText();
     content = content.replaceAll("(?i)```json", "").replaceAll("(?i)```", "").trim();
 
     Pattern jsonPattern = Pattern.compile("\\{[\\s\\S]*?\\}");
