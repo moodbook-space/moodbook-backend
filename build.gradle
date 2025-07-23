@@ -55,7 +55,7 @@ dependencies {
 
     // ElasticSearch
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
-    implementation 'co.elastic.clients:elasticsearch-java'
+    implementation 'co.elastic.clients:elasticsearch-java:8.12.0'
 
     // gson
     implementation 'com.google.code.gson:gson:2.10.1'

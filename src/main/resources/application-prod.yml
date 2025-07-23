@@ -32,9 +32,8 @@ spring:
     init:
       mode: never
 
-  spring:
-    elasticsearch:
-      uris: ${ELASTICSEARCH_URI}
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URI}
 
   data:
     mongodb:
