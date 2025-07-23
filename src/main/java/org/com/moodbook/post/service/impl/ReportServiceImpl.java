@@ -80,6 +80,8 @@ public class ReportServiceImpl implements ReportService {
         .id(report.getId())
         .title(report.getTitle())
         .content(report.getContent())
+        .viewCount(report.getViewCount())      
+        .likeCount((int)likeService.countLikes(reportId))
         .bookId(report.getBook().getId())
         .bookTitle(report.getBook().getTitle())
         .bookAuthor(report.getBook().getAuthor())
