@@ -10,6 +10,18 @@ spring:
     hibernate:
       ddl-auto: update
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
   batch:
     jdbc:
       initialize-schema: never
@@ -32,6 +44,22 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
       timeout: 6000
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: ${GOOGLE_REDIRECT_URI}
+            scope:
+              - ${GOOGLE_SCOPE}
+
+moodbook:
+  url:
+    frontend: ${MOODBOOK_FRONTEND_URL}
+    backend: ${MOODBOOK_BACKEND_URL}
 
 management:
   endpoints:
