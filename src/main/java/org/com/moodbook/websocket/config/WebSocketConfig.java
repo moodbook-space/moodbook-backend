@@ -40,7 +40,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   public void registerStompEndpoints(StompEndpointRegistry registry) {
     registry.addEndpoint("/ws-chat")
         .setHandshakeHandler(new CustomHandshakeHandler())
-        .setAllowedOriginPatterns("*")
+        .setAllowedOrigins("http://localhost:3000", "http://localhost:8080", "http://localhost:5173") // 개발/운영 환경 모두 추가
         .withSockJS();
 
     registry.addEndpoint("/ws-gpt")
