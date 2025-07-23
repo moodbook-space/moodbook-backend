@@ -51,6 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     authenticationRepository.save(entity);
     return LoginResponseDTO.builder()
+        .member(member.getId())
         .accessToken(accessToken)
         .refreshToken(refreshToken)
         .build();
