@@ -11,7 +11,8 @@ services:
       - "${APP_PORT}:${APP_PORT}"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - TZ=Asia/Seoul                       # 한국 시간 설정
+      - JAVA_TOOL_OPTIONS=-Xms512m -Xmx512m     # JVM 메모리 관리
+      - TZ=Asia/Seoul                           # 한국 시간 설정
 
       # MySQL
       - DB_HOST=${DB_HOST}

@@ -28,7 +28,7 @@
     <file>${LOG_PATH}/app.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <fileNamePattern>${LOG_PATH}/app-%d{yyyy-MM-dd}.log</fileNamePattern>
-      <maxHistory>10</maxHistory>  <!-- : 10일치까지만 파일 보관(자동 삭제) -->
+      <maxHistory>1</maxHistory>  <!-- : 1일치까지만 파일 보관(자동 삭제) -->
     </rollingPolicy>
     <encoder>
       <Pattern>${FILE_PATTERN}</Pattern>

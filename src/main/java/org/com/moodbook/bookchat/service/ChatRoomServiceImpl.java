@@ -100,7 +100,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     if (request.getLimitMembers() != 0) {
       chatRoom.setLimitMembers(request.getLimitMembers());
     }
-
+    
+    chatRoomRepository.save(chatRoom);
+    
     return new ChatRoomResponse(
         chatRoom.getId(),
         chatRoom.getTitle(),
@@ -110,6 +112,39 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         ownerName,
         LocalDateTime.now()
     );
+  }
+
+  @Override
+  @Transactional
+  public ChatRoomMemberResponse requestJoinChatRoom(Long roomId, Long memberId) {
+      ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+          .orElseThrow(() -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND));
+
+      Member member = memberRepository.findById(memberId)
+          .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+
+      boolean alreadyJoined = chatRoomMemberRepository.existsByChatRoomAndMember(chatRoom,
+          member);
+      if (alreadyJoined) {
+          throw new BaseException(ErrorCode.ALREADY_EXIST_JOIN);
+      }
+
+      ChatRoomMember waitJoinMember = ChatRoomMember.builder()
+          .chatRoom(chatRoom)
+          .member(member)
+          .role(ChatRoomMemberRole.WAITING)
+          .status(ChatRoomMemberStatus.WAITING)
+          .build();
+      chatRoomMemberRepository.save(waitJoinMember);
+
+      ChatRoomMember savedMember = chatRoomMemberRepository.findByChatRoomAndMember(chatRoom,
+              member)
+          .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+
+      // 채팅방 멤버 가입 신청 알림
+      chatRoomNotificationHelper.notifyJoinRequest(chatRoom, member);
+
+      return ChatRoomMemberResponse.from(savedMember);
   }
 
   @Override
@@ -130,49 +165,22 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
   @Override
   @Transactional
-  public ChatRoomMemberResponse requestJoinChatRoom(Long roomId, Long memberId) {
-    ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-        .orElseThrow(() -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND));
-
-    Member member = memberRepository.findById(memberId)
-        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
-
-    boolean alreadyJoined = chatRoomMemberRepository.existsByChatRoomAndMember(chatRoom,
-        member);
-    if (alreadyJoined) {
-      throw new BaseException(ErrorCode.ALREADY_EXIST_JOIN);
-    }
-
-    ChatRoomMember waitJoinMember = ChatRoomMember.builder()
-        .chatRoom(chatRoom)
-        .member(member)
-        .role(ChatRoomMemberRole.WAITING)
-        .status(ChatRoomMemberStatus.WAITING)
-        .build();
-    chatRoomMemberRepository.save(waitJoinMember);
-
-    ChatRoomMember savedMember = chatRoomMemberRepository.findByChatRoomAndMember(chatRoom, member)
-        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
-
-//        // 채팅방 멤버 가입 신청 알림
-//        chatRoomNotificationHelper.notifyJoinRequest(chatRoom, member);
-
-    System.out.println(member.getName());
-
-    return ChatRoomMemberResponse.from(savedMember);
-  }
-
-  @Override
-  @Transactional
   public ChatRoomMemberResponse approveJoinChatRoom(ApproveJoinRequest request) {
 
-    Long chatRoomMemberId = request.getChatRoomMemberId();
-    Long roomId = request.getRoomId();
-    Long ownerId = request.getApproveId();
-    boolean approve = request.isApprove();
-    ChatRoomMember joinRequest = chatRoomMemberRepository.findByChatRoomIdAndMemberId(roomId,
-        chatRoomMemberId);
+      Long chatRoomMemberId = request.getChatRoomMemberId();
+      Long roomId = request.getRoomId();
+      Long ownerId = request.getApproveId();
+      boolean approve = request.isApprove();
+      ChatRoomMember joinRequest = chatRoomMemberRepository.findByChatRoomIdAndMemberId(roomId,
+          chatRoomMemberId);
 
+      ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+          .orElseThrow(() -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND));
+      Member owner = chatRoom.getOwner();
+//        System.out.println(chatRoomMemberId);
+//        Member member = memberRepository.findById(chatRoomMemberId)
+//            .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+   
     ChatRoom chatRoom = chatRoomRepository.findById(roomId)
         .orElseThrow(() -> new BaseException(ErrorCode.CHATROOM_NOT_FOUND));
     Member owner = chatRoom.getOwner();
@@ -190,8 +198,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
       ChatRoomMember saved = chatRoomMemberRepository.save(joinRequest);
 
-      // 채팅방 멤버 가입 신청 알림
-      chatRoomNotificationHelper.notifyJoinRequest(chatRoom, member);
+      // 채팅방 멤버 가입 승인 알림
+      chatRoomNotificationHelper.notifyApproval(joinRequest);
 
       return ChatRoomMemberResponse.from(saved);
     } else {
