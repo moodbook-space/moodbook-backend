@@ -22,7 +22,7 @@ public class MeetingDetailResponse {
   private String location;
   private int viewCount;
   private int likeCount;
-  private int currentParticipants;   // 승인된 인원 수
+  private int currentParticipants;
   private List<String> tags;
   private String hostName;
   private LocalDateTime createdAt;
