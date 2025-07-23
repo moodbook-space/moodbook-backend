@@ -16,7 +16,7 @@ public class ElasticsearchConfig {
   @Bean
   public RestClient restClient() {
     return RestClient.builder(
-        HttpHost.create("http://localhost:9200")
+        HttpHost.create("http://43.203.174.101:9200")
     ).build();
   }
 
