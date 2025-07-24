@@ -15,6 +15,7 @@ import org.com.moodbook.post.entity.Report;
 import org.com.moodbook.post.entity.MoodTag;
 import org.com.moodbook.post.repository.MoodTagRepository;
 import org.com.moodbook.post.repository.ReportRepository;
+import org.com.moodbook.post.search.service.ReportEsService;
 import org.com.moodbook.post.service.LikeService;
 import org.com.moodbook.post.service.ReportService;
 import org.springframework.data.domain.Page;
@@ -35,6 +36,7 @@ public class ReportServiceImpl implements ReportService {
   private final MemberRepository memberRepository;
   private final MoodTagRepository tagRepository;
   private final LikeService likeService;
+  private final ReportEsService reportEsService;
 
   @Override
   public Long createReport(Long memberId, CreateReportRequest req) {
@@ -43,7 +45,7 @@ public class ReportServiceImpl implements ReportService {
         .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
 
     // 책 정보 검증
-    var book = bookRepository.findById(req.getBookId())
+    Book book = bookRepository.findById(req.getBookId())
         .orElseThrow(() -> new BaseException(ErrorCode.BOOK_NOT_FOUND));
 
     // 태그 조회 (최소 하나 이상 필요하다면 추가 검증)
@@ -61,7 +63,10 @@ public class ReportServiceImpl implements ReportService {
         .moodTags(tags)
         .build();
 
-    reportRepository.save(report);
+    Report reports = reportRepository.save(report);
+
+    reportEsService.indexReport(reports);
+
     return report.getId();
   }
 
@@ -136,6 +141,7 @@ public class ReportServiceImpl implements ReportService {
     rpt.setMoodTags(tags);
 
     reportRepository.save(rpt);
+    reportEsService.indexReport(rpt);
   }
 
   @Override
@@ -145,7 +151,8 @@ public class ReportServiceImpl implements ReportService {
     if (!rpt.getMember().getId().equals(memberId)) {
       throw new BaseException(ErrorCode.ACCESS_DENIED);
     }
-    reportRepository.deleteById(reportId);  // 소프트 삭제
+    reportRepository.deleteById(reportId);
+    reportEsService.deleteReport(reportId);
   }
 
   // 도서 상세페이지에서 해당 도서에 관한 독후감목록만조회하기위한 메서드
