@@ -44,35 +44,8 @@ public class SecurityConfig {
                 // 나머지는 기존 코드와 동일
                 .requestMatchers("/api/oauth/**").permitAll()
                 .requestMatchers("/api/notification/**").permitAll()
-                .requestMatchers(
-                    "/redis/test",
-                    "/auth/**",
-                    "/api/oauth/",
-                    "/admin/**",
-                    "/api/admin/**",
-                    "/api/books/**",
-                    "/api/recent-books/**",
-                    "/api/reviews/**",
-                    "/api/openai/**",
-                    "/v3/api-docs/**",
-                    "/swagger-ui/**",
-                    "/swagger-ui.html",
-                    "/chat.html",
-                    "/main.html",
-                    "/images/**",
-                    "/sounds/**",
-                    "/favicon.ico",
-                    "/error",
-                    "/emotion/**",
-                    "/api/emotion/**",
-                    "/api/books/**",
-                    "/actuator/prometheus",     //프로메테우스
-                    "/login",
-                    "/signUp",
-                    "/books/**",
-                    "/api/books/**"
-                ).permitAll()
                 .requestMatchers("/api/chat-rooms/**").authenticated()
+                .requestMatchers("/api/chat/**").authenticated()
                 .requestMatchers("/chat-rooms/**").authenticated()
                 .anyRequest().authenticated()
             )
