@@ -1,5 +1,8 @@
 package org.com.moodbook.security.config;
 
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +51,9 @@ public class SecurityConfig {
                 // 나머지는 기존 코드와 동일
                 .requestMatchers("/api/oauth/**").permitAll()
                 .requestMatchers("/api/notification/**").permitAll()
-                .requestMatchers("/api/tags").permitAll()
+                .requestMatchers(GET, "/api/tags").permitAll()
+                // POST /api/tags 는 관리자만 허용
+                .requestMatchers(POST, "/api/tags").hasRole("ADMIN")
                 .requestMatchers(
                     "/redis/test",
                     "/oauth2/**",
