@@ -26,7 +26,7 @@ public interface BookService {
   Page<BookResponse> getTrendingBooks(Pageable pageable, Long memberId);
 
   /** 감정 별 책 추천 Top10 **/
-  List<BookEmotionRecommendResponse> getBooksByEmotionTop10(BookEmotionRecommendRequest request, Long memberId);
+  List<BookEmotionRecommendResponse> getBooksByEmotionTop10(String emotion, Long memberId);
 
   /** 감정 별 책 추천 내림차순 **/
   List<BookEmotionRecommendAllResponse> getBooksByEmotionDesc(BookEmotionRecommendAllRequest request, Long memberId);
