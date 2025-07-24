@@ -7,6 +7,7 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.com.moodbook.post.entity.Report;
 import org.com.moodbook.post.search.document.ReportEsDocument;
 import org.com.moodbook.post.search.repository.ReportEsRepository;
 import org.com.moodbook.post.repository.ReportRepository;
@@ -100,5 +101,16 @@ public class ReportEsService {
       log.error("Report 자동완성 오류", e);
       throw new RuntimeException("Report 자동완성 검색 오류", e);
     }
+  }
+
+  @Transactional
+  public void indexReport(Report report) {
+    ReportEsDocument doc = ReportEsDocument.fromEntity(report);
+    reportEsRepository.save(doc);
+  }
+
+  @Transactional
+  public void deleteReport(Long reportId) {
+    reportEsRepository.deleteById(reportId);
   }
 }
