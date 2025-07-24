@@ -92,12 +92,11 @@ dependencies {
     // web-socket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
-    // Jackson DataType
+    // JSR-310(Java8 Date/Time)
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
     // .env
     implementation 'io.github.cdimascio:java-dotenv:5.2.2'
-
 }
 
 // querydsl

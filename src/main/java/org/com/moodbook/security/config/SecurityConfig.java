@@ -78,6 +78,7 @@ public class SecurityConfig {
                     "/api/books/**"
                 ).permitAll()
                 .requestMatchers("/api/chat-rooms/**").authenticated()
+                .requestMatchers("/api/chat/**").authenticated()
                 .requestMatchers("/chat-rooms/**").authenticated()
                 .anyRequest().authenticated()
             )
