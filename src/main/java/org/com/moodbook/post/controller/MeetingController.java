@@ -59,13 +59,6 @@ public class MeetingController {
 
   /**
    * 독서모임 상세 조회
-   * GET /api/meetings/{meetingId}
-   * Response JSON (MeetingDetailResponse)에 아래 필드 포함
-   *  - chatRoomId  ← 생성된 채팅방 ID (null 가능)
-   * 프론트에서
-   * 1. 이 API 호출 후 반환된 chatRoomId가 있을 때만
-   *    “채팅방 입장하기” 버튼 노출
-   * 2. 버튼 클릭 시 /chat-rooms/{chatRoomId}로 이동
    */
   @GetMapping("/{id}")
   @Operation(summary = "독서 모임 상세 조회",
