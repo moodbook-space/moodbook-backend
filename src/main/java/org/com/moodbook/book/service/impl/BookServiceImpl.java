@@ -145,7 +145,7 @@ public class BookServiceImpl implements BookService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<BookEmotionRecommendResponse> getBooksByEmotionTop10(BookEmotionRecommendRequest request, Long memberId) {
+  public List<BookEmotionRecommendResponse> getBooksByEmotionTop10(String emotion, Long memberId) {
     if (memberId == null) {
       throw BaseException.UNAUTHORIZED_ACCESS;
     }
@@ -153,10 +153,9 @@ public class BookServiceImpl implements BookService {
     int minScore = 4;
     int maxScore = 5;
     int limit = 10;
-    String emotionTag = request.getEmotionTag();
 
     Aggregation agg = Aggregation.newAggregation(
-        Aggregation.match(Criteria.where("scores." + emotionTag).gte(minScore).lte(maxScore)),
+        Aggregation.match(Criteria.where("scores." + emotion).gte(minScore).lte(maxScore)),
         Aggregation.sample(limit)
     );
 
@@ -179,8 +178,7 @@ public class BookServiceImpl implements BookService {
 
   // 더보기
   @Override
-  public List<BookEmotionRecommendAllResponse> getBooksByEmotionDesc(
-      BookEmotionRecommendAllRequest request, Long memberId) {
+  public List<BookEmotionRecommendAllResponse> getBooksByEmotionDesc(BookEmotionRecommendAllRequest request, Long memberId) {
     if (memberId == null) {
       throw BaseException.UNAUTHORIZED_ACCESS;
     }
