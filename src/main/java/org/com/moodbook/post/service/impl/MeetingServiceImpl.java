@@ -19,6 +19,7 @@ import org.com.moodbook.post.entity.Meeting;
 import org.com.moodbook.post.entity.MoodTag;
 import org.com.moodbook.post.repository.MeetingRepository;
 import org.com.moodbook.post.repository.MoodTagRepository;
+import org.com.moodbook.post.search.service.MeetingEsService;
 import org.com.moodbook.post.service.LikeService;
 import org.com.moodbook.post.service.MeetingService;
 import org.springframework.data.domain.Page;
@@ -36,6 +37,7 @@ public class MeetingServiceImpl implements MeetingService {
   private final MoodTagRepository tagRepository;
   private final ChatRoomMemberRepository chatRoomMemberRepo;
   private final LikeService likeService;
+  private final MeetingEsService meetingEsService;
 
   @Override
   public Long createMeeting(Long memberId, CreateMeetingRequest req) {
@@ -65,7 +67,9 @@ public class MeetingServiceImpl implements MeetingService {
         .location(req.getLocation())
         .moodTags(tags)
         .build();
-    meetingRepository.save(meeting);
+    Meeting meetings = meetingRepository.save(meeting);
+
+    meetingEsService.indexMeeting(meetings);
 
     return meeting.getId();
   }
@@ -161,6 +165,7 @@ public class MeetingServiceImpl implements MeetingService {
     meeting.setMoodTags(tags);
 
     meetingRepository.save(meeting);
+    meetingEsService.indexMeeting(meeting);
   }
 
   @Override
@@ -171,6 +176,7 @@ public class MeetingServiceImpl implements MeetingService {
       throw new BaseException(ErrorCode.ACCESS_DENIED);
     }
     meetingRepository.deleteById(meetingId);
+    meetingEsService.deleteMeeting(meetingId);
   }
 
   @Override
@@ -201,6 +207,9 @@ public class MeetingServiceImpl implements MeetingService {
         .orElseThrow(() -> new BaseException(ErrorCode.MEETING_NOT_FOUND));
     if (!meeting.getMember().getId().equals(hostId)) {
       throw new BaseException(ErrorCode.ACCESS_DENIED);
+    }
+    if (meetingRepository.existsByChatRoomId(req.getChatRoomId())) {
+      throw new BaseException(ErrorCode.CHAT_ROOM_ALREADY_LINKED);
     }
     meeting.setChatRoomId(req.getChatRoomId());
     meetingRepository.save(meeting);

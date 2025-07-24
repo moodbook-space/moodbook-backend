@@ -1,13 +1,31 @@
 package org.com.moodbook.post.entity;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.com.moodbook.common.model.BaseTime;
 import org.com.moodbook.member.entity.Member;
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 /**
  * BasePost: 공통 게시글 엔티티
@@ -17,8 +35,6 @@ import org.hibernate.annotations.Where;
 @Table(name = "post")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "post_type", discriminatorType = DiscriminatorType.STRING)
-@SQLDelete(sql = "UPDATE post SET deleted = true WHERE id = ?")
-@Where(clause = "deleted = false")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -59,5 +75,16 @@ public abstract class BasePost extends BaseTime {
       inverseJoinColumns = @JoinColumn(name = "tag_id")
   )
   private List<MoodTag> moodTags;
+
+  @OneToMany(mappedBy = "post",
+      cascade = CascadeType.REMOVE,
+      orphanRemoval = true)
+  private List<Comment> comments = new ArrayList<>();
+
+  @OneToMany(mappedBy = "post",
+      cascade = CascadeType.REMOVE,
+      orphanRemoval = true)
+  private List<PostLike> likes = new ArrayList<>();
+
 }
 

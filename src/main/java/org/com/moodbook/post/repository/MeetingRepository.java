@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 public interface MeetingRepository extends JpaRepository<Meeting, Long> {
   Page<Meeting> findByMember_Id(Long memberId, Pageable pageable);
 
+  boolean existsByChatRoomId(Long chatRoomId);
+
   @Override
   @EntityGraph(attributePaths = "moodTags")
   List<Meeting> findAll();
