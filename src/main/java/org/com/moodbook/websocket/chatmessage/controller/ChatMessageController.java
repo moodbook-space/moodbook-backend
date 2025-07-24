@@ -28,6 +28,10 @@ public class ChatMessageController {
   private final ChatMessageMongoRepository mongoRepository;
   private final ChatMessageRedisRepository redisRepository;
 
+  @Operation(
+    summary = "채팅 메시지 전송",
+    description = "채팅방에 실시간 메시지를 브로드캐스트하고, Redis에 임시 저장합니다."
+  )
   @MessageMapping("/chat.sendMessage")
   public void sendMessage(ChatMessage message) {
     // 1. 실시간 브로드캐스트
@@ -38,13 +42,35 @@ public class ChatMessageController {
     chatMessageService.saveMessage(message.getRoomId(), message);
   }
 
-
+  @Operation(
+      summary = "채팅방의 최근 메시지 조회 (Redis)",
+      description = "Redis에서 채팅방의 최근 N개 메시지를 조회합니다."
+  )
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "최근 메시지 조회 성공",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChatMessage.class))),
+      @ApiResponse(responseCode = "404", description = "해당 방 없음")
+  })
   @GetMapping("/recent/{roomId}")
   public List<ChatMessage> getRecentFromRedis(@PathVariable Long roomId, @RequestParam(defaultValue = "30") int count) {
     return chatMessageService.getRecentMessagesFromRedis(roomId, (long) count);
   }
 
   // MongoDB 기준(영구 저장소에서 페이징)
+  @Operation(
+      summary = "채팅방 전체 메시지 페이징 조회 (MongoDB + Redis)",
+      description = """
+      page=0이면 Redis의 최신 메시지, page>=1이면 MongoDB에서 페이징 조회.<br>
+      과거→최신 순서로 반환.<br>
+      - page: 0(기본값, Redis), 1이상(MongoDB)
+      - size: 한 페이지당 메시지 수(기본값 30)
+      """
+  )
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "채팅 내역 조회 성공",
+          content = @Content(mediaType = "application/json", schema = @Schema(implementation = ChatMessageDocumentResponse.class))),
+      @ApiResponse(responseCode = "404", description = "해당 방 없음")
+  })
   @GetMapping("/api/chat/{roomId}/history")
   public List<ChatMessageDocumentResponse> getChatHistory(
       @PathVariable Long roomId,
@@ -71,8 +97,4 @@ public class ChatMessageController {
       return mongoMsgs.stream().map(ChatMessageDocumentResponse::from).collect(Collectors.toList());
     }
   }
-
-
-
-
 }
