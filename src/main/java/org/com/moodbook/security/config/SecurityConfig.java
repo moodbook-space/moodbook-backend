@@ -48,6 +48,7 @@ public class SecurityConfig {
                 // 나머지는 기존 코드와 동일
                 .requestMatchers("/api/oauth/**").permitAll()
                 .requestMatchers("/api/notification/**").permitAll()
+                .requestMatchers("/api/tags").permitAll()
                 .requestMatchers(
                     "/redis/test",
                     "/oauth2/**",
