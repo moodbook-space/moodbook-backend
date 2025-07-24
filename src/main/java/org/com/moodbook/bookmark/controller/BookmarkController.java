@@ -63,7 +63,8 @@ public class BookmarkController {
   @DeleteMapping("/{bookId}")
   public ResponseEntity<Void> deleteBookmark(@PathVariable Long bookId,
       @AuthenticationPrincipal CustomMemberDetails customMemberDetails) {
-    bookmarkService.deleteBookmark(bookId, customMemberDetails.getId());
+
+    bookmarkService.deleteBookmark(customMemberDetails.getId(), bookId);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 }
