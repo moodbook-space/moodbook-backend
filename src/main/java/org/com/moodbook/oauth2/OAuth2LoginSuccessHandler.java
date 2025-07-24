@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.com.moodbook.common.config.AppUrlProperties;
 import org.com.moodbook.common.constants.AWSS3Constants;
 import org.com.moodbook.common.constants.Gender;
 import org.com.moodbook.common.constants.MemberStatus;
@@ -37,6 +38,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
   private final JwtTokenProvider jwtTokenProvider;
   private final JwtProperties jwtProperties;
   private final AuthenticationRepository authenticationRepository;
+  private final AppUrlProperties appUrlProperties;
 
   //OAuth2 로그인 성공 시 자동으로 호출되는 메서드
   @Override
@@ -105,9 +107,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     authenticationRepository.save(entity);
 
     // 5. accessToken은 local스토리지에 보내기 위해 쿼리 파라미터로 전달
-    response.sendRedirect("http://localhost:3000/main?access_token=" + accessToken +"&id=" + member.getId());
-
-
+    String redirectUrl = appUrlProperties.getFrontend() + "/main?access_token=" + accessToken + "&id=" + member.getId();
+    response.sendRedirect(redirectUrl);
   }
 
 
