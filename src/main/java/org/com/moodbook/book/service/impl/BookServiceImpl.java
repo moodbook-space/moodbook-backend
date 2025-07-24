@@ -13,12 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.com.moodbook.book.dto.BookEmotionAnalyzeResponse;
 import org.com.moodbook.book.dto.BookEmotionRecommendAllRequest;
 import org.com.moodbook.book.dto.BookEmotionRecommendAllResponse;
-import org.com.moodbook.book.dto.BookEmotionRecommendRequest;
 import org.com.moodbook.book.dto.BookEmotionRecommendResponse;
 import org.com.moodbook.book.dto.BookResponse;
 import org.com.moodbook.book.entity.Book;
 import org.com.moodbook.book.entity.BookCount;
-
 import org.com.moodbook.book.entity.QBook;
 import org.com.moodbook.book.eventlistener.event.BookCreatedEvent;
 import org.com.moodbook.book.repository.BookCountRepository;
@@ -41,8 +39,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,7 +67,9 @@ public class BookServiceImpl implements BookService {
 
   }
 
-  /** Recommendation (기준: 알라딘 평점순 - 높은 순으로) **/
+  /**
+   * Recommendation (기준: 알라딘 평점순 - 높은 순으로)
+   **/
   @Override
   @Transactional(readOnly = true)
   public Page<BookResponse> getRecommendedBooks(Pageable pageable, Long memberId) {
@@ -106,7 +104,9 @@ public class BookServiceImpl implements BookService {
     );
   }
 
-  /** 도서 상세 조회 **/
+  /**
+   * 도서 상세 조회
+   **/
   @Override
   @Transactional
   public BookResponse getBookById(Long id, Long memberId) {
@@ -132,7 +132,9 @@ public class BookServiceImpl implements BookService {
     return BookResponse.from(book, bookCount.getViewCount());
   }
 
-  /** 책 조회수별 조회 **/
+  /**
+   * 책 조회수별 조회
+   **/
   @Override
   @Transactional(readOnly = true)
   public Page<BookResponse> getTrendingBooks(Pageable pageable, Long memberId) {
@@ -178,7 +180,8 @@ public class BookServiceImpl implements BookService {
 
   // 더보기
   @Override
-  public List<BookEmotionRecommendAllResponse> getBooksByEmotionDesc(BookEmotionRecommendAllRequest request, Long memberId) {
+  public List<BookEmotionRecommendAllResponse> getBooksByEmotionDesc(
+      BookEmotionRecommendAllRequest request, Long memberId) {
     if (memberId == null) {
       throw BaseException.UNAUTHORIZED_ACCESS;
     }
@@ -236,7 +239,6 @@ public class BookServiceImpl implements BookService {
 
     return bookRepository.findAllByCreatedAt(pageable);
   }
-
 
 
 }
