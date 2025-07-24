@@ -7,6 +7,7 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.com.moodbook.post.entity.Meeting;
 import org.com.moodbook.post.search.document.MeetingEsDocument;
 
 import org.com.moodbook.post.repository.MeetingRepository;
@@ -111,5 +112,16 @@ public class MeetingEsService {
       log.error("Meeting 자동완성 오류", e);
       throw new RuntimeException("Meeting 자동완성 검색 오류", e);
     }
+  }
+
+  @Transactional
+  public void indexMeeting(Meeting meeting) {
+    MeetingEsDocument doc = MeetingEsDocument.fromEntity(meeting);
+    meetingEsRepository.save(doc);
+  }
+
+  @Transactional
+  public void deleteMeeting(Long meetingId) {
+    meetingEsRepository.deleteById(meetingId);
   }
 }
