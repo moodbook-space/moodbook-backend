@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.com.moodbook.common.constants.MemberStatus;
 import org.com.moodbook.security.core.CustomMemberDetails;
 import org.com.moodbook.security.core.CustomUserDetailsService;
-import org.com.moodbook.threadlocal.TraceIdHolder;
 import org.hibernate.annotations.Filter;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -61,10 +60,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
   ) throws ServletException, IOException {
 
     try {
-      // HTTP 요청이 시작되는 구간에서 TraceID 발급
-      String traceId = UUID.randomUUID().toString().substring(0, 8);      // 고유한 값을 찍어줌 (Random 하게)
-      TraceIdHolder.set(traceId);                 // TraceId ThreadLocal에 저장
-
       String accessToken = extractTokenFromRequest(request);      // 요청 헤더에서 토큰 추출
 
       //블랙 리스트 확인
@@ -121,10 +116,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
       filterChain.doFilter(request, response);        // JwtTokenFilter를 거치고 다음 필터로 넘어감 (이동...이동...이동)
     } finally {
-      // HTTP 요청이 끝날 때 ThreadLocal 데이터를 비워줌
-      TraceIdHolder.clear();
-//            String afterClear = TraceIdHolder.get();
-//            log.info("TraceIdHolder 데이터 확인 : {}", afterClear);
+
     }
   }
   //HTTP 요청 헤더에서 토큰을 추출하는 메서드
