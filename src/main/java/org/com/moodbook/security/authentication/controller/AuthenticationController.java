@@ -4,9 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.com.moodbook.common.config.AppUrlProperties;
 import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.common.exception.ErrorCode;
 import org.com.moodbook.security.authentication.service.AuthenticationService;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import software.amazon.awssdk.services.s3.endpoints.internal.Value.Str;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class AuthenticationController {
   private final AuthenticationService authenticationService;
   private final EmailAuthenticationService emailAuthenticationService;
   private final RedisTemplate<String, String> redisTemplate;
-
+  private final AppUrlProperties appUrlProperties;
 
   //이메일 인증 api
   @GetMapping("/verify-email")
@@ -68,7 +67,7 @@ public class AuthenticationController {
     Boolean isValid = redisTemplate.hasKey("password-reset:"+token);
     if (isValid) {
       //프론트의 재설정 페이지로 리다이렉트 ex:React 비밀번호 재설정 페이지
-      URI redirectUri = URI.create("http://localhost:8080/auth/password-reset?token="+token);
+      URI redirectUri = URI.create(appUrlProperties.getFrontend() + "auth/password-reset?token="+token);
       return ResponseEntity.status(HttpStatus.FOUND).location(redirectUri).build();//302리다이렉트
     }else {
       throw new BaseException(ErrorCode.INVALID_TOKEN);

@@ -60,9 +60,6 @@ public class MemberServiceImpl implements MemberService {
     if (memberRepository.existsByEmail(dto.getEmail())) {
       throw new BaseException(ErrorCode.ALREADY_EXIST_EMAIL);
     }
-    if (memberRepository.existsByContact(dto.getContact())) {
-      throw new BaseException(ErrorCode.ALREADY_EXIST_CONTACT);
-    }
 
 
     Gender gender = Gender.valueOf(dto.getGender());

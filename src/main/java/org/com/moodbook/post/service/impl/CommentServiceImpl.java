@@ -11,8 +11,10 @@ import org.com.moodbook.post.entity.Comment;
 import org.com.moodbook.post.repository.BasePostRepository;
 import org.com.moodbook.post.repository.CommentRepository;
 import org.com.moodbook.post.service.CommentService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -46,19 +48,27 @@ public class CommentServiceImpl implements CommentService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<CommentResponse> getComments(Long memberId, Long postId) {
-    // 최상위 댓글부터 조회
-    var roots = commentRepository.findByPostIdAndParentCommentIsNullOrderByCreatedAtAsc(postId);
-    return roots.stream().map(root -> toDto(root, memberId)).toList();
+  public List<CommentResponse> getComments(Long memberId, Long postId, Pageable pageable) {
+    var roots = commentRepository.findByPostIdAndParentCommentIsNullOrderByCreatedAtAsc(postId, pageable);
+    return roots.stream()
+        .map(root -> CommentResponse.withoutReplies(root, memberId))
+        .toList();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<CommentResponse> getReplies(Long memberId, Long parentCommentId) {
+    return commentRepository.findByParentCommentIdOrderByCreatedAtAsc(parentCommentId)
+        .stream()
+        .map(r -> toDto(r, memberId))  // 재귀 통해 대댓글·대대댓글… 모두 포함
+        .toList();
   }
 
   private CommentResponse toDto(Comment c, Long memberId) {
-    // 대댓글 조회
-    var replies = commentRepository.findByParentCommentIdOrderByCreatedAtAsc(c.getId())
-        .stream()
+    var children = commentRepository.findByParentCommentIdOrderByCreatedAtAsc(c.getId());
+    var replies = children.stream()
         .map(r -> toDto(r, memberId))
         .toList();
-
     return CommentResponse.builder()
         .id(c.getId())
         .authorId(c.getAuthor().getId())
@@ -77,6 +87,6 @@ public class CommentServiceImpl implements CommentService {
     if (!c.getAuthor().getId().equals(memberId)) {
       throw new BaseException(ErrorCode.ACCESS_DENIED);
     }
-    commentRepository.delete(c);
+    commentRepository.delete(c);  // Cascade + orphanRemoval로 하위 댓글 자동 삭제
   }
 }

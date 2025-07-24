@@ -15,6 +15,8 @@ public class ReportDetailResponse {
   private Long id;
   private String title;
   private String content;
+  private int viewCount;
+  private int likeCount;
   private Long bookId;
   private String bookTitle;
   private String bookAuthor;

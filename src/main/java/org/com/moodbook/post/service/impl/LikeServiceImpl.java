@@ -1,10 +1,11 @@
-// src/main/java/org/com/moodbook/post/service/impl/LikeServiceImpl.java
 package org.com.moodbook.post.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.common.exception.ErrorCode;
+import org.com.moodbook.member.entity.Member;
 import org.com.moodbook.member.repository.MemberRepository;
+import org.com.moodbook.post.entity.BasePost;
 import org.com.moodbook.post.entity.PostLike;
 import org.com.moodbook.post.repository.BasePostRepository;
 import org.com.moodbook.post.repository.PostLikeRepository;
@@ -23,14 +24,12 @@ public class LikeServiceImpl implements LikeService {
 
   @Override
   public void toggleLike(Long memberId, Long postId) {
-    // 게시글 유무 확인
-    var post = postRepo.findById(postId)
+
+    BasePost post = postRepo.findById(postId)
         .orElseThrow(() -> new BaseException(ErrorCode.POST_NOT_FOUND));
-    // 회원 존재 확인
-    var member = memberRepo.findById(memberId)
+    Member member = memberRepo.findById(memberId)
         .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
 
-    // 좋아요 로직
     if (likeRepo.existsByPost_IdAndMember_Id(postId, memberId)) {
       likeRepo.deleteByPost_IdAndMember_Id(postId, memberId);
     } else {
@@ -40,6 +39,10 @@ public class LikeServiceImpl implements LikeService {
           .build();
       likeRepo.save(like);
     }
+
+    long currentLikes = likeRepo.countByPost_Id(postId);
+    post.setLikeCount((int) currentLikes);
+    postRepo.save(post);
   }
 
   @Override
@@ -54,7 +57,6 @@ public class LikeServiceImpl implements LikeService {
   @Override
   @Transactional(readOnly = true)
   public boolean isLikedBy(Long memberId, Long postId) {
-    // 회원,게시글 검증
     postRepo.findById(postId)
         .orElseThrow(() -> new BaseException(ErrorCode.POST_NOT_FOUND));
     memberRepo.findById(memberId)

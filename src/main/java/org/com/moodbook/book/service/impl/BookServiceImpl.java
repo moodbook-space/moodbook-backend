@@ -41,6 +41,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,8 +74,13 @@ public class BookServiceImpl implements BookService {
   /** Recommendation (기준: 알라딘 평점순 - 높은 순으로) **/
   @Override
   @Transactional(readOnly = true)
-  public Page<BookResponse> getRecommendedBooks(Pageable pageable) {
+  public Page<BookResponse> getRecommendedBooks(Pageable pageable, Long memberId) {
     QBook book = QBook.book;
+
+    // 로그인 안 한 경우 처리
+    if (memberId == null) {
+      throw BaseException.UNAUTHORIZED_ACCESS;
+    }
 
     List<Book> content = queryFactory
         .selectFrom(book)
@@ -128,13 +135,21 @@ public class BookServiceImpl implements BookService {
   /** 책 조회수별 조회 **/
   @Override
   @Transactional(readOnly = true)
-  public Page<BookResponse> getTrendingBooks(Pageable pageable) {
+  public Page<BookResponse> getTrendingBooks(Pageable pageable, Long memberId) {
+    if (memberId == null) {
+      throw BaseException.UNAUTHORIZED_ACCESS;
+    }
+
     return bookRepository.findAllWithViewCount(pageable);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public List<BookEmotionRecommendResponse> getBooksByEmotionTop10(BookEmotionRecommendRequest request) {
+  public List<BookEmotionRecommendResponse> getBooksByEmotionTop10(BookEmotionRecommendRequest request, Long memberId) {
+    if (memberId == null) {
+      throw BaseException.UNAUTHORIZED_ACCESS;
+    }
+
     int minScore = 4;
     int maxScore = 5;
     int limit = 10;
@@ -165,7 +180,10 @@ public class BookServiceImpl implements BookService {
   // 더보기
   @Override
   public List<BookEmotionRecommendAllResponse> getBooksByEmotionDesc(
-      BookEmotionRecommendAllRequest request) {
+      BookEmotionRecommendAllRequest request, Long memberId) {
+    if (memberId == null) {
+      throw BaseException.UNAUTHORIZED_ACCESS;
+    }
 
     Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
     String emotionTag = request.getEmotionTag();
@@ -213,7 +231,11 @@ public class BookServiceImpl implements BookService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<BookResponse> getAllBooks(Pageable pageable) {
+  public Page<BookResponse> getAllBooks(Pageable pageable, Long memberId) {
+    if (memberId == null) {
+      throw BaseException.UNAUTHORIZED_ACCESS;
+    }
+
     return bookRepository.findAllByCreatedAt(pageable);
   }
 

@@ -3,6 +3,8 @@ package org.com.moodbook.security.config;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.com.moodbook.oauth2.CustomOAuth2UserService;
+import org.com.moodbook.oauth2.OAuth2LoginSuccessHandler;
 import org.com.moodbook.security.jwt.JwtTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +31,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+        CustomOAuth2UserService customOAuth2UserService,
+        OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) throws Exception {
         return http
             .cors(cors -> cors
                 .configurationSource(corsConfigurationSource())
@@ -44,10 +48,45 @@ public class SecurityConfig {
                 // 나머지는 기존 코드와 동일
                 .requestMatchers("/api/oauth/**").permitAll()
                 .requestMatchers("/api/notification/**").permitAll()
+                .requestMatchers(
+                    "/redis/test",
+                    "/oauth2/**",
+                    "/auth/**",
+                    "/api/oauth/",
+                    "/admin/**",
+                    "/api/admin/**",
+                    "/api/books/**",
+                    "/api/recent-books/**",
+                    "/api/reviews/**",
+                    "/api/openai/**",
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/chat.html",
+                    "/main.html",
+                    "/images/**",
+                    "/sounds/**",
+                    "/favicon.ico",
+                    "/error",
+                    "/emotion/**",
+                    "/api/emotion/**",
+                    "/api/books/**",
+                    "/actuator/prometheus",     //프로메테우스
+                    "/login",
+                    "/signUp",
+                    "/books/**",
+                    "/api/books/**"
+                ).permitAll()
                 .requestMatchers("/api/chat-rooms/**").authenticated()
                 .requestMatchers("/api/chat/**").authenticated()
                 .requestMatchers("/chat-rooms/**").authenticated()
                 .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(customOAuth2UserService)
+                )
+                .successHandler(oAuth2LoginSuccessHandler)
             )
             .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
             .build();

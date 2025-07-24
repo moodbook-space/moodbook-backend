@@ -3,6 +3,7 @@ package org.com.moodbook.security.authentication.service;
 import java.time.Duration;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.com.moodbook.common.config.AppUrlProperties;
 import org.com.moodbook.common.constants.MemberStatus;
 import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.common.exception.ErrorCode;
@@ -24,6 +25,7 @@ public class EmailAuthenticationServiceImpl implements EmailAuthenticationServic
   //Redis에 저장 된 인증 토큰과 연결 된 이메일/회원 정보를 조회하기 위한 템플릿
   private final StringRedisTemplate stringRedisTemplate;
   private final MemberRepository memberRepository;
+  private final AppUrlProperties appUrlProperties;
 
   @Transactional
   @Override
@@ -38,7 +40,7 @@ public class EmailAuthenticationServiceImpl implements EmailAuthenticationServic
       String subject = "[MoodBook] 이메일 인증 요청";
       String body = "<h3>이메일 인증<h3><p>"
           + "아래 링크를 클릭하여 이메일 인증을 완료하세요.</p>"
-          + "<a href='http://localhost:8080/auth/verify-email?token=" + token + "'>이메일 인증하기</a>";
+          + "<a href='" + appUrlProperties.getBackend() + "/auth/verify-email?token=" + token + "'>이메일 인증하기</a>";
 
       // 4.유틸 호출로 실제 메일 발송
       emailUtil.sendEmail(toEmail, subject, body);
@@ -122,7 +124,7 @@ public class EmailAuthenticationServiceImpl implements EmailAuthenticationServic
     String subject = "[MoodBook] 비밀번호 재설정 요청";
     String body = "<h3>비밀번호 재설정 요청</h3>"
         +  "<p>아래 링크를 클릭하여 비밀번호를 재설정 하세요<p>"
-        + "<a href='http://localhost:8080/auth/reset-password?token=" + token + "'>비밀번호 재설정하기</a>";
+        + "<a href='" + appUrlProperties.getBackend() + "/auth/reset-password?token=" + token + "'>비밀번호 재설정하기</a>";
 
     emailUtil.sendEmail(email, subject, body);
 
