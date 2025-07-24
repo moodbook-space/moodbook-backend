@@ -3,6 +3,8 @@ package org.com.moodbook.security.config;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.com.moodbook.oauth2.CustomOAuth2UserService;
+import org.com.moodbook.oauth2.OAuth2LoginSuccessHandler;
 import org.com.moodbook.security.jwt.JwtTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +31,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+        CustomOAuth2UserService customOAuth2UserService,
+        OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) throws Exception {
         return http
             .cors(cors -> cors
                 .configurationSource(corsConfigurationSource())
@@ -46,6 +50,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/notification/**").permitAll()
                 .requestMatchers(
                     "/redis/test",
+                    "/oauth2/**",
                     "/auth/**",
                     "/api/oauth/",
                     "/admin/**",
@@ -75,6 +80,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/chat-rooms/**").authenticated()
                 .requestMatchers("/chat-rooms/**").authenticated()
                 .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(customOAuth2UserService)
+                )
+                .successHandler(oAuth2LoginSuccessHandler)
             )
             .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
