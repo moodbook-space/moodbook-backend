@@ -23,12 +23,13 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtTokenFilter jwtTokenFilter;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  private final JwtTokenFilter jwtTokenFilter;
+
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
@@ -48,6 +49,10 @@ public class SecurityConfig {
                 // 나머지는 기존 코드와 동일
                 .requestMatchers("/api/oauth/**").permitAll()
                 .requestMatchers("/api/notification/**").permitAll()
+                // 관리자는 기능 및 페이지 접속은 ADMIN만 가능
+                .requestMatchers(
+                    "/admin/**",
+                    "/api/admin/**").hasRole("ADMIN")
                 .requestMatchers(
                     "/redis/test",
                     "/oauth2/**",
@@ -92,38 +97,38 @@ public class SecurityConfig {
             .build();
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-        throws Exception {
-        return config.getAuthenticationManager();
-    }
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+      throws Exception {
+    return config.getAuthenticationManager();
+  }
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        return request -> {
-            CorsConfiguration config = new CorsConfiguration();
+  @Bean
+  CorsConfigurationSource corsConfigurationSource() {
+    return request -> {
+      CorsConfiguration config = new CorsConfiguration();
 
-            // 필요한 헤더만 명시, 필요시 변경 가능
-            config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+      // 필요한 헤더만 명시, 필요시 변경 가능
+      config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 
-            // HTTP 메소드 사용시 변경 가능
-            config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
+      // HTTP 메소드 사용시 변경 가능
+      config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
 
-            // 허용할 url
-            config.setAllowedOriginPatterns(List.of(
-                "http://localhost:5173",
-                "http://localhost:8080",
-                "http://localhost:3000",
-                "http://127.0.0.1:3000",
-                "http://moodbook.live",
-                "https://moodbook.live",
-                "http://43.200.89.83",
-                "https://43.200.89.83"
-            ));
+      // 허용할 url
+      config.setAllowedOriginPatterns(List.of(
+          "http://localhost:5173",
+          "http://localhost:8080",
+          "http://localhost:3000",
+          "http://127.0.0.1:3000",
+          "http://moodbook.live",
+          "https://moodbook.live",
+          "http://43.200.89.83",
+          "https://43.200.89.83"
+      ));
 
-            // 자격 증명(쿠키, 토큰) 허용
-            config.setAllowCredentials(true);
-            return config;
-        };
-    }
+      // 자격 증명(쿠키, 토큰) 허용
+      config.setAllowCredentials(true);
+      return config;
+    };
+  }
 }
