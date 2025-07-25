@@ -4,12 +4,12 @@ import java.util.List;
 import org.com.moodbook.bookchat.dto.ApproveJoinRequest;
 import org.com.moodbook.bookchat.dto.ChatRoomMemberResponse;
 import org.com.moodbook.bookchat.dto.ChatRoomResponse;
-import org.com.moodbook.bookchat.dto.ChatRoomSearchRequest;
 import org.com.moodbook.bookchat.dto.CreateChatRoomRequest;
 import org.com.moodbook.bookchat.dto.UpdateChatRoomRequest;
-import org.com.moodbook.bookchat.entity.ChatRoomMemberRole;
 import org.com.moodbook.bookchat.entity.ChatRoomMemberStatus;
 import org.com.moodbook.bookchat.entity.ChatRoom;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ChatRoomService {
 
@@ -41,4 +41,7 @@ public interface ChatRoomService {
   void leaveRoom(Long chatRoomId, Long memberId);
 
   boolean isMember(Long chatRoomId, Long memberId);
+
+  /** (관리자용) 채팅방 검색  **/
+  Page<ChatRoomResponse> searchChats(String query, Pageable pageable);
 }
