@@ -6,13 +6,11 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.com.moodbook.common.constants.MemberStatus;
 import org.com.moodbook.security.core.CustomMemberDetails;
 import org.com.moodbook.security.core.CustomUserDetailsService;
-import org.hibernate.annotations.Filter;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,9 +40,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         || path.startsWith("/images/")
         || path.equals("/")
         || path.equals("/index.html")
+        || path.equals("/login.html")
+        || path.equals("/signUp.html")
+
         || path.endsWith(".html")
         || path.startsWith("/favicon.ico")
-        || path.startsWith("/api/oauth/tempSighUp")
+        || path.startsWith("/api/oauth/sighUp")
         || path.startsWith("/api/oauth/login");
 
     /**

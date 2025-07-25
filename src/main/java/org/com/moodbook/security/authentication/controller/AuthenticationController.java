@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.com.moodbook.common.config.AppUrlProperties;
 import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.common.exception.ErrorCode;
+import org.com.moodbook.security.authentication.dto.PasswordResetRequestDto;
 import org.com.moodbook.security.authentication.service.AuthenticationService;
 import org.com.moodbook.security.authentication.service.EmailAuthenticationService;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -62,7 +64,7 @@ public class AuthenticationController {
     return ResponseEntity.status(HttpStatus.OK).body("비밀번호 재설정 링크가 이메일로 전송되었습니다. \n메일함을 확인해주세요.");
   }
 
-  @GetMapping("/reset-password")
+  @GetMapping("/reset-password/verify-token")
   public ResponseEntity<Void> redirectToPasswordReset(@RequestParam String token) {
     Boolean isValid = redisTemplate.hasKey("password-reset:"+token);
     if (isValid) {
@@ -72,6 +74,14 @@ public class AuthenticationController {
     }else {
       throw new BaseException(ErrorCode.INVALID_TOKEN);
     }
+
+
+  }
+  //비밀번호 재설정 완료 메서드
+  @PostMapping("/reset-password/confirm")
+  public ResponseEntity<?> confirmPasswordReset(@RequestBody PasswordResetRequestDto dto) {
+    emailAuthenticationService.resetPassword(dto.getNewPassword(), dto.getToken());
+    return ResponseEntity.status(HttpStatus.OK).body("비밀번호 재설정 완료");
 
   }
 

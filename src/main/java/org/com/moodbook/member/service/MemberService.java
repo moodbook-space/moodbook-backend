@@ -10,7 +10,7 @@ public interface MemberService {
 
 
   //임시 회원가입
-  MemberDTO tempjoin(MemberTempJoinDTO memberTempJoinDto);
+  MemberDTO join(MemberTempJoinDTO memberTempJoinDto);
 
   //로그인
   LoginResponseDTO login(LoginRequestDTO memberLoginDTO);

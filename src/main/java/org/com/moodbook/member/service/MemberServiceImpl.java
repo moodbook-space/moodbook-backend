@@ -54,7 +54,7 @@ public class MemberServiceImpl implements MemberService {
   //임시 회원가입 진행
   @Override
   @Transactional
-  public MemberDTO tempjoin(
+  public MemberDTO join(
       MemberTempJoinDTO dto) {
 
     if (memberRepository.existsByEmail(dto.getEmail())) {
