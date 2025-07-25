@@ -9,6 +9,7 @@ import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.common.exception.ErrorCode;
 import org.com.moodbook.common.util.EmailUtil;
 import org.com.moodbook.member.entity.Member;
+import org.com.moodbook.member.repository.MemberProfileRepository;
 import org.com.moodbook.member.repository.MemberRepository;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -26,6 +27,7 @@ public class EmailAuthenticationServiceImpl implements EmailAuthenticationServic
   private final StringRedisTemplate stringRedisTemplate;
   private final MemberRepository memberRepository;
   private final AppUrlProperties appUrlProperties;
+  private final MemberProfileRepository memberProfileRepository;
 
   @Transactional
   @Override
@@ -91,6 +93,7 @@ public class EmailAuthenticationServiceImpl implements EmailAuthenticationServic
           .orElse(null);//삭제할수도 있으니 예외는 발생시키지 않음
       if(member != null && !member.isEmailVerified()){
         // 4.해당 회원이 존재하고 이메일 인증을 하지 않았다면 DB에서 삭제
+        memberProfileRepository.delete(member.getMemberProfile());
         memberRepository.delete(member);
       }
     }
