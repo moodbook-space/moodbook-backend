@@ -64,4 +64,18 @@ public interface BookRepository extends JpaRepository<Book, Long> {
   Book findByIsbn13(String isbn13);
 
   boolean existsByIsbn13(String isbn13);
+
+  @Query("SELECT new org.com.moodbook.book.dto.BookResponse(" +
+      "c.id, c.isbn13, c.title, c.author, c.publisher, c.pubDate,c.reputation, c.coverImage, c.description, c.categoryName, c.createdAt, CAST(0 AS long)) " +
+      "FROM Book c " +
+      "WHERE " +
+      "LOWER(c.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+      "LOWER(c.isbn13) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+      "LOWER(c.author) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+      "LOWER(c.pubDate) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+      "LOWER(c.publisher) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+      "(c.description IS NOT NULL AND LOWER(c.description) LIKE LOWER(CONCAT('%', :query, '%'))) OR " +
+      "LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :query, '%')) " +
+      "ORDER BY c.createdAt DESC")
+  Page<BookResponse> findWithQuery(@Param("query") String query, Pageable pageable);
 }
