@@ -42,9 +42,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         || path.startsWith("/images/")
         || path.equals("/")
         || path.equals("/index.html")
+        || path.equals("/login.html")
+        || path.equals("/signUp.html")
+
         || path.endsWith(".html")
         || path.startsWith("/favicon.ico")
-        || path.startsWith("/api/oauth/tempSighUp")
+        || path.startsWith("/api/oauth/sighUp")
         || path.startsWith("/api/oauth/login");
 
     /**
