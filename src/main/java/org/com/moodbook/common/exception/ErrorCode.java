@@ -59,6 +59,7 @@ public enum ErrorCode {
   LEADER_NOT_FOUND(HttpStatus.NOT_FOUND, "LEADER_NOT_FOUND", "채팅방 리더를 찾을 수 없습니다."),
   AWSS3_NO_FILE(HttpStatus.BAD_REQUEST, "AWSS3_NO_FILE", "S3에 해당 파일이 없습니다."),
   ACCESS_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND,"ACCESS_TOKEN_NOT_FOUND","토큰이 존재하지 않습니다"),
+  UNSUPPORTED_PROVIDER(HttpStatus.BAD_REQUEST,"UNSUPPORTED_PROVIDER","지원하지 않는 OAuth2 제공자 입니다"),
   /* 500 - Internal Server Error */
   INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버에 오류가 발생했습니다."),
   AWSS3_UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AWSS3_UNKNOWN_ERROR", "S3 연결 과정에서 에러가 발생했습니다"),
