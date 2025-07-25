@@ -16,6 +16,10 @@ import org.com.moodbook.bookchat.entity.ChatRoomMemberStatus;
 import org.com.moodbook.bookchat.service.ChatRoomService;
 import org.com.moodbook.member.repository.MemberRepository;
 import org.com.moodbook.security.core.CustomMemberDetails;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -146,7 +150,7 @@ public class ChatRoomController {
   }
 
   @Operation(summary = "채팅방 삭제",
-      description = "채팅방을 삭제합니다.")
+      description = "채팅방을 삭제합니다. (관리자도 가능합니다) ")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "성공적으로 삭제가 되었습니다."),
       @ApiResponse(responseCode = "500", description = "삭제에 실패하였습니다.")
@@ -192,6 +196,22 @@ public class ChatRoomController {
 
     return ResponseEntity.ok(isMember);
   }
+
+  @Operation(summary = "(관리자용) 독서모임 채팅방 조회 및 검색",
+      description = "(관리자용) 모든 독서모임 채팅방을 조회하거나 검색합니다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "채팅방을 성공적으로 조회했습니다."),
+      @ApiResponse(responseCode = "500", description = "채팅방 조회에 실패했습니다.")
+  })
+  @GetMapping("/admin/chatrooms")
+  public ResponseEntity<Page<ChatRoomResponse>> getChatRooms(
+      @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+      Pageable pageable
+  ) {
+    Page<ChatRoomResponse> result = chatRoomService.searchChats("", pageable);
+    return ResponseEntity.ok(result);
+  }
+
 
 
 }
