@@ -155,14 +155,13 @@
     <!-- JavaScript로 페이지 번호 렌더링 -->
   </div>
 </div>
-
-<script>
+\<script>
   let currentPage = 0;
   const pageSize = 10;
   let currentQuery = "";
 
   function fetchChats(page, query = "") {
-    fetch(`/api/admin/chat?page=${page}&size=${pageSize}&query=${encodeURIComponent(query)}`)
+    fetch(`/api/chat-rooms/admin/chatrooms?page=${page}&size=${pageSize}&query=${encodeURIComponent(query)}`)
     .then(res => res.json())
     .then(data => {
       renderTable(data.content);
@@ -177,14 +176,14 @@
       const createdAt = chat.createdAt ? chat.createdAt.slice(0, 16).replace("T", " ") : "-";
       const tr = document.createElement("tr");
       tr.innerHTML = `
-          <td>${chat.participants} / ${chat.limitMembers}</td>
-          <td>${chat.title}</td>
-          <td>${chat.nickname}</td>
-          <td>${chat.status}</td>
-          <td>${createdAt}</td>
-          <td>-</td>
-          <td><span class="delete-btn" onclick="deleteChat(${chat.id})">&#10060;</span></td>
-        `;
+        <td>- / ${chat.limitMembers}</td>
+        <td>${chat.title}</td>
+        <td>${chat.ownerName}</td>
+        <td>${chat.status}</td>
+        <td>${createdAt}</td>
+        <td>-</td>
+        <td><span class="delete-btn" onclick="deleteChat(${chat.chatRoomId})">&#10060;</span></td>
+      `;
       tbody.appendChild(tr);
     });
   }
@@ -215,8 +214,9 @@
 
   function deleteChat(id) {
     if (confirm("정말 삭제하시겠습니까?")) {
-      fetch(`/api/admin/chat/${id}`, { method: 'DELETE' })
-      .then(res => {
+      fetch(`/api/chat-rooms/${id}`, {
+        method: 'DELETE'
+      }).then(res => {
         if (res.ok) fetchChats(currentPage, currentQuery);
       });
     }

@@ -138,9 +138,11 @@
 <script>
   async function searchBooks() {
     const keyword = document.getElementById("searchInput").value;
-    if (!keyword.trim()) return;
+    if (!keyword.trim()) {
+      return;
+    }
 
-    const response = await fetch(`/api/admin/book/add?keyword=${encodeURIComponent(keyword)}`);
+    const response = await fetch(`/api/books/admin/add?keyword=${encodeURIComponent(keyword)}`);
     const books = await response.json();
 
     const tbody = document.querySelector("#resultTable tbody");
@@ -160,21 +162,29 @@
     });
   }
 
-  async function addBook(book) {
-    const res = await fetch("/api/admin/book/add", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(book)
+  async function addBook(bookData) {
+    const res = await fetch("/api/books/admin/add", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(bookData)
+    })
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(msg => {
+          throw new Error(msg);
+        });
+      }
+      return response.text();
+    })
+    .then(data => {
+      alert("책 등록 성공!");
+    })
+    .catch(error => {
+      alert(error.message); // "이미 등록된 책입니다."
     });
-
-    if (res.ok) {
-      alert("책이 추가되었습니다.");
-    } else {
-      alert("추가 실패");
-    }
   }
+
+
 </script>
 </body>
 </html>

@@ -164,7 +164,7 @@
   let currentQuery = "";
 
   function fetchBooks(page, query = "") {
-    fetch(`/api/admin/book?page=${page}&size=${pageSize}&query=${encodeURIComponent(query)}`)
+    fetch(`/api/books/admin?page=${page}&size=${pageSize}&query=${encodeURIComponent(query)}`)
     .then(res => res.json())
     .then(data => {
       renderBooks(data.content);
@@ -195,19 +195,19 @@
 
   function deleteBook(id) {
     if (confirm("정말 삭제하시겠습니까?")) {
-      fetch(`/api/admin/book/${id}`, { method: 'DELETE' })
+      fetch(`/api/books/admin/${id}`, { method: 'DELETE' })
       .then(res => {
-        if (res.ok) fetchBooks(currentPage, currentQuery);
+        if (res.ok) {
+          fetchBooks(currentPage, currentQuery);
+        } else {
+          res.text().then(msg => alert("삭제 실패: " + msg));
+        }
       });
     }
   }
 
   function onLogoClick() {
     alert("아직 이동 경로가 지정되지 않았습니다.");
-  }
-
-  function onAddBook() {
-    alert("책 추가 화면으로 이동 예정");
   }
 
   fetchBooks(currentPage);

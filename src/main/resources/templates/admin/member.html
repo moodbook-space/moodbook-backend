@@ -225,7 +225,7 @@
     const formData = new FormData();
     formData.append("image", file);
 
-    const response = await fetch("/api/admin/upload-image", {
+    const response = await fetch("/api/oauth/admin/upload-image", {
       method: "POST",
       body: formData
     });
@@ -302,19 +302,22 @@
 
   function confirmApply() {
     if (confirm("정말 수정하시겠습니까?")) {
-      const payload = {
-        id: selectedMemberId,
-        name: document.getElementById("detail-name").value,
-        nickname: document.getElementById("detail-nickname").value,
-        contact: document.getElementById("detail-contact").value,
-        email: document.getElementById("detail-email").value,
-        address: document.getElementById("detail-address").value,
-        myImage: document.getElementById("detail-image").value
-      };
-      fetch(`/api/admin/member/${selectedMemberId}`, {
-        method: "PUT",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+      const formData = new FormData();
+
+      formData.append("id", selectedMemberId);
+      formData.append("name", document.getElementById("detail-name").value);
+      formData.append("nickname", document.getElementById("detail-nickname").value);
+      formData.append("contact", document.getElementById("detail-contact").value);
+      formData.append("email", document.getElementById("detail-email").value);
+      formData.append("address", document.getElementById("detail-address").value);
+
+      const imageUrl = document.getElementById("detail-image").value;
+      formData.append("myImage", imageUrl);
+
+
+      fetch(`/api/oauth/admin/${selectedMemberId}`, {
+        method: "PATCH",
+        body: formData
       }).then(res => {
         if (res.ok) {
           alert("수정 완료!");
@@ -327,7 +330,7 @@
 
   function confirmWithdraw() {
     if (confirm("정말 탈퇴시키겠습니까?")) {
-      fetch(`/api/admin/member/${selectedMemberId}`, { method: "DELETE" })
+      fetch(`/api/oauth/deactivate/${selectedMemberId}`, { method: "PATCH" })
       .then(res => {
         if (res.ok) {
           alert("탈퇴 완료");
