@@ -1,7 +1,6 @@
 package org.com.moodbook.bookchat.entity;
 
 
-import com.fasterxml.jackson.databind.ser.Serializers.Base;
 import jakarta.persistence.*;
 import java.util.List;
 import lombok.*;
