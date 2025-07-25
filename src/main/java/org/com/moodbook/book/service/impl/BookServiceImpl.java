@@ -2,8 +2,21 @@ package org.com.moodbook.book.service.impl;
 
 import static org.com.moodbook.common.exception.BaseException.BOOK_NOT_FOUND;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -22,6 +35,7 @@ import org.com.moodbook.book.eventlistener.event.BookCreatedEvent;
 import org.com.moodbook.book.repository.BookCountRepository;
 import org.com.moodbook.book.repository.BookRepository;
 import org.com.moodbook.book.service.BookService;
+import org.com.moodbook.common.config.AladinApiProperties;
 import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.common.exception.ErrorCode;
 import org.com.moodbook.emotion.entity.BookEmotionScore;
@@ -54,6 +68,7 @@ public class BookServiceImpl implements BookService {
   private final BookEmotionScoreRepository bookEmotionScoreRepository;
   private final MemberRepository memberRepository;
   private final RecentBookViewRepository recentBookViewRepository;
+  private final AladinApiProperties aladinApiProperties;
 
   @Autowired
   private ApplicationEventPublisher publisher;
@@ -240,5 +255,113 @@ public class BookServiceImpl implements BookService {
     return bookRepository.findAllByCreatedAt(pageable);
   }
 
+  /** 관리자용 책 전체 조회 및 query 조회 **/
+  @Override
+  public Page<BookResponse> getDbBookList(String query, Pageable pageable) {
+    if (query == null || query.isBlank()) {
+      return bookRepository.findAllByCreatedAt(pageable); // 기존 전체 목록
+    }
+    return bookRepository.findWithQuery(query, pageable);
+  }
+
+  /** (관리자용) 책 추가를 위한 알라딘 api 책 조회 **/
+  public List<BookResponse> searchForNewBook(String title) {
+    try {
+      String apiUrl = "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx"
+          + "?ttbkey=" + aladinApiProperties.getKey()
+          + "&Query=" + URLEncoder.encode(title, StandardCharsets.UTF_8)
+          + "&QueryType=Title"
+          + "&SearchTarget=Book"
+          + "&output=js"
+          + "&Version=20131101"
+          + "&MaxResults=10";
+
+      HttpURLConnection conn = (HttpURLConnection) new URL(apiUrl).openConnection();
+      conn.setRequestMethod("GET");
+
+      if (conn.getResponseCode() != 200) {
+        return Collections.emptyList();
+      }
+
+      BufferedReader reader = new BufferedReader(
+          new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+      StringBuilder sb = new StringBuilder();
+      String line;
+      while ((line = reader.readLine()) != null) {
+        sb.append(line);
+      }
+      reader.close();
+
+      String jsonString = sb.toString()
+          .replaceFirst("TTB_ItemSearch\\(", "")
+          .replaceFirst("\\);?$", "");
+
+      Gson gson = new Gson();
+      JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+      JsonArray items = jsonObject.getAsJsonArray("item");
+      if (items == null || items.isEmpty()) {
+        return Collections.emptyList();
+      }
+
+      List<BookResponse> books = new ArrayList<>();
+      for (JsonElement item : items) {
+        JsonObject obj = item.getAsJsonObject();
+        BookResponse book = BookResponse.builder()
+            .title(obj.get("title").getAsString())
+            .isbn13(obj.get("isbn13").getAsString())
+            .author(obj.get("author").getAsString())
+            .publisher(obj.get("publisher").getAsString())
+            .pubDate(obj.get("pubDate").getAsString())
+            .reputation(BigDecimal.valueOf(obj.get("customerReviewRank").getAsInt()))
+            .coverImage(obj.get("cover").getAsString())
+            .description(obj.get("description").getAsString())
+            .categoryName(obj.get("categoryName").getAsString())
+            .build();
+        books.add(book);
+      }
+
+      return books;
+
+    } catch (Exception e) {
+      log.warn("알라딘 제목 검색 실패: {}", e.getMessage());
+      return Collections.emptyList();
+    }
+  }
+
+
+  /** (관리자용) 조회된 책 db에 추가 **/
+  @Override
+  public boolean addBook(BookResponse bookResponse){
+
+    if(bookRepository.findByIsbn13(bookResponse.getIsbn13())==null) {
+      Book book = Book.builder()
+          .isbn13(bookResponse.getIsbn13())
+          .title(bookResponse.getTitle())
+          .author(bookResponse.getAuthor())
+          .publisher(bookResponse.getPublisher())
+          .pubDate(bookResponse.getPubDate())
+          .reputation(bookResponse.getReputation())
+          .coverImage(bookResponse.getCoverImage())
+          .description(bookResponse.getDescription())
+          .categoryName(bookResponse.getCategoryName())
+          .build();
+
+      bookRepository.save(book);
+      return true;
+    }
+    else{
+      return false;
+    }
+
+  }
+
+  /** (관리자용) db에서 책 제거 **/
+  @Override
+  public void deleteBookById(Long bookId){
+    if(!bookRepository.existsById(bookId)){
+      throw new BaseException(ErrorCode.BOOK_NOT_FOUND);
+    }
+    bookRepository.deleteById(bookId);
+  }
 
 }
