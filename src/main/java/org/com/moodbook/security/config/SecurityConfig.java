@@ -1,10 +1,9 @@
 package org.com.moodbook.security.config;
 
-import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.com.moodbook.oauth2.CustomOAuth2UserService;
-import org.com.moodbook.oauth2.OAuth2LoginSuccessHandler;
+import org.com.moodbook.oauth2.service.CustomOAuth2UserService;
+import org.com.moodbook.oauth2.service.OAuth2LoginSuccessHandler;
 import org.com.moodbook.security.jwt.JwtTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
