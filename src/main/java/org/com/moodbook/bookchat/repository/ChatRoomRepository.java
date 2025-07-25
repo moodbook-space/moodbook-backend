@@ -14,4 +14,9 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
   @Query("SELECT r FROM ChatRoom r JOIN FETCH r.owner WHERE r.id = :roomId")
   Optional<ChatRoom> findWithOwnerById(@Param("roomId") Long roomId);
+
+  @Query("SELECT c FROM ChatRoom c JOIN FETCH c.owner " +
+      "WHERE c.title LIKE %:query% OR c.owner.name LIKE %:query% " +
+      "ORDER BY c.createdAt DESC")
+  List<ChatRoom> findAllByTitleOrOwnerName(@Param("query") String query);
 }
