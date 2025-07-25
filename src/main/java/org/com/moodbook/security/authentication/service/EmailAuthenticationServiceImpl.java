@@ -13,6 +13,7 @@ import org.com.moodbook.member.repository.MemberProfileRepository;
 import org.com.moodbook.member.repository.MemberRepository;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,7 @@ public class EmailAuthenticationServiceImpl implements EmailAuthenticationServic
   private final MemberRepository memberRepository;
   private final AppUrlProperties appUrlProperties;
   private final MemberProfileRepository memberProfileRepository;
+  private final PasswordEncoder passwordEncoder;
 
   @Transactional
   @Override
@@ -153,7 +155,12 @@ public class EmailAuthenticationServiceImpl implements EmailAuthenticationServic
     Member member = memberRepository.findByEmail(email)
         .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
 
-    // 4.
+    // 4. 비밀번호 암호화 및 저장
+    member.setPassword(passwordEncoder.encode(newPassword));
+    memberRepository.save(member);
+
+    redisTemplate.delete(token);
+    redisTemplate.delete(redisKey);
 
 
 
