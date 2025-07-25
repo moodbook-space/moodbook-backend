@@ -42,6 +42,7 @@ public enum ErrorCode {
   INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED,"INVALID_REFRESH_TOKEN","유효하지 않는 토큰입니다"),
   REVIEW_FORBIDDEN(HttpStatus.UNAUTHORIZED, "REVIEW_FORBIDDEN", "본인의 리뷰만 수정/삭제할 수 있습니다."),
   REFRESH_TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED,"REFRESH_TOKEN_MISMATCH","리프레쉬 토큰이 불일치 합니다"),
+  YOU_ARE_NOT_DAMN_ADMIN(HttpStatus.UNAUTHORIZED,"YOU_ARE_NOT_DAMN_ADMIN","넌 씨 어드민이 아니잖아"),
 
   /* 404 - Not Found */
   BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOK_NOT_FOUND", "해당 책을 찾을 수 없습니다."),
