@@ -1,4 +1,4 @@
-package org.com.moodbook.admin.member.dto;
+package org.com.moodbook.member.dto;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import org.com.moodbook.common.constants.Gender;
 @Data
 @AllArgsConstructor
 @Builder
-public class AdminMemberDTO {
+public class MemberDTOForUpdate {
   private Long id;
   private Gender gender;
   private String address;
