@@ -4,24 +4,35 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.AllArgsConstructor;
+import org.com.moodbook.common.util.AWSS3Uploader;
 import org.com.moodbook.member.dto.LoginResponseDTO;
 import org.com.moodbook.member.dto.MemberDTO;
 import org.com.moodbook.member.dto.LoginRequestDTO;
+import org.com.moodbook.member.dto.MemberDTOForUpdate;
 import org.com.moodbook.member.dto.MemberTempJoinDTO;
 import org.com.moodbook.member.service.MemberService;
 import org.com.moodbook.security.authentication.service.AuthenticationService;
 import org.com.moodbook.security.core.CustomMemberDetails;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @AllArgsConstructor
 @RestController
@@ -31,6 +42,7 @@ public class MemberController {
 
   private final MemberService memberService;
   private final AuthenticationService authenticationService;
+  private final AWSS3Uploader awss3Uploader;
 
   /**
    * [POST] 임시 회원가입
@@ -121,6 +133,63 @@ public class MemberController {
 
 
   }
+
+  @Operation(summary = "(관리자용) 멤버 사진 S3서버에 업로드",
+      description = "(관리자용) 멤버 사진 S3서버에 업로드 후 url 반환")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "S3에 사진 업로드 성공"),
+      @ApiResponse(responseCode = "500", description = "S3에 사진 업로드 실패")
+  })
+  @PostMapping("/admin/upload-image")
+  public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("image") MultipartFile file) {
+    String imageUrl = awss3Uploader.upload(file);  // 👉 아까 보여주신 메서드 호출
+
+    Map<String, String> response = new HashMap<>();
+    response.put("imageUrl", imageUrl);
+
+    return ResponseEntity.ok(response);
+  }
+
+
+  @Operation(summary = "(관리자용) 멤버 검색 및 조회", description = "검색어와 페이지 정보로 멤버 목록을 조회합니다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "멤버 목록 조회 성공"),
+      @ApiResponse(responseCode = "500", description = "멤버 목록 조회 실패")
+  })
+  @GetMapping("/admin/member")
+  public ResponseEntity<Page<MemberDTO>> getMembers(
+      @RequestParam(defaultValue = "") String query,
+      @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+      Pageable pageable
+  ) {
+    Page<MemberDTO> result = memberService.searchMembers(query, pageable);
+    return ResponseEntity.ok(result);
+  }
+
+
+
+  @Operation(summary = "(관리자용) 멤버 정보 상세 조회",
+      description = "(관리자용) 멤버와 그에 맞는 프로필 정보를 모두 상세 조회합니다.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "멤버를 성공적으로 상세조회했습니다."),
+      @ApiResponse(responseCode = "500", description = "멤버 상세조회에 실패했습니다.")
+  })
+  @GetMapping("/admin/{memberId}")
+  public MemberDTOForUpdate getMemberDetail(@PathVariable Long memberId) {
+    return memberService.getMemberDetail(memberId);
+  }
+
+
+  @PatchMapping("/admin/{memberId}")
+  public ResponseEntity<Void> updateMember(@PathVariable Long memberId,
+      @ModelAttribute MemberDTOForUpdate dto) {
+    memberService.updateMember(memberId, dto);
+    return ResponseEntity.ok().build();
+  }
+
+
+
+
 
 
 }
