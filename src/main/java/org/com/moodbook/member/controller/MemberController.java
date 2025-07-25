@@ -40,7 +40,7 @@ public class MemberController {
       @ApiResponse(responseCode = "200", description = "회원가입에 성공하였습니다."),
       @ApiResponse(responseCode = "500", description = "회원가입에 실패하였습니다.")
   })
-  @PostMapping("/tempSignUp")
+  @PostMapping("/signUp")
   public ResponseEntity<String> tempSignUp(@RequestBody MemberTempJoinDTO dto) {
 
     MemberDTO result = memberService.tempjoin(dto);
