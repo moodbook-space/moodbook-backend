@@ -50,4 +50,16 @@ public interface BookService {
    **/
   Page<BookResponse> getAllBooks(Pageable pageable, Long memberId);
 
+  /** (관리자용) 책 검색어 조회 **/
+  Page<BookResponse> getDbBookList(String query, Pageable pageable);
+
+  /** (관리자용) 책 추가를 위한 알라딘 api 책 조회 **/
+  List<BookResponse> searchForNewBook(String keyword);
+
+  /** (관리자용) 조회된 책 db에 추가 **/
+  boolean addBook(BookResponse bookResponse);
+
+  /** (관리자용) db에서 책 제거 **/
+  void deleteBookById(Long bookId);
+
 }
