@@ -58,6 +58,17 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_URL=${OPENAI_URL}
       - OPENAI_MODEL=${OPENAI_MODEL}
+
+      # Social Login
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
+      - GOOGLE_SCOPE=${GOOGLE_SCOPE}
+      - KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
+      - KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}
+      - KAKAO_CLIENT_NAME=${KAKAO_CLIENT_NAME}
+      - KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}
+
     volumes:
       - /etc/localtime:/etc/localtime:ro      # 한국 시간 설정
       - /home/ubuntu/moodbook/logs:/app/logs
