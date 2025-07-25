@@ -6,7 +6,9 @@ import static org.com.moodbook.common.exception.ErrorCode.INVALID_PASSWORD;
 import static org.com.moodbook.common.exception.ErrorCode.MEMBER_DEACTIVATED;
 
 import java.time.Duration;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.com.moodbook.awss3.service.AWSS3Service;
 import org.com.moodbook.common.constants.AWSS3Constants;
 import org.com.moodbook.common.constants.Gender;
 import org.com.moodbook.common.constants.MemberStatus;
@@ -16,15 +18,20 @@ import org.com.moodbook.common.exception.ErrorCode;
 import org.com.moodbook.member.dto.LoginResponseDTO;
 import org.com.moodbook.member.dto.MemberDTO;
 import org.com.moodbook.member.dto.LoginRequestDTO;
+import org.com.moodbook.member.dto.MemberDTOForUpdate;
 import org.com.moodbook.member.dto.MemberTempJoinDTO;
 import org.com.moodbook.member.entity.Member;
 import org.com.moodbook.member.entity.MemberProfile;
+import org.com.moodbook.member.repository.MemberProfileRepository;
 import org.com.moodbook.member.repository.MemberRepository;
 import org.com.moodbook.security.authentication.repository.AuthenticationRepository;
 import org.com.moodbook.security.authentication.service.AuthenticationService;
 import org.com.moodbook.security.authentication.service.EmailAuthenticationService;
 import org.com.moodbook.security.jwt.JwtProperties;
 import org.com.moodbook.security.jwt.JwtTokenProvider;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,6 +52,9 @@ public class MemberServiceImpl implements MemberService {
   private final EmailAuthenticationService emailAuthenticationService;
   private final AuthenticationRepository authenticationRepository;
   private final RedisTemplate<String, String> redisTemplate;
+  private final MemberProfileRepository memberProfileRepository;
+  private final AWSS3Service awsS3Service;
+
 
   private Member findMemberOrThrow(Long memberId) {
     return memberRepository.findById(memberId)
@@ -179,6 +189,80 @@ public class MemberServiceImpl implements MemberService {
     // 5.상태 비활성화 처리
     deactivateMember.setStatus(MemberStatus.DEACTIVATED);
   }
+
+
+
+  /** (관리자용) 유저 검색 서비스 **/
+  @Override
+  public Page<MemberDTO> searchMembers(String query, Pageable pageable) {
+    List<Member> members;
+
+    if (query == null || query.isBlank()) {
+      members = memberRepository.findAllOrderByCreatedAtDesc();
+    } else {
+      members = memberRepository.findAllByFeatures(query);
+    }
+
+    List<MemberDTO> dtos = members.stream()
+        .map(MemberDTO::toDto)
+        .toList();
+
+    int start = (int) pageable.getOffset();
+    int end = Math.min(start + pageable.getPageSize(), dtos.size());
+    List<MemberDTO> pageContent = dtos.subList(start, end);
+
+    return new PageImpl<>(pageContent, pageable, dtos.size());
+  }
+
+ /** (관리자용) 멤버 정보 업데이트 **/
+  @Override
+  public void updateMember(Long memberId, MemberDTOForUpdate dto) {
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+
+    MemberProfile profile = memberProfileRepository.findById(memberId)
+        .orElseThrow(()-> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+
+
+//  awsS3Service.uploadFile();
+
+
+    // MemberProfile 수정
+    profile.setGender(dto.getGender());
+    profile.setAddress(dto.getAddress());
+    profile.setMyImage(dto.getMyImage());
+    profile.setNickname(dto.getNickname());
+    // Member 수정
+    member.setEmail(dto.getEmail());
+    member.setName(dto.getName());
+    member.setContact(dto.getContact());
+
+
+
+    // save() 호출 없이 트랜잭션 커밋 시 자동 반영 (더티 체킹)
+  }
+
+  /** (관리자용) 멤버, 멤버 프로파일 정보 한 번에 다 가져오기 **/
+  public MemberDTOForUpdate getMemberDetail(Long memberId){
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+
+    MemberProfile profile = memberProfileRepository.findById(memberId)
+        .orElseThrow(()-> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+
+    return MemberDTOForUpdate.builder()
+        .id(member.getId())
+        .gender(profile.getGender())
+        .address(profile.getAddress())
+        .myImage(profile.getMyImage())
+        .nickname(profile.getNickname())
+        .contact(member.getContact())
+        .createdAt(member.getCreatedAt())
+        .email(member.getEmail())
+        .name(member.getName())
+        .build();
+
+  };
 
 
 }
