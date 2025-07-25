@@ -1,4 +1,4 @@
-package org.com.moodbook.oauth2;
+package org.com.moodbook.oauth2.service;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,9 +13,13 @@ import org.com.moodbook.common.constants.AWSS3Constants;
 import org.com.moodbook.common.constants.Gender;
 import org.com.moodbook.common.constants.MemberStatus;
 import org.com.moodbook.common.constants.Role;
+import org.com.moodbook.common.exception.BaseException;
+import org.com.moodbook.common.exception.ErrorCode;
 import org.com.moodbook.member.entity.Member;
 import org.com.moodbook.member.entity.MemberProfile;
 import org.com.moodbook.member.repository.MemberRepository;
+import org.com.moodbook.oauth2.dto.GoogleUserInfo;
+import org.com.moodbook.oauth2.dto.KakaoUserInfo;
 import org.com.moodbook.security.authentication.entity.AuthenticationEntity;
 import org.com.moodbook.security.authentication.repository.AuthenticationRepository;
 import org.com.moodbook.security.core.CustomMemberDetails;
@@ -28,6 +32,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -38,35 +43,49 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
   private final JwtProperties jwtProperties;
   private final AuthenticationRepository authenticationRepository;
 
-  //OAuth2 로그인 성공 시 자동으로 호출되는 메서드
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request,
-                                      HttpServletResponse response,
-                                      Authentication authentication)
+      HttpServletResponse response,
+      Authentication authentication)
       throws IOException, ServletException {
-    //인증 된 사용자 정보 꺼내기 (구글에서 제공된 사용자 정보)
+
     DefaultOAuth2User oAuth2User = (DefaultOAuth2User) authentication.getPrincipal();
-    // 이메일과 이름은 대부분 OAuth2에서 제공함
-    Map<String,Object> attributes = oAuth2User.getAttributes();
+    Map<String, Object> attributes = oAuth2User.getAttributes();
+    String registrationId = (String) attributes.get("registrationId");
 
-    //이메일과 이름은 대부분 OAuth2에서 제공함
-    String email = (String) attributes.get("email");
-    String name = (String) attributes.get("name");
+    String email;
+    String name  =  "";
+    String profileImage;
 
-    // 3. DB에서 회원 조회 (소셜 로그인은 이메일 기준으로 식별)
+    if("google".equals(registrationId)) {
+      GoogleUserInfo userInfo = new GoogleUserInfo(attributes);
+      email = userInfo.getEmail();
+      name = userInfo.getName();
+      profileImage = userInfo.getProfileImage();
+    }else if ("kakao".equals(registrationId)) {
+      KakaoUserInfo userInfo = new KakaoUserInfo(attributes);
+      String nickname = userInfo.getNickname();
+      String id = userInfo.getId();
+      email = nickname+"_"+id+"@kakao.com";//이메일 생성
+      profileImage = userInfo.getProfileImage();
+      name = nickname;
+    }else {
+      log.warn("제공하지 않는 소셜로그인입니다: {}",registrationId);
+      throw new BaseException(ErrorCode.UNSUPPORTED_PROVIDER);
+    }
+
+
+
     Optional<Member> optionalMember = memberRepository.findByEmail(email);
-
     Member member;
     if (optionalMember.isPresent()) {
-      //이미 존재하는 경우 -> 병합 로직 수행
       member = optionalMember.get();
-      member.setEmailVerified(true);//이미 인증 된이메일로 간주
+      member.setEmailVerified(true);
       memberRepository.save(member);
-    }else {
-      // 존재하지 않는 경우 새로운 회원 및 프로필 등록
+    } else {
       member = Member.builder()
           .email(email)
-          .password("SOCIAL")//소셜로그인 계정은 비밀번호 없음
+          .password("SOCIAL")
           .role(Role.USER)
           .name(name)
           .contact("SOCIAL")
@@ -75,7 +94,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
           .build();
 
       MemberProfile profile = MemberProfile.builder()
-          .myImage(AWSS3Constants.DEFAULT_PROFILE_IMAGE)
+          .myImage(profileImage != null ? profileImage : AWSS3Constants.DEFAULT_PROFILE_IMAGE)
           .nickname(name)
           .gender(Gender.UNKNOWN)
           .address(" ")
@@ -83,32 +102,28 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
       member.setProfile(profile);
       memberRepository.save(member);
-      log.info("소셜 회원가입 성공: {}", email);
+      log.info("신규 소셜 회원가입 완료: {}", email);
     }
+
     CustomMemberDetails customMemberDetails = new CustomMemberDetails(member);
-    // 2.토큰 발급
     Authentication authToken = new UsernamePasswordAuthenticationToken(
         customMemberDetails,
         null,
         Collections.singleton(new SimpleGrantedAuthority(member.getRole().name()))
     );
     SecurityContextHolder.getContext().setAuthentication(authToken);
-    // 3.access,refresh 토큰 생성
-    String accessToken = jwtTokenProvider.generateToken(authToken,jwtProperties.getAccessTokenExpirationMs() ,"access");
-    String refreshToken = jwtTokenProvider.generateToken(authToken,jwtProperties.getRefreshTokenExpirationMs(),"refresh");
 
-    // 4.refreshToken 저장
+    //토큰 발급
+    String accessToken = jwtTokenProvider.generateToken(authToken, jwtProperties.getAccessTokenExpirationMs(), "access");
+    String refreshToken = jwtTokenProvider.generateToken(authToken, jwtProperties.getRefreshTokenExpirationMs(), "refresh");
+
+    //refresh토큰 저장
     AuthenticationEntity entity = AuthenticationEntity.builder()
         .member(member)
         .refreshToken(refreshToken)
         .build();
     authenticationRepository.save(entity);
 
-    // 5. accessToken은 local스토리지에 보내기 위해 쿼리 파라미터로 전달
-    response.sendRedirect("http://localhost:3000/main?access_token=" + accessToken +"&id=" + member.getId());
-
-
+    response.sendRedirect("http://localhost:3000/main?access_token=" + accessToken + "&id=" + member.getId());
   }
-
-
 }
