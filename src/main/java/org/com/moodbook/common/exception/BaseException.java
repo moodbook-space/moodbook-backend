@@ -45,6 +45,7 @@ public class BaseException extends RuntimeException {
     public static final BaseException ACCESS_TOKEN_NOT_FOUND = new BaseException(ErrorCode.ACCESS_TOKEN_NOT_FOUND);
     public static final BaseException MEMBER_ALREADY_DEACTIVATED = new BaseException(ErrorCode.MEMBER_ALREADY_DEACTIVATED);
     public static final BaseException EMOTION_SAVE_ERROR = new BaseException(ErrorCode.EMOTION_SAVE_ERROR);
+    public static final BaseException YOU_ARE_NOT_DAMN_ADMIN = new BaseException(ErrorCode.YOU_ARE_NOT_DAMN_ADMIN);
     private final ErrorCode errorCode;
 
     // 의도적인 예외이므로 stack trace 제거 (불필요한 예외처리 비용 제거)
