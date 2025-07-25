@@ -3,7 +3,10 @@ package org.com.moodbook.member.service;
 import org.com.moodbook.member.dto.LoginResponseDTO;
 import org.com.moodbook.member.dto.MemberDTO;
 import org.com.moodbook.member.dto.LoginRequestDTO;
+import org.com.moodbook.member.dto.MemberDTOForUpdate;
 import org.com.moodbook.member.dto.MemberTempJoinDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 
 public interface MemberService {
@@ -27,6 +30,16 @@ public interface MemberService {
 
 
 
+
+
+
+  /** (관리자용) 멤버 검색 */
+  Page<MemberDTO> searchMembers(String query, Pageable pageable);
+
+  /** (관리자용) 멤버 정보 업데이트 **/
+  void updateMember(Long memberId, MemberDTOForUpdate dto);
+
+  MemberDTOForUpdate getMemberDetail(Long memberId);
 
 
 }
