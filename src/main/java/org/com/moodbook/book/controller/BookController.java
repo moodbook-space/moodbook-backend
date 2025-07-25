@@ -14,13 +14,17 @@ import org.com.moodbook.book.dto.BookResponse;
 import org.com.moodbook.book.service.BookService;
 import org.com.moodbook.security.core.CustomMemberDetails;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -109,5 +113,70 @@ public class BookController {
         memberId);
     return ResponseEntity.ok(result);
   }
+
+
+    @Operation(summary = "(관리자용) 책 전체 조회",
+        description = "(관리자용) db에 있는 모든 책 조회")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "(관리자용) 도서 리스트 반환 성공"),
+        @ApiResponse(responseCode = "500", description = "(관리자용) 도서 리스트 반환 오류")
+    })
+    @GetMapping("/admin")
+    public Page<BookResponse> getDbBookList(
+        @RequestParam(defaultValue = "") String query,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return bookService.getDbBookList(query, pageable);
+
+    }
+
+    @Operation(summary = "(관리자용) 책 제거",
+        description = "(관리자용) db에 있는 책 제거")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "(관리자용) 책 제거 성공"),
+        @ApiResponse(responseCode = "500", description = "(관리자용) 책 제거 오류")
+    })
+    @DeleteMapping("/admin/{bookId}")
+    public ResponseEntity<String> deleteBookById(@PathVariable Long bookId) {
+        bookService.deleteBookById(bookId);
+        return ResponseEntity.ok("삭제 완료");
+
+    }
+
+
+    @Operation(summary = "(관리자용) 알라딘 api 책 검색",
+        description = "(관리자용) 알라딘 api로 책 검색")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "(관리자용) 알라딘 api 책 검색 성공"),
+        @ApiResponse(responseCode = "500", description = "(관리자용) 알라딘 api 책 검색 오류")
+    })
+    @GetMapping("/admin/add")
+    public ResponseEntity<List<BookResponse>> searchForNewBook(
+        @RequestParam("keyword") String keyword
+    ) {
+        List<BookResponse> books = bookService.searchForNewBook(keyword);
+
+        return ResponseEntity.ok(books);
+    }
+
+
+    @Operation(summary = "(관리자용) 검색된 책 db에 추가 (한 개)",
+        description = "(관리자용) 검색된 책 하나를 선택해 db에 추가합니다")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "(관리자용) db에 책 책 추가 성공"),
+        @ApiResponse(responseCode = "500", description = "(관리자용) db에 책 추가 오류")
+    })
+    @PostMapping("/admin/add")
+    public ResponseEntity<String> addBook(@RequestBody BookResponse bookResponse) {
+        boolean success = bookService.addBook(bookResponse);
+        if (success) {
+            return ResponseEntity.ok("등록 완료");
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 등록된 책입니다.");
+        }
+    }
+
 
 }
