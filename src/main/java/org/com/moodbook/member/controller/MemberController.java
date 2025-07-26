@@ -41,7 +41,7 @@ public class MemberController {
       @ApiResponse(responseCode = "400",description = "이미 가입 된 회원입니다"),
       @ApiResponse(responseCode = "500", description = "회원가입에 실패하였습니다.")
   })
-  @PostMapping("/signUp")
+  @PostMapping("/sign-up")
   public ResponseEntity<String> tempSignUp(@RequestBody MemberTempJoinDTO dto) {
 
     MemberDTO result = memberService.join(dto);
@@ -56,7 +56,7 @@ public class MemberController {
       @ApiResponse(responseCode = "200", description = "로그인에 성공하였습니다."),
       @ApiResponse(responseCode = "500", description = "로그인에 실패하였습니다.")
   })
-  @PostMapping("/login")
+  @PostMapping("/sign-in")
   public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginDto) {
     //
     LoginResponseDTO tokenResponse = memberService.login(loginDto);
