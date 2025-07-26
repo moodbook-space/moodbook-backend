@@ -117,6 +117,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     //토큰 발급
     String accessToken = jwtTokenProvider.generateToken(authToken, jwtProperties.getAccessTokenExpirationMs(), "access");
+    log.info("accessToken: {}", accessToken);
     String refreshToken = jwtTokenProvider.generateToken(authToken, jwtProperties.getRefreshTokenExpirationMs(), "refresh");
 
     //refresh토큰 저장
