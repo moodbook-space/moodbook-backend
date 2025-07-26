@@ -38,6 +38,7 @@ public class MemberController {
   @Operation(summary = "임시 회원가입", description = "이메일 인증 이전의 회원가입을 진행합니다.")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "회원가입에 성공하였습니다."),
+      @ApiResponse(responseCode = "400",description = "이미 가입 된 회원입니다"),
       @ApiResponse(responseCode = "500", description = "회원가입에 실패하였습니다.")
   })
   @PostMapping("/signUp")
@@ -92,7 +93,8 @@ public class MemberController {
   @Operation(summary = "멤버 아이디 조회", description = "")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "조회에 성공했습니다."),
-      @ApiResponse(responseCode = "403", description = "권한이 없습니다")
+      @ApiResponse(responseCode = "403", description = "권한이 없습니다"),
+      @ApiResponse(responseCode = "404",description = "존재하지 않은 회원입니다")
   })
   @GetMapping("/me")
   public ResponseEntity<MemberDTO> getMyInfo(
