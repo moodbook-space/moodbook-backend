@@ -56,8 +56,8 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/",
                     "/redis/test",
-                    "/oauth2/**",
-                    "/auth/",
+                    "/login/oauth2/**",
+                    "/auth/**",
                     "/api/oauth/signUp",
                     "/api/oauth/login",
                     "/admin/**",
