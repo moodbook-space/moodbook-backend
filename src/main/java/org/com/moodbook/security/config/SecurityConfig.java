@@ -58,7 +58,7 @@ public class SecurityConfig {
                     "/redis/test",
                     "/login/oauth2/**",
                     "/auth/**",
-                    "/api/oauth/sign-upp",
+                    "/api/oauth/sign-up",
                     "/api/oauth/sign-in",
                     "/admin/**",
                     "/api/admin/**",
