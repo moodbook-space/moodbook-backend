@@ -24,6 +24,7 @@ public enum ErrorCode {
   ALREADY_IN_BOOKMARK(HttpStatus.BAD_REQUEST, "ALREADY_IN_BOOKMARK", "이미 북마크에 존재하는 도서입니다"),
   ALREADY_VERIFIED(HttpStatus.BAD_REQUEST,"ALREADY_VERIFIED","이미 인증된 메일입니다"),
   CHATROOM_FULL(HttpStatus.BAD_REQUEST, "CHATROOM_FULL", "채팅방 인원이 초과되었습니다."),
+  ALREADY_EXIST_TAG(HttpStatus.BAD_REQUEST,"ALREADY_EXIST_TAG","이미 존재하는 태그입니다."),
 
 
   /* 401 - Unauthorized */
@@ -44,7 +45,7 @@ public enum ErrorCode {
   INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED,"INVALID_REFRESH_TOKEN","유효하지 않는 토큰입니다"),
   REVIEW_FORBIDDEN(HttpStatus.UNAUTHORIZED, "REVIEW_FORBIDDEN", "본인의 리뷰만 수정/삭제할 수 있습니다."),
   REFRESH_TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED,"REFRESH_TOKEN_MISMATCH","리프레쉬 토큰이 불일치 합니다"),
-
+  UNSUPPORTED_PROVIDER(HttpStatus.BAD_REQUEST,"UNSUPPORTED_PROVIDER","지원하지 않는 제공자 입니다"),
   /* 404 - Not Found */
   BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "BOOK_NOT_FOUND", "해당 책을 찾을 수 없습니다."),
   REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT_NOT_FOUND", "해당 독후감을 찾을 수 없습니다."),

@@ -46,6 +46,7 @@ public class BaseException extends RuntimeException {
     public static final BaseException MEMBER_ALREADY_DEACTIVATED = new BaseException(ErrorCode.MEMBER_ALREADY_DEACTIVATED);
     public static final BaseException EMOTION_SAVE_ERROR = new BaseException(ErrorCode.EMOTION_SAVE_ERROR);
     public static final BaseException CHATROOM_FULL = new BaseException(ErrorCode.CHATROOM_FULL);
+    public static final BaseException UNSUPPORTED_PROVIDER = new BaseException(ErrorCode.UNSUPPORTED_PROVIDER);
     private final ErrorCode errorCode;
 
     // 의도적인 예외이므로 stack trace 제거 (불필요한 예외처리 비용 제거)

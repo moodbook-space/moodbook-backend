@@ -95,13 +95,13 @@
 </head>
 <body>
   <div class="sidebar">
-    <img src="/images/logo.png" alt="로고" onclick="alert('이동 주소는 아직 미정입니다.')">
+    <img src="/admin/images/logo.png" alt="로고" onclick="alert('이동 주소는 아직 미정입니다.')">
   </div>
 
   <div class="main">
     <div class="main-header">
       <h1>관리자 페이지</h1>
-      <img src="/images/gendo.png" alt="관리자">
+      <img src="/admin/images/gendo.png" alt="관리자">
     </div>
 
     <div class="grid">
@@ -115,7 +115,7 @@
 
   </div>
   <div class="onion" id="onion">
-    <img src="/images/onion.png" alt="양파">
+    <img src="/admin/images/onion.png" alt="양파">
     <div class="speech">오늘의 제적 : 김영민</div>
   </div>
 </body>
@@ -133,7 +133,7 @@
   let mouseY = null;
 
   // 사운드 객체
-  const bounceSound = new Audio('/sounds/bounce.mp3');
+  const bounceSound = new Audio('sounds/bounce.mp3');
 
   function playBounceSound() {
     if (bounceSound.paused) {

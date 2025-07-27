@@ -1,10 +1,12 @@
 package org.com.moodbook.security.config;
 
-import java.util.Collections;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.com.moodbook.oauth2.CustomOAuth2UserService;
-import org.com.moodbook.oauth2.OAuth2LoginSuccessHandler;
+import org.com.moodbook.oauth2.service.CustomOAuth2UserService;
+import org.com.moodbook.oauth2.service.OAuth2LoginSuccessHandler;
 import org.com.moodbook.security.jwt.JwtTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,13 +48,18 @@ public class SecurityConfig {
                 // 아래처럼 ws-chat 엔드포인트는 인증 예외처리(permitAll) ★
                 .requestMatchers("/ws-chat/**").permitAll()
                 // 나머지는 기존 코드와 동일
-                .requestMatchers("/api/oauth/**").permitAll()
+                .requestMatchers("/api/oauth").permitAll()
                 .requestMatchers("/api/notification/**").permitAll()
+                .requestMatchers(GET, "/api/tags").permitAll()
+                // POST /api/tags 는 관리자만 허용
+                .requestMatchers(POST, "/api/tags").hasRole("ADMIN")
                 .requestMatchers(
+                    "/",
                     "/redis/test",
-                    "/oauth2/**",
+                    "/login/oauth2/**",
                     "/auth/**",
-                    "/api/oauth/",
+                    "/api/oauth/sign-up",
+                    "/api/oauth/sign-in",
                     "/admin/**",
                     "/api/admin/**",
                     "/api/books/**",
@@ -73,11 +80,14 @@ public class SecurityConfig {
                     "/api/books/**",
                     "/actuator/prometheus",     //프로메테우스
                     "/login",
-                    "/signUp",
+                    "/signup",
                     "/books/**",
                     "/api/books/**"
                 ).permitAll()
                 .requestMatchers("/api/chat-rooms/**").authenticated()
+                .requestMatchers("/api/oauth/deactivate/**").authenticated()
+                .requestMatchers("/api/oauth/logout/**").authenticated()
+                .requestMatchers("/api/oauth/me").authenticated()
                 .requestMatchers("/api/chat/**").authenticated()
                 .requestMatchers("/chat-rooms/**").authenticated()
                 .anyRequest().authenticated()
