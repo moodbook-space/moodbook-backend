@@ -29,7 +29,7 @@ public class RecentBookViewController {
     @Operation(summary = "최근에 본 도서 조회")
     public ResponseEntity<ApiResponse<Page<RecentBookViewResponse>>> getRecentBooks(
         @AuthenticationPrincipal CustomMemberDetails memberDetails,
-        @PageableDefault(size = 5, sort = "viewedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        @PageableDefault(size = 20, sort = "viewedAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Long memberId = memberDetails.getId();
         Page<RecentBookViewResponse> recentBooks =
             recentBookViewService.getRecentBookViews(memberId, pageable);
