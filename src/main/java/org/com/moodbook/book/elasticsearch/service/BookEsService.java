@@ -17,7 +17,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.com.moodbook.book.dto.BookResponse;
+import org.com.moodbook.book.elasticsearch.dto.BookEsAutoCompleteDocument;
 import org.com.moodbook.book.elasticsearch.dto.BookEsDocument;
+import org.com.moodbook.book.elasticsearch.repository.BookEsAutoCompleteRepository;
 import org.com.moodbook.book.elasticsearch.repository.BookEsRepository;
 import org.com.moodbook.book.repository.BookRepository;
 import org.springframework.data.domain.Page;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class BookEsService {
 
   private final BookEsRepository bookEsRepository;
+  private final BookEsAutoCompleteRepository bookEsAutoCompleteRepository;
   private final BookRepository bookRepository;
   private final ElasticsearchClient client;
 
@@ -51,7 +54,13 @@ public class BookEsService {
     var docs = bookRepository.findAll().stream()
         .map(BookEsDocument::fromEntity)
         .toList();
+
+    var docs_v2 = bookRepository.findAll().stream()
+        .map(BookEsAutoCompleteDocument::fromEntity)
+        .toList();
+
     bookEsRepository.saveAll(docs);
+    bookEsAutoCompleteRepository.saveAll(docs_v2);
   }
 
   // ES에 있는 책 모두 조회
@@ -133,13 +142,13 @@ public class BookEsService {
           .size(10) // 최대 10개만
       );
 
-      SearchResponse<BookEsDocument> response = client.search(request, BookEsDocument.class);
+      SearchResponse<BookEsAutoCompleteDocument> response = client.search(request, BookEsAutoCompleteDocument.class);
       System.out.println(response.hits());
 
       return response.hits().hits().stream()
           .map(Hit::source)
           .filter(Objects::nonNull)
-          .map(BookEsDocument::getTitle)
+          .map(BookEsAutoCompleteDocument::getTitle)
           .distinct()
           .collect(Collectors.toList());
     } catch (IOException e) {
