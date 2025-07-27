@@ -129,7 +129,13 @@ public class ChatRoomServiceImpl implements ChatRoomService {
           throw new BaseException(ErrorCode.ALREADY_EXIST_JOIN);
       }
 
-      ChatRoomMember waitJoinMember = ChatRoomMember.builder()
+    long approvedCount = chatRoomMemberRepository.countByChatRoomAndStatus(chatRoom, ChatRoomMemberStatus.APPROVED);
+    if (approvedCount >= chatRoom.getLimitMembers()) {
+      throw new BaseException(ErrorCode.CHATROOM_FULL);
+    }
+
+
+    ChatRoomMember waitJoinMember = ChatRoomMember.builder()
           .chatRoom(chatRoom)
           .member(member)
           .role(ChatRoomMemberRole.WAITING)

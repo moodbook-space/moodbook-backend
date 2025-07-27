@@ -23,6 +23,7 @@ public enum ErrorCode {
   INVALID_ACTION(HttpStatus.BAD_REQUEST, "INVALID_ACTION", "올바른 작업이 아닙니다."),
   ALREADY_IN_BOOKMARK(HttpStatus.BAD_REQUEST, "ALREADY_IN_BOOKMARK", "이미 북마크에 존재하는 도서입니다"),
   ALREADY_VERIFIED(HttpStatus.BAD_REQUEST,"ALREADY_VERIFIED","이미 인증된 메일입니다"),
+  CHATROOM_FULL(HttpStatus.BAD_REQUEST, "CHATROOM_FULL", "채팅방 인원이 초과되었습니다."),
   ALREADY_EXIST_TAG(HttpStatus.BAD_REQUEST,"ALREADY_EXIST_TAG","이미 존재하는 태그입니다."),
 
 
