@@ -39,6 +39,7 @@ public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMember, 
       + "AND crm.role = 'LEADER'")
   Optional<ChatRoomMember> findLeaderByChatRoomId(@Param("chatRoomId") Long chatRoomId);
 
+  Long countByChatRoomAndStatus(ChatRoom chatRoom, ChatRoomMemberStatus status);
 
 }
 
