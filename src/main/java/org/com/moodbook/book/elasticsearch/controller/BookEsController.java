@@ -29,7 +29,7 @@ public class BookEsController {
     return ResponseEntity.ok(books);
   }
 
-  @GetMapping("/search")
+  @GetMapping("/keyword")
   public ResponseEntity<Page<BookEsDocument>> searchBooks(
       @RequestParam(required = false) String keyword,
       @RequestParam(defaultValue = "0") int page,
