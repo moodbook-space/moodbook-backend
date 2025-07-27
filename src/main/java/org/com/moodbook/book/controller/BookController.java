@@ -39,7 +39,7 @@ public class BookController {
   @ApiResponses({@ApiResponse(responseCode = "200", description = "도서 리스트 반환 성공"),
       @ApiResponse(responseCode = "500", description = "도서 리스트 반환 오류")})
   public ResponseEntity<Page<BookResponse>> getRecommendedBooks(
-      @PageableDefault(size = 10, page = 0) Pageable pageable,
+      @PageableDefault(size = 50, page = 0) Pageable pageable,
       @AuthenticationPrincipal CustomMemberDetails memberDetails) {
     Long memberId = (memberDetails != null) ? memberDetails.getId() : null;
     Page<BookResponse> recommendedBooks = bookService.getRecommendedBooks(pageable, memberId);
@@ -74,7 +74,7 @@ public class BookController {
   @ApiResponses({@ApiResponse(responseCode = "200", description = "조회수별 도서 조회 성공"),
       @ApiResponse(responseCode = "500", description = "조회수별 도서 조회 실패")})
   public ResponseEntity<Page<BookResponse>> getTrendingBooks(
-      @PageableDefault(size = 20, page = 0) Pageable pageable,
+      @PageableDefault(size = 50, page = 0) Pageable pageable,
       @AuthenticationPrincipal CustomMemberDetails memberDetails) {
     Long memberId = (memberDetails != null) ? memberDetails.getId() : null;
     Page<BookResponse> trendingBooks = bookService.getTrendingBooks(pageable, memberId);
