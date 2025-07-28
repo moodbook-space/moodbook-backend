@@ -1,8 +1,10 @@
 package org.com.moodbook.mypage.service;
 
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.com.moodbook.awss3.dto.AWSS3DTO;
 import org.com.moodbook.awss3.service.AWSS3Service;
+import org.com.moodbook.common.constants.AWSS3Constants;
 import org.com.moodbook.common.exception.BaseException;
 import org.com.moodbook.member.entity.Member;
 import org.com.moodbook.member.entity.MemberProfile;
@@ -89,8 +91,10 @@ public class MyPageServiceImpl implements MyPageService {
     AWSS3DTO awsS3DTO = AWSS3DTO.of(memberProfile.getMyImage());
 
     // 이미 올라간 파일이 존재하는지 확인하고, 삭제
-    awsS3Service.doesObjectExist(awsS3DTO);
-    awsS3Service.deleteFile(awsS3DTO);
+    if (!Objects.equals(awsS3DTO.getUrl(), AWSS3Constants.DEFAULT_PROFILE_IMAGE)) {
+      awsS3Service.doesObjectExist(awsS3DTO);
+      awsS3Service.deleteFile(awsS3DTO);
+    }
 
     // 새 파일 업로드하고, 업로드된 경로 기반으로 MemberProfile 수정하기
     memberProfile.setMyImage(awsS3Service.uploadFile(image).getUrl());
