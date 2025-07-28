@@ -14,6 +14,7 @@ public class MyPageModifyResponse {
   private String nickname;
   private String email;
   private String contact;
+  private String address;
 
   public static MyPageModifyResponse of(Member member, MemberProfile memberProfile) {
     return MyPageModifyResponse.builder()
@@ -22,6 +23,7 @@ public class MyPageModifyResponse {
         .nickname(memberProfile.getNickname())
         .email(member.getEmail())
         .contact(member.getContact())
+        .address(memberProfile.getAddress())
         .build();
   }
 }
