@@ -20,7 +20,7 @@ public class BookBatchScheduler {
     // 매일 자정마다 실행 (초, 분, 시, 일, 월, 요일)
     // 현재는 매일 자정마다 실행하는 것으로 세팅
     // 테스트하고 싶으면 @Scheduled(cron = "0 * * * * *")
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void runBookBatchJob() {
         try {
             JobExecution jobExecution = jobLauncher.run(bookImportJob, new JobParametersBuilder()

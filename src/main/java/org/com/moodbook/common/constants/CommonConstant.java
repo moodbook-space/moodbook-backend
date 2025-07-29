@@ -16,8 +16,8 @@ public class CommonConstant {
 	 * TOTAL_COUNT: 500~1000
 	 */
 
-	public static final int MAX_RESULTS = 10;
+	public static final int MAX_RESULTS = 5;
 	public static final int MAX_PAGES_PER_KEYWORD = 5;
-	public static final int TOTAL_COUNT = 50;
+	public static final int TOTAL_COUNT = 5;
 
 }
