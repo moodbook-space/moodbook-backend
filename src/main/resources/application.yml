@@ -1,6 +1,18 @@
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
   profiles:
-    default: prod  # 기본 실행 프로필 지정
+    default: local  # 기본 실행 프로필 지정
 
 server:
   port: 8080
