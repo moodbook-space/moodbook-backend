@@ -42,18 +42,38 @@
 
 | 구분               | 기술/도구                                                             |
 | ---------------- | ----------------------------------------------------------------- |
-| **Frontend** | HTML, CSS, JavaScript, Thymeleaf, SockJS |
-| **Backend** | Java 21 (LTS), Spring Boot 3.4.0, Spring Security, JWT            |
-| **DataBase**       | PostgreSQL 17 (pgvector 지원), MongoDB 7.0, Redis(Valkey) - (캐시/세션) |
-| **Main Tech Stack**       | WebSocket, STOMP, Redis (Valkey) Pub/Sub, RAG                                   |
-| **Dev Tools**        | Swagger/OpenAPI (API 문서화), JUnit 5, Mockito, Docker (컨테이너화), Discord          |
+| **Frontend** | React, TypeScript, Styled-components, React-router |
+| **Backend** | Java 17 (LTS), Spring Boot 3.5.3, Spring Security, JPA, QueryDSL, H2        |
+| **DataBase**       | MySQL, MongoDB 7.0, Redis, ElasticSearch |
+| **Main Tech Stack**       | WebSocket, STOMP, Redis Pub/Sub                                |
+| **DevOps**        | Docker, Github Actions, Jenkins, Grafana, Prometheus, Discord, ELK, S3, RDS, EC2, ElasticCache, Nginx     |
 
 <br/>
 
 ## 📁 프로젝트 구조
 
 ```
-
+moodbook-backend/
+ ├── src/main/java/com/moodbook
+ │    ├── domain
+ │    │    ├── member
+ │    │    ├── book
+ │    │    ├── review
+ │    │    ├── bookmark
+ │    │    ├── chat
+ │    │    └── notification
+ │    ├── global
+ │    │    ├── config
+ │    │    ├── exception
+ │    │    └── security
+ │    └── MoodbookApplication.java
+ │
+ ├── src/main/resources
+ │    ├── application.yml
+ │    └── static / templates
+ │
+ ├── build.gradle
+ └── docker-compose.yml
 ```
 
 
