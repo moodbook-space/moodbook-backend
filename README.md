@@ -54,6 +54,19 @@
 
 <br/>
 
+## FlowChart
+
+<img width="597" height="763" alt="image" src="https://github.com/user-attachments/assets/631edeb5-d526-4406-8185-7f19bea87b3c" />
+
+<img width="1000" height="550" alt="image" src="https://github.com/user-attachments/assets/278228a1-78f9-4fce-b309-b258884a9e1b" />
+
+<img width="597" height="763" alt="image" src="https://github.com/user-attachments/assets/1c35a868-e642-47e1-b84a-594417e50016" />
+
+<img width="1000" height="550" alt="image" src="https://github.com/user-attachments/assets/f03b0b9e-9f5c-4b97-86e1-d174322005a0" />
+
+
+
+
 ## 🏗️ 시스템 아키텍처
 
 ### 전반적인 흐름 구성도
