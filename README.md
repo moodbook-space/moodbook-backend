@@ -41,6 +41,14 @@
 
 <br/>
 
+## 📜 API 명세서
+
+- 링크: https://documenter.getpostman.com/view/31353886/2sB34mhxma#8b0aed3b-14db-4dac-a541-a902374c5d2c
+
+<img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/45372fdf-fc6d-418c-a3e6-20413e5f1aed" />
+
+<br/>
+
 ## 🏗️ 시스템 아키텍처
 
 ### 전반적인 흐름 구성도
@@ -107,7 +115,6 @@ flowchart TB
 
 <img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/e1b0238b-f3e5-46a8-aa52-33bdfea68973" />
 
-
 <br/>
 
 ## 🛠️ 기술 스택
@@ -118,7 +125,7 @@ flowchart TB
 | **Backend** | Java 17 (LTS), Spring Boot 3.5.3, Spring Security, JPA, QueryDSL, H2        |
 | **DataBase**       | MySQL, MongoDB 7.0, Redis, ElasticSearch |
 | **Main Tech Stack**       | WebSocket, STOMP, Redis Pub/Sub                                |
-| **DevOps**        | Docker, Github Actions, Jenkins, Grafana, Prometheus, Discord, ELK, S3, RDS, EC2, ElasticCache, Nginx     |
+| **DevOps**        | Docker, Github Actions, Jenkins, Grafana, Prometheus, Discord, ELK, AWS(S3, RDS, EC2), ElasticCache, Nginx  |
 
 <br/>
 
