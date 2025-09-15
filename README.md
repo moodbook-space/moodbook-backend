@@ -125,7 +125,7 @@ flowchart TB
 | **Backend** | Java 17 (LTS), Spring Boot 3.5.3, Spring Security, JPA, QueryDSL, H2        |
 | **DataBase**       | MySQL, MongoDB 7.0, Redis, ElasticSearch |
 | **Main Tech Stack**       | WebSocket, STOMP, Redis Pub/Sub                                |
-| **DevOps**        | Docker, Github Actions, Jenkins, Grafana, Prometheus, Discord, ELK, AWS(S3, RDS, EC2), ElasticCache, Nginx  |
+| **DevOps**        | Docker, Github Actions, Jenkins, Grafana, Prometheus, Discord, ELK(ElasticSearch + Logstash + Kibana), AWS(S3, RDS, EC2), ElasticCache, Nginx  |
 
 <br/>
 
