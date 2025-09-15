@@ -14,6 +14,7 @@
 <img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/a8b30a6b-eb63-4cc4-85e4-73e06f499c8b" />
 
 <br/>
+<br/>
 
 ## 🧐 새로운 추천 흐름
 
@@ -25,6 +26,7 @@
 
 <img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/e8822cf2-b174-4a31-92da-3a2a29b758be" />
 
+<br/>
 <br/>
 
 ## 👨‍💻 문제 인식 및 해결 방안
@@ -39,6 +41,7 @@
 <img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/170456e1-cc87-474c-a56d-a5b2bc85032f" />
 
 <br/>
+<br/>
 
 ## 📜 API 명세서
 
@@ -47,17 +50,20 @@
 <img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/45372fdf-fc6d-418c-a3e6-20413e5f1aed" />
 
 <br/>
+<br/>
 
 ## 🧭 ERD
 
 <img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/5c8e9503-ff00-48d4-a044-6fc4a12163b0" />
 
 <br/>
+<br/>
 
 ## Wireframe
 
 <img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/016ce909-f8e5-4ee2-a4c2-bc57cf2b06ff" />
 
+<br/>
 <br/>
 
 ## FlowChart
@@ -70,6 +76,7 @@
 
 <img width="1000" height="550" alt="image" src="https://github.com/user-attachments/assets/f03b0b9e-9f5c-4b97-86e1-d174322005a0" />
 
+<br/>
 <br/>
 
 ## 🏗️ 시스템 아키텍처
@@ -134,6 +141,9 @@ flowchart TB
 
 ```
 
+<br/>
+<br/>
+
 ### CI/CD 구성도
 
 <img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/e1b0238b-f3e5-46a8-aa52-33bdfea68973" />
@@ -150,6 +160,7 @@ flowchart TB
 | **Main Tech Stack**       | WebSocket, STOMP, Redis Pub/Sub                                |
 | **DevOps**        | Docker, Github Actions, Jenkins, Grafana, Prometheus, Discord, ELK(ElasticSearch + Logstash + Kibana), AWS(S3, RDS, EC2), ElasticCache, Nginx  |
 
+<br/>
 <br/>
 
 ## 📁 프로젝트 구조
