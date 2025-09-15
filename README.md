@@ -40,17 +40,23 @@
 
 <br/>
 
+## 📜 API 명세서
+
+- 링크: https://documenter.getpostman.com/view/31353886/2sB34mhxma#8b0aed3b-14db-4dac-a541-a902374c5d2c
+
+<img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/45372fdf-fc6d-418c-a3e6-20413e5f1aed" />
+
+<br/>
+
 ## 🧭 ERD
 
 <img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/5c8e9503-ff00-48d4-a044-6fc4a12163b0" />
 
 <br/>
 
-## 📜 API 명세서
+## Wireframe
 
-- 링크: https://documenter.getpostman.com/view/31353886/2sB34mhxma#8b0aed3b-14db-4dac-a541-a902374c5d2c
-
-<img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/45372fdf-fc6d-418c-a3e6-20413e5f1aed" />
+<img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/016ce909-f8e5-4ee2-a4c2-bc57cf2b06ff" />
 
 <br/>
 
@@ -64,8 +70,7 @@
 
 <img width="1000" height="550" alt="image" src="https://github.com/user-attachments/assets/f03b0b9e-9f5c-4b97-86e1-d174322005a0" />
 
-
-
+<br/>
 
 ## 🏗️ 시스템 아키텍처
 
